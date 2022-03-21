@@ -1,0 +1,28 @@
+[config]
+
+# Time method by which to perform validation, either by init time or by valid
+# time. Indicate by either BY_VALID or BY_INIT
+#TIME_METHOD = BY_VALID
+LOOP_BY = VALID
+
+# For processing by init time or valid time, indicate the start and end hours
+# in HH format                                                             
+VALID_TIME_FMT = %Y%m%d%H
+
+VALID_BEG = 2020010500
+VALID_END = 2020010523
+
+# Indicate the begin and end date, and interval (in hours)                                                        
+#BEG_TIME = 20190502
+#END_TIME = 20190502
+#INTERVAL_TIME = 1
+VALID_INCREMENT = 3600
+
+# start and end dates are created by combining the date with
+# start and end hours (format can be hh, hhmm, or hhmmss.                                                         
+#START_DATE = {BEG_TIME}{START_HOUR}
+#END_DATE = {END_TIME}{END_HOUR}
+
+# The obs window dictionary
+OBS_WINDOW_BEGIN = -86400
+OBS_WINDOW_END = 86400
