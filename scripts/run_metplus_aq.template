@@ -34,8 +34,8 @@ cd $MET_PLUS_TMP
 
 export DATE=xxDATE
 export DATEp1=xxDATEp1
-export MET_PLUS=/gpfs/dell2/emc/verification/save/${USER}/METplus-4.0.0
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/${USER}/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS=xxBASE
+export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/perry
 export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_aq
 export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_aq
 

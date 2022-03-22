@@ -14,6 +14,9 @@ else
     LASTDAY=$2
 fi
 
+BASE=`pwd`
+export HOMEverif="$(dirname ${BASE})"
+
 logdir=/gpfs/dell2/ptmp/${USER}/VERF_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
@@ -50,7 +53,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
 
     run_script=run_${jobname}_${NOW}.sh
-    sed -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEm2!${PDYm2}!" -e "s!xxDATEm1!${PDYm1}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
+    sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEm2!${PDYm2}!" -e "s!xxDATEm1!${PDYm1}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
         cat ${working_dir}/${run_script} | bsub

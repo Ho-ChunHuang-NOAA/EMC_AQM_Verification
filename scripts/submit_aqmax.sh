@@ -16,6 +16,9 @@ else
     LASTDAY=$3
 fi
 
+BASE=`pwd`
+export HOMEverif="$(dirname ${BASE})"
+
 logdir=/gpfs/dell2/ptmp/${USER}/VERF_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
@@ -36,6 +39,19 @@ if [ ! -s ${script_base} ]; then
    exit
 fi 
 
+#
+# Find EXP Name if envir="EXP"_bc
+#
+if [[ "${envir}" == *"_bc"* ]]; then
+    length=${#envir}
+    cutlim=$(expr ${length} - 3)
+    EXP=`echo ${envir} | cut -c1-${cutlim}`
+    Bias_Corr='_bc'
+else
+    EXP=${envir}
+    Bias_Bcorr=''
+fi
+
 NOW=${FIRSTDAY}
 while [ ${NOW} -le ${LASTDAY} ]; do
     YY=`echo ${NOW} | cut -c1-4`
@@ -55,33 +71,36 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     err_logfile=${logdir}/${jjob}.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
-    obs_dir=/gpfs/dell1/nco/ops/com/hourly/prod
+    OBS_INPUT_COMOUT=/gpfs/dell1/nco/ops/com/hourly/prod
+    OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/com/hourly/prod
+    obs_dir=${OBS_INPUT_COMOUT}
     if [ -s ${obs_dir}/hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024 ] && [ -s ${obs_dir}/hourly.${NOW}/aqm.t12z.prepbufr.tm00 ]; then
-        run_type=realtime
+        obs_select=${obs_dir}
     else
-        obs_dir=/gpfs/dell2/emc/modeling/noscrub/${USER}/com/hourly/prod
+        obs_dir=${OBS_INPUT_USER}
         if [ -s ${obs_dir}/hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024 ] && [ -s ${obs_dir}/hourly.${NOW}/aqm.t12z.prepbufr.tm00 ]; then
-            run_type=retro
+            obs_select=${obs_dir}
         else
-            echo "Can not find prepbufr data in ${obs_dir} and /gpfs/dell1/nco/ops/com/hourly/prod, program stop"
+            echo "Can not find prepbufr data in ${OBS_INPUT_COMOUT} and ${OBS_INPUT_USER}, program stop"
             exit
         fi
     fi
-    fcst_dir=/gpfs/hps/nco/ops/com/aqm/prod
-    if [ "${run_type}" == "realtime" ]; then
-        if [ ! -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.ave_1hr_pm25_bc.227.grib2 ]; then
-           fcst_dir=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/prod
-            if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.ave_1hr_pm25_bc.227.grib2 ]; then
-                run_type=retro
-            else
-                echo "Can not find model ouput data ${PDYm3} in ${fcst_dir} and /gpfs/hps/nco/ops/com/aqm/prod, program stop"
-                exit
-            fi
+    FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
+    FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
+    fcst_dir=${FCST_INPUT_NCO}
+    if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.ave_1hr_pm25_bc.227.grib2 ]; then
+        fcst_select=${fcst_dir}
+    else
+        fcst_dir=${FCST_INPUT_USER}
+        if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.ave_1hr_pm25_bc.227.grib2 ]; then
+            fcst_select=${fcst_dir}
+        else
+            echo "Can not find model output data ${PDYm3} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, program stop"
+            exit
         fi
     fi
-
     run_script=run_${jjob}.sh
-    sed -e "s!xxRUN_TYPE!${run_type}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEm3!${PDYm3}!" -e "s!xxDATEm2!${PDYm2}!" -e "s!xxDATEm1!${PDYm1}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
+    sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEm3!${PDYm3}!" -e "s!xxDATEm2!${PDYm2}!" -e "s!xxDATEm1!${PDYm1}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
         cat ${working_dir}/${run_script} | bsub
