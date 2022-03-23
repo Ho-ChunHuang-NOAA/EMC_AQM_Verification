@@ -1,9 +1,9 @@
 [dir]
 
-PROJ_DIR = /gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0/output
-OUTPUT_BASE = /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_cam
+PROJ_DIR = /gpfs/dell2/emc/verification/save/(USER_TO_USE)/METplus-4.0.0/output
+OUTPUT_BASE = /gpfs/dell2/emc/verification/noscrub/(USER_TO_USE)/metplus_cam
 TMP_DIR = {OUTPUT_BASE}/tmp
-METPLUS_BASE = /gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0
+METPLUS_BASE = /gpfs/dell2/emc/verification/save/(USER_TO_USE)/METplus-4.0.0
 MET_BUILD_BASE = /gpfs/dell2/emc/verification/noscrub/emc.metplus/met/10.0.0
 MET_INSTALL_DIR = /gpfs/dell2/emc/verification/noscrub/emc.metplus/met/10.0.0
 PARM_BASE = {METPLUS_BASE}/parm
