@@ -52,15 +52,18 @@ export DATEp1=xxDATEp1
 export MET_PLUS=xxBASE
 export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/perry
 export MET_PLUS_CONF2=${MET_PLUS}/parm/met_config
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_aq${caseid}
-export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
+# export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_aq${caseid}
+# export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
+export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_aq
+export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_aq/${envir}/${DATE}
 
 #
 # Creat a more distinct temporary directory to store temporary config files for specific model/date/type
 # If both near-real-time and retro run share the same directory, the config files generated for one run
 # can be deleted (for commands below) when another one is activated
 #
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
+# export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
+export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_aq/${envir}/${DATE}
 
 rm -f -r ${MET_PLUS_TMP}
 mkdir -p ${MET_PLUS_TMP}
