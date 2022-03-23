@@ -33,7 +33,7 @@ caseid=icmaq
 caseid=aq
 caseid=aqmax
 jobname=metplus_${caseid}
-script_base=run_${jobname}.template_working
+script_base=run_${jobname}.template
 if [ ! -s ${script_base} ]; then
    echo "Can not find ${script_base}"
    exit
