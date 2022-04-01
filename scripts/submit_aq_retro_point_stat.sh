@@ -2,7 +2,7 @@
 module load prod_util/1.1.6
 module load prod_envir/1.1.0
 module load HPSS/5.0.2.5
-MSG="$0 FIRSTDAY LASTDAY"
+MSG="$0 exp [prod|para6d|icmaq|...] FIRSTDAY LASTDAY"
 if [ $# -lt 2 ]; then
     echo ${MSG}
     exit
@@ -29,9 +29,11 @@ rundir=/gpfs/dell2/ptmp/${USER}/VERF_run
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 script_dir=`pwd`
-caseid=aq
 caseid=icmaq
-jobname=metplus_${caseid}
+caseid=aq
+sub_task=point_stat
+jobname=metplus_${caseid}_${sub_task}
+
 script_base=run_${jobname}.template
 if [ ! -s ${script_base} ]; then
    echo "Can not find ${script_base}"
@@ -71,7 +73,6 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
     OBS_INPUT_COMOUT=/gpfs/dell1/nco/ops/com/hourly/prod
     OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/com/hourly/prod
-    OBS_INPUT_USER=/gpfs/dell2/emc/verification/noscrub/Perry.Shafran/com/hourly/prod
     obs_dir=${OBS_INPUT_COMOUT}
     if [ -s ${obs_dir}/hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024 ] && [ -s ${obs_dir}/hourly.${NOW}/aqm.t12z.prepbufr.tm00 ]; then
         obs_select=${obs_dir}
@@ -86,14 +87,12 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     fi
     FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
     FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
-    FCST_INPUT_USER=/gpfs/dell2/ptmp/${USER}/com/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
-    if [ -s ${fcst_dir}/aqm.${PDYm3}/rrfs.t12z.natlevf072.tm00.grib2 ]; then
+    if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2 ]; then
         fcst_select=${fcst_dir}
     else
         fcst_dir=${FCST_INPUT_USER}
-        ## if [ -s ${fcst_dir}/aqm.${PDYm3}/rrfs.t12z.natlevf072.tm00.grib2 ]; then
-        if [ -s ${fcst_dir}/aqm.${PDYm3}/postprd/rrfs.t12z.natlevf072.tm00.grib2 ]; then
+        if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2 ]; then
             fcst_select=${fcst_dir}
         else
             echo "Can not find model output data ${PDYm3} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, program stop"
