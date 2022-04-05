@@ -264,13 +264,13 @@ EOF
 ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 
+for model in pmmax
+do
+
 ##
 ## Deactivate Point_Stat
 ##
 if [ 1 -eq 2 ]; then
-
-for model in pmmax
-do
 
 for hour in 06 12
 do
@@ -307,7 +307,6 @@ fi
 #
 # with its own pmmax daily statistic file
 #
-model=pmmax
 model1=`echo ${model} | tr a-z A-Z`
 cat << EOF > statanalysis.conf
 [dir]
@@ -329,13 +328,13 @@ ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_
 done
 
 
+for model in pmave
+do
+
 ##
 ## Deactivate Point_Stat
 ##
 if [ 1 -eq 2 ]; then
-
-for model in pmave
-do
 
 for hour in 06 12
 do
@@ -378,7 +377,8 @@ ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to
 done
 
 fi
-model=pmave
+
+
 model1=`echo ${model} | tr a-z A-Z`
 #
 # with its own pmave daily statistic file

@@ -66,38 +66,10 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     PDYm1=$( ${NDATE} -24 ${cdate} | cut -c1-8 )
     PDYp1=$( ${NDATE} +24 ${cdate} | cut -c1-8 )
     jjob=${caseid}_${envir}_${NOW}
-    out_logfile=${logdir}/${jjob}.log
-    err_logfile=${logdir}/${jjob}.log
+    out_logfile=${logdir}/${jjob}.sa.log
+    err_logfile=${logdir}/${jjob}.sa.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
-    OBS_INPUT_COMOUT=/gpfs/dell1/nco/ops/com/hourly/prod
-    OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/com/hourly/prod
-    obs_dir=${OBS_INPUT_COMOUT}
-    if [ -s ${obs_dir}/hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024 ] && [ -s ${obs_dir}/hourly.${NOW}/aqm.t12z.prepbufr.tm00 ]; then
-        obs_select=${obs_dir}
-    else
-        obs_dir=${OBS_INPUT_USER}
-        if [ -s ${obs_dir}/hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024 ] && [ -s ${obs_dir}/hourly.${NOW}/aqm.t12z.prepbufr.tm00 ]; then
-            obs_select=${obs_dir}
-        else
-            echo "Can not find prepbufr data in ${OBS_INPUT_COMOUT} and ${OBS_INPUT_USER}, program stop"
-            exit
-        fi
-    fi
-    FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
-    FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
-    fcst_dir=${FCST_INPUT_NCO}
-    if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2 ]; then
-        fcst_select=${fcst_dir}
-    else
-        fcst_dir=${FCST_INPUT_USER}
-        if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2 ]; then
-            fcst_select=${fcst_dir}
-        else
-            echo "Can not find model output data ${PDYm3} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, program stop"
-            exit
-        fi
-    fi
     run_script=run_${jjob}.sh
     sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
