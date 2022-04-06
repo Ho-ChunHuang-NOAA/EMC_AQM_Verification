@@ -105,12 +105,14 @@ cd ${MET_PLUS_TMP}
 # Define high priority venviironment variable used in the METplus
 # to overwrite any prior setting in ~/parm/use_cases/perry 
 # and /parm/met_config
+# LEAD_SEQ = begin_end_incr(0,48,24)
 cat << EOF > user_priority.conf
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output
 METPLUS_BASE = ${MET_PLUS}
 CONFIG_DIR = ${MET_PLUS_CONF2}
+LEAD_SEQ = begin_end_incr(0,72,24)
 EOF
 
 cat << EOF > shared.conf_aqmax

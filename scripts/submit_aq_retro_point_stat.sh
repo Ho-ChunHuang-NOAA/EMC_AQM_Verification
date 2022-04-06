@@ -107,12 +107,12 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             fcst_select=${fcst_dir}
         else
             chkfile=aqm.${PDYm3}/aqm.t06z.awpozcon.f72.148.grib2
-            if [ ! -s ${obs_dir}/${chkfile} ]; then
-                echo "Can not find ${chkfile} in ${OBS_INPUT_NCO} and ${OBS_INPUT_USER}, skip to next day"
+            if [ ! -s ${fcst_dir}/${chkfile} ]; then
+                echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
             chkfile=aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2
-            if [ ! -s ${obs_dir}/${chkfile} ]; then
-                echo "Can not find ${chkfile} in ${OBS_INPUT_NCO} and ${OBS_INPUT_USER}, skip to next day"
+            if [ ! -s ${fcst_dir}/${chkfile} ]; then
+                echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
             cdate=${NOW}"00"
             NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
