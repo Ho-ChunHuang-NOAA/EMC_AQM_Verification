@@ -1,0 +1,411 @@
+#!/bin/bash
+#BSUB -J xxJOB
+#BSUB -o xxOUTLOG
+#BSUB -e xxERRLOG
+#BSUB -q "dev2"
+#BSUB -P CMAQ-T2O
+#BSUB -R "rusage[mem=3000]"
+#BSUB -n 1
+#BSUB -W 04:00
+#BSUB -R affinity[core(1)]
+
+module use /gpfs/dell2/emc/verification/noscrub/emc.metplus/modulefiles
+module load met/10.0.1
+module load metplus/4.0.0
+module load python/3.6.3
+module load NetCDF/4.5.0
+
+#
+# This template is for multiple days point-stat verification.  Mainly for restrospective
+# StatAnalysis can be run after all Point_Stat are finsihed for each days. Otherwise, 00z staistic may be missing.
+#
+envir=xxENVIR
+envir1=`echo ${envir} | tr a-z A-Z`
+echo "experiment run is ${envir} ${envir1}"
+
+set -x
+TODAY=`date +%Y%m%d`
+
+#
+# Find EXP Name if envir="EXP"_bc
+#
+if [[ "${envir}" == *"_bc"* ]]; then
+    length=${#envir}
+    cutlim=$(expr ${length} - 3)
+    EXP=`echo ${envir} | cut -c1-${cutlim}`
+    Bias_Corr='_bc'
+else
+    EXP=${envir}
+    Bias_Bcorr=''
+fi
+
+caseid="_test"
+export cycle=t00z
+export UTILHOME=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2
+export utilscript=${UTILHOME}/ush
+export utilexec=${UTILHOME}/exec
+export EXECutil=${UTILHOME}/exec
+
+export wgrib2=/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.1/exec/wgrib2
+
+## sh $utilscript/setup.sh  ## no longer existed in the system
+## sh $utilscript/setpdy.sh
+## . $MET_PLUS_TMP/PDY
+
+export DATEm3=xxDATEm3
+export DATEm2=xxDATEm2
+export DATEm1=xxDATEm1
+export DATE=xxDATE
+export DATEp1=xxDATEp1
+export MET_PLUS=xxBASE
+export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/perry
+export MET_PLUS_CONF2=${MET_PLUS}/parm/met_config
+# export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_aq${caseid}
+# export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
+export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_aq
+export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_aqmax/${envir}/${DATE}
+
+#
+# Creat a more distinct temporary directory to store temporary config files for specific model/date/type
+# If both near-real-time and retro run share the same directory, the config files generated for one run
+# can be deleted (for commands below) when another one is activated
+#
+## export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
+export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_aqmax/${envir}/${DATE}
+rm -f -r $MET_PLUS_TMP
+mkdir -p $MET_PLUS_TMP
+
+###############################################################################################
+## Define FCST and OBS input location depend on the case of near-real-time or retrospective run
+## METplus will use FCST_INPUT_SELECT and OBS_INPUT_SELECT
+## Assign AQM output directory for various exp, PROD, PARA6D,...or ICMAQ
+###############################################################################################
+## EXP model output directory, the default is /gpfs/hps/nco/ops/com/aqm/prod
+## Define FCST_INPUT_COMOUT for AQM model output
+##
+## export FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
+## export FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
+## 
+export FCST_INPUT_COMOUT=xxFCST_INPUT
+export FCST_INPUT_SELECT=/gpfs/dell2/ptmp/${USER}/com/aqm/${EXP}
+
+## EXP Obs input directory, the default is /gpfs/dell1/nco/ops/com/hourly/prod
+## Define OBS_INPUT_SELECT for EPA bufr --> obsproc --> prepbufpr  location
+## 
+## 
+## export OBS_INPUT_NCO=/gpfs/dell1/nco/ops/com/hourly/prod                        avail after 21Z
+## export OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/com/hourly/prod  avail after 22Z
+## 
+export OBS_INPUT_SELECT=xxOBS_INPUT
+
+mkdir -p ${MET_PLUS_OUT} ${MET_PLUS_STD}
+
+cd ${MET_PLUS_TMP}
+#
+# Define high priority venviironment variable used in the METplus
+# to overwrite any prior setting in ~/parm/use_cases/perry 
+# and /parm/met_config
+# LEAD_SEQ = begin_end_incr(0,72,24)
+cat << EOF > user_priority.conf
+[dir]
+OUTPUT_BASE = ${MET_PLUS_OUT}
+PROJ_DIR = ${MET_PLUS}/output
+METPLUS_BASE = ${MET_PLUS}
+CONFIG_DIR = ${MET_PLUS_CONF2}
+LEAD_SEQ = begin_end_incr(0,48,24)
+EOF
+
+cat << EOF > shared.conf_aqmax
+[config]
+
+# Time method by which to perform validation, either by init time or by valid
+# time. Indicate by either BY_VALID or BY_INIT
+#TIME_METHOD = BY_VALID
+LOOP_BY = VALID
+
+# For processing by init time or valid time, indicate the start and end hours
+# in HH format                                                             
+VALID_TIME_FMT = %Y%m%d
+
+VALID_BEG = ${DATE}
+VALID_END = ${DATE}
+
+# Indicate the begin and end date, and interval (in hours)                                                        
+#BEG_TIME = 20190502
+#END_TIME = 20190502
+#INTERVAL_TIME = 1
+VALID_INCREMENT = 3600
+
+# start and end dates are created by combining the date with
+# start and end hours (format can be hh, hhmm, or hhmmss.                                                         
+#START_DATE = {BEG_TIME}{START_HOUR}
+#END_DATE = {END_TIME}{END_HOUR}
+
+# The obs window dictionary
+OBS_WINDOW_BEGIN = -43200
+OBS_WINDOW_END = 43200
+
+OBS_PB2NC_FILE_WINDOW_BEGIN = 0
+OBS_PB2NC_FILE_WINDOW_END = 86400
+EOF
+
+for hour in 06 12
+do
+
+for model in aqmax1 
+do
+    model1=`echo ${model} | tr a-z A-Z`
+    ifile=aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
+    for iday in ${DATE} ${DATEm1} ${DATEm2}; do
+        mkdir -p ${FCST_INPUT_SELECT}/aqm.${iday}
+        if [ -s out1.grb2 ]; then /bin/rm -f out1.grb2; fi
+        if [ -s out2.grb2 ]; then /bin/rm -f out2.grb2; fi
+        if [ -s out3.grb2 ]; then /bin/rm -f out3.grb2; fi
+        if [ $hour -eq 06 ]; then
+            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "-1-22 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "23-46 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "47-70 hour ave fcst" -grib out3.grb2
+        elif [ $hour -eq 12 ]; then
+            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "-7-16 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "17-40 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "41-64 hour ave fcst" -grib out3.grb2
+        fi
+        cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/aqm.${iday}/${ifile}
+    done
+
+cat << EOF > fcst_input_temp_${model}.conf
+[dir]
+LOG_DIR = ${MET_PLUS_TMP}/logs
+FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
+PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
+PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/${model}/${envir}
+OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
+## POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/${model}/${envir}
+POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
+[config]
+MODEL = ${envir1}
+PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+[filename_templates]
+FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
+POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+EOF
+
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
+
+done
+
+for model in aqmax8
+do
+
+    model1=`echo ${model} | tr a-z A-Z`
+    ifile=aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
+    for iday in ${DATE} ${DATEm1} ${DATEm2}; do
+        mkdir -p ${FCST_INPUT_SELECT}/aqm.${iday}
+        if [ -s out1.grb2 ]; then /bin/rm -f out1.grb2; fi
+        if [ -s out2.grb2 ]; then /bin/rm -f out2.grb2; fi
+        if [ -s out3.grb2 ]; then /bin/rm -f out3.grb2; fi
+        if [ $hour -eq 06 ]; then
+            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "6-29 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "30-53 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "54-77 hour ave fcst" -grib out3.grb2
+        elif [ $hour -eq 12 ]; then
+            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "0-23 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "24-47 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "48-71 hour ave fcst" -grib out3.grb2
+        fi
+        cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/aqm.${iday}/${ifile}
+    done
+
+
+cat << EOF > fcst_input_temp_${model}.conf
+[dir]
+LOG_DIR = ${MET_PLUS_TMP}/logs
+FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
+PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
+PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/${model}/${envir}
+OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
+POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
+[config]
+MODEL = ${envir1}
+PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+[filename_templates]
+FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
+POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+EOF
+
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
+
+done
+
+done
+
+##
+## Deactivate Stat Analysis
+##
+if [ 1 -eq 2 ]; then
+
+#
+# Combine both aqmax1 and aqmax8 into one daily statistic file
+#
+cat << EOF > statanalysis.conf
+[dir]
+LOG_DIR = ${MET_PLUS_TMP}/logs
+STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/aqm
+MODEL1_STAT_ANALYSIS_LOOKIN_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax/${envir}/*{VALID_BEG}*
+[config]
+STAT_ANALYSIS_CONFIG_FILE = ${MET_PLUS}/parm/met_config/STATAnalysisConfig
+VALID_BEG = ${DATEp1}
+VALID_END = ${DATEp1}
+MODEL = ${envir}
+MODEL1 = ${envir1}
+[filename_templates]
+STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_AQMAX_{valid_beg?fmt=%Y%m%d}.stat
+EOF
+
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/user_priority.conf
+
+fi
+
+
+for model in pmmax
+do
+
+for hour in 06 12
+do
+
+    model1=`echo ${model} | tr a-z A-Z`
+    ## Need to copy to ${FCST_INPUT_SELECT} if FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
+    ifile=aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
+    for iday in ${DATE} ${DATEm1} ${DATEm2}; do
+        mkdir -p ${FCST_INPUT_SELECT}/aqm.${iday}
+        cp -p ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} ${FCST_INPUT_SELECT}/aqm.${iday}
+    done
+
+cat << EOF > fcst_input_temp_${model}.conf
+[dir]
+LOG_DIR = ${MET_PLUS_TMP}/logs
+FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
+PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
+PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/${model}/${envir}
+OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
+POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
+[config]
+MODEL = ${envir1}
+PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+[filename_templates]
+FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
+POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+EOF
+
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
+
+done
+
+##
+## Deactivate Stat Analysis
+##
+if [ 1 -eq 2 ]; then
+
+#
+# with its own pmmax daily statistic file
+#
+cat << EOF > statanalysis.conf
+[dir]
+LOG_DIR = ${MET_PLUS_TMP}/logs
+STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/aqm
+MODEL1_STAT_ANALYSIS_LOOKIN_DIR = {OUTPUT_BASE}/pmmax/stat/${model}/${envir}/*{VALID_BEG}*
+[config]
+STAT_ANALYSIS_CONFIG_FILE = ${MET_PLUS}/parm/met_config/STATAnalysisConfig
+VALID_BEG = ${DATEp1}
+VALID_END = ${DATEp1}
+MODEL = ${envir}
+MODEL1 = ${envir1}
+[filename_templates]
+STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
+EOF
+
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/user_priority.conf
+
+fi
+
+done
+
+
+for model in pmave
+do
+
+for hour in 06 12
+do
+
+    model1=`echo ${model} | tr a-z A-Z`
+    ## Need to copy to ${FCST_INPUT_SELECT} if FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
+    ifile=aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
+    for iday in ${DATE} ${DATEm1} ${DATEm2}; do
+        mkdir -p ${FCST_INPUT_SELECT}/aqm.${iday}
+        cp -p ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} ${FCST_INPUT_SELECT}/aqm.${iday}
+    done
+
+#
+# Ed has those in [config] section; but is defined in ${MET_PLUS}/parm/use_cases/perry/point_stat_pmave.conf
+# FCST_VAR1_NAME = PMTF
+# FCST_VAR1_LEVELS = A23
+# FCST_VAR1_OPTIONS = valid_time= "{valid?fmt=%Y%m%d?shift=1d}_04";set_attr_name = "PMAVE";
+# OBS_VAR1_NAME= COPOPM
+# OBS_VAR1_LEVELS= A1
+# OBS_VAR1_OPTIONS =  message_type = "ANOWPM_MEAN_230000"; convert(x) = x * 10^9;
+#
+cat << EOF > fcst_input_temp_${model}.conf
+[dir]
+LOG_DIR = ${MET_PLUS_TMP}/logs
+FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
+PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
+PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/${model}/${envir}
+OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
+POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
+[config]
+MODEL = ${envir1}
+PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+[filename_templates]
+FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
+POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+EOF
+
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
+
+done
+
+##
+## Deactivate Stat Analysis
+##
+if [ 1 -eq 2 ]; then
+
+#
+# with its own pmave daily statistic file
+#
+cat << EOF > statanalysis.conf
+[dir]
+LOG_DIR = ${MET_PLUS_TMP}/logs
+STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/aqm
+MODEL1_STAT_ANALYSIS_LOOKIN_DIR = {OUTPUT_BASE}/pmmax/stat/${model}/${envir}/*{VALID_BEG}*
+[config]
+STAT_ANALYSIS_CONFIG_FILE = ${MET_PLUS}/parm/met_config/STATAnalysisConfig
+VALID_BEG = ${DATEp1}
+VALID_END = ${DATEp1}
+MODEL = ${envir}
+MODEL1 = ${envir1}
+[filename_templates]
+STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
+EOF
+
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/user_priority.conf
+
+fi
+
+done
+
+## Define LOG_DIR using MET_PLUS_TMP, thus avodiing moving logs file
+## mv ${MET_PLUS_OUT}/logs/run_metplus.log.${DATEp1} ${MET_PLUS_TMP}
+## mv ${MET_PLUS_OUT}/logs/run_metplus.log.${TODAY}* ${MET_PLUS_TMP}
+## mv ${MET_PLUS_OUT}/logs/${envir}/${DATEp1}/run_metplus.statanalysis.log.${TODAY}* ${MET_PLUS_TMP}
+
+exit
