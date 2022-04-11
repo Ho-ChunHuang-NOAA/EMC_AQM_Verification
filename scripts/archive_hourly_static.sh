@@ -30,6 +30,7 @@ aq_hourly=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_aq/aqm/stat
 aqmmax_hourly=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_aq
 
 declare -a hr_type=( aq pm )
+declare -a envir=( prod prod_bc )
 declare -a envir=( para6d para6d_bc )
 
 NOW=${FIRSTDAY}
@@ -38,6 +39,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     YM=`echo ${NOW} | cut -c1-6`
     hpssdir_h=${hpsshourly}/${YY}/${YM}
     hpssdir_d=${hpssdaily}/${YY}/${YM}
+    ## hsi mkdir -p ${hpssdir_h}
     for i in "${hr_type[@]}"; do
         for j in "${envir[@]}"; do
             mkdir -p ${datadir}/${i}_${j}_${NOW}
@@ -69,6 +71,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         cd ${datadir}
         htar -cf ${hpssdir_h}/${j}_${k}_${NOW}.tar ${j}_${k}_${NOW}
     done
+    echo ${NOW}
     cdate=${NOW}"00"
     NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
 done

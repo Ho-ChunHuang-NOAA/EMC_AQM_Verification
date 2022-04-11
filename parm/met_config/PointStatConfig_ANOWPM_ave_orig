@@ -38,7 +38,7 @@ regrid = {
 //
 censor_thresh  = [];
 censor_val     = [];
-cat_thresh     = [ >5, >10, >12, >15, >20, >25, >35 ];
+cat_thresh     = [ >5, >10, >12, >15, >20, >25, >35, >40, >45, >50, >55, >60, >65 ];
 cnt_thresh     = [ NA ];
 cnt_logic      = UNION;
 wind_thresh    = [ NA ];
