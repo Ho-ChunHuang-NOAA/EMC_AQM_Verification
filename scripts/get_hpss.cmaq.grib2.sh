@@ -30,37 +30,24 @@ fi
 model=aqm
 bkpdir=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/${model}/${envir}
 hpssroot=/5year/NCEPDEV/emc-naqfc/${USER} ## archive 5 year
-if [ ! -d ${bkpdir} ]; then
-    echo "Can not find ${bkpdir}"
-    exit
-fi
+if [ ! -d ${bkpdir} ]; then mkdir -p ${bkpdir}; fi
 
-YY0=`echo ${FIRSTDAY} | cut -c1-4`
-YM0=`echo ${FIRSTDAY} | cut -c1-6`
-hpssdir=${hpssroot}/Verification_Grib2/${envir}/${YY0}/${YM0}
-hsi mkdir -p ${hpssdir}
 NOW=${FIRSTDAY}
 while [ ${NOW} -le ${LASTDAY} ]; do
     YY=`echo ${NOW} | cut -c1-4`
     YM=`echo ${NOW} | cut -c1-6`
     hpssdir=${hpssroot}/Verification_Grib2/${envir}/${YY}/${YM}
-    if [ ${YY} -ne ${YY0} ] | [ ${YM} -ne ${YM0} ]; then
-        echo "${YY0} ${YM0} to ${YY} ${YM}, hpss mkdir"
-        YY0=${YY}
-        YM0=${YM}
-        hsi mkdir -p ${hpssdir}
-    fi
    
     target_dir=${model}.${NOW}
 
-    working_dir=/gpfs/dell2/stmp/${USER}/to_hpss_${model}_verification_grib2_${envir}
+    working_dir=/gpfs/dell2/stmp/${USER}/get_hpss_${model}_verification_grib2_${envir}
     if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
     ## Now at working dir
     cd ${working_dir}
 
     job_name=verif_${envir}_${NOW}
-    batch_script=to_hpss_${model}_verif_${envir}_${NOW}.sh
+    batch_script=get_hpss_${model}_verif_${envir}_${NOW}.sh
     if [ -s ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
 
     logdir=/gpfs/dell2/ptmp/${USER}/batch_logs
@@ -90,14 +77,10 @@ module load ips/18.0.5.274    ## require for module load prod_util/1.1.6
 module load prod_util/1.1.6
 module load HPSS/5.0.2.5
 
+mkdir -p ${bkpdir}
 cd ${bkpdir}
-if [ ! -d ${target_dir} ]; then 
-    echo "${bkpdir}/${target_dir} can not be found; No HPSS backup performed" 
-else
-    echo "HPSS BACKUP :: ${bkpdir}/${target_dir}"
-    htar -cf ${hpssdir}/${target_dir}.tar ${target_dir}
-fi
-echo "HPSS location is ${hpssdir}"
+htar -xf ${hpssdir}/${target_dir}.tar
+echo "Data location is ${bkpdir}/${target_dir}"
 exit
 EOF
     ##
@@ -105,12 +88,11 @@ EOF
     ##
     if [ "${flag_test}" == "no" ]; then
         ## cat ${batch_script} | bsub
-        ## bash ${batch_script} > ${logfile} 2>&1 &
-        bash ${batch_script} > ${logfile} 2>&1
-        echo "Batch_script : ${working_dir}/${batch_script}"
+        bash ${batch_script} > ${logfile} 2>&1 &
     else
         echo "test bsub < ${batch_script} completed"
     fi
+    echo "Batch_script : ${working_dir}/${batch_script}"
     cdate=${NOW}"00"
     NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
 done
