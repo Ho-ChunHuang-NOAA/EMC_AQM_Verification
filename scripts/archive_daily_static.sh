@@ -28,12 +28,21 @@ hpsshourly=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/metplus_aq_hourly_point_stat
 
 aq_daily=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_aq/stat/aqm
 
+YY0=`echo ${FIRSTDAY} | cut -c1-4`
+YM0=`echo ${FIRSTDAY} | cut -c1-6`
+hpssdir_d=${hpssdaily}/${YY0}/${YM0}
+hsi mkdir -p ${hpssdir_d}
 NOW=${FIRSTDAY}
 while [ ${NOW} -le ${LASTDAY} ]; do
     YY=`echo ${NOW} | cut -c1-4`
     YM=`echo ${NOW} | cut -c1-6`
     hpssdir_d=${hpssdaily}/${YY}/${YM}
-    ## hsi mkdir -p ${hpssdir_d}
+    if [ ${YY} -ne ${YY0} ] | [ ${YM} -ne ${YM0} ]; then
+        echo "${YY0} ${YM0} to ${YY} ${YM}, hpss mkdir"
+        YY0=${YY}
+        YM0=${YM}
+        hsi mkdir -p ${hpssdir_d}
+    fi
     mkdir -p ${datadir}/aqm_daily.${NOW}
     if [ -d ${aq_daily}/${NOW} ]; then
         cp -p  ${aq_daily}/${NOW}/*  ${datadir}/aqm_daily.${NOW}

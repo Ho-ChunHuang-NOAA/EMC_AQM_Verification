@@ -105,11 +105,12 @@ EOF
     ##
     if [ "${flag_test}" == "no" ]; then
         ## cat ${batch_script} | bsub
-        bash ${batch_script} > ${logfile} 2>&1 &
+        ## bash ${batch_script} > ${logfile} 2>&1 &
+        bash ${batch_script} > ${logfile} 2>&1
+        echo "Batch_script : ${working_dir}/${batch_script}"
     else
         echo "test bsub < ${batch_script} completed"
     fi
-    echo "Batch_script : ${working_dir}/${batch_script}"
     cdate=${NOW}"00"
     NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
 done
