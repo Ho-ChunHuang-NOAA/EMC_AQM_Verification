@@ -103,6 +103,8 @@ cd ${MET_PLUS_TMP}
 # to overwrite any prior setting in ~/parm/use_cases/perry 
 # and /parm/met_config
 cat << EOF > user_priority.conf
+[config]
+PB2NC_SKIP_IF_OUTPUT_EXISTS=true
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output

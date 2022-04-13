@@ -107,6 +107,8 @@ cd ${MET_PLUS_TMP}
 # and /parm/met_config
 # LEAD_SEQ = begin_end_incr(0,72,24)
 cat << EOF > user_priority.conf
+[config]
+PB2NC_SKIP_IF_OUTPUT_EXISTS=true
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output
@@ -164,11 +166,9 @@ do
         if [ $hour -eq 06 ]; then
             ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "-1-22 hour ave fcst" -grib out1.grb2
             ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "23-46 hour ave fcst" -grib out2.grb2
-            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "47-70 hour ave fcst" -grib out3.grb2
         elif [ $hour -eq 12 ]; then
             ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "-7-16 hour ave fcst" -grib out1.grb2
             ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "17-40 hour ave fcst" -grib out2.grb2
-            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "41-64 hour ave fcst" -grib out3.grb2
         fi
         cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/aqm.${iday}/${ifile}
     done
@@ -207,11 +207,9 @@ do
         if [ $hour -eq 06 ]; then
             ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "6-29 hour ave fcst" -grib out1.grb2
             ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "30-53 hour ave fcst" -grib out2.grb2
-            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "54-77 hour ave fcst" -grib out3.grb2
         elif [ $hour -eq 12 ]; then
             ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "0-23 hour ave fcst" -grib out1.grb2
             ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "24-47 hour ave fcst" -grib out2.grb2
-            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "48-71 hour ave fcst" -grib out3.grb2
         fi
         cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/aqm.${iday}/${ifile}
     done

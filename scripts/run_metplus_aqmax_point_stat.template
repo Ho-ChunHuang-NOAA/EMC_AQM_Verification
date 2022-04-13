@@ -107,6 +107,8 @@ cd ${MET_PLUS_TMP}
 # and /parm/met_config
 # LEAD_SEQ = begin_end_incr(0,48,24)
 cat << EOF > user_priority.conf
+[config]
+PB2NC_SKIP_IF_OUTPUT_EXISTS=true
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output

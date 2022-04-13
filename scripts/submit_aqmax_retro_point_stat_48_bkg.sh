@@ -123,8 +123,8 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
         ## cat ${working_dir}/${run_script} | bsub
-        ## bash ${working_dir}/${run_script} > ${out_logfile} 2>&1 &
-        bash ${working_dir}/${run_script} > ${out_logfile} 2>&1
+        bash ${working_dir}/${run_script} > ${out_logfile} 2>&1 &
+        ## bash ${working_dir}/${run_script} > ${out_logfile} 2>&1
         echo "log_file  = ${out_logfile}"
     else
         echo "Can not find ${working_dir}/${run_script}"

@@ -5,7 +5,7 @@ module load HPSS/5.0.2.5
 TODAY=`date +%Y%m%d`
 
 MSG="$0 EXP start_date end_date"
-if [ $# -eq 1 ]; then
+if [ $# -lt 1 ]; then
     echo ${MSG}
     exit
 elif [ $# -eq 1 ]; then
