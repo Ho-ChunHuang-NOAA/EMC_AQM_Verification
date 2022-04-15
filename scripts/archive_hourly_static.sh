@@ -63,7 +63,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         echo "${YY0} ${YM0} to ${YY} ${YM}, hpss mkdir"
         YY0=${YY}
         YM0=${YM}
-        hpssdir=${hpsshourly}/${EXP}/${YY}/${YM}
+        hpssdir=${hpssroot}/metplus_aq_hourly_point_stat/${EXP}/${YY}/${YM}
         hsi mkdir -p ${hpssdir}
     fi
     for i in "${hr_type[@]}"; do
