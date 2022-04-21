@@ -116,7 +116,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             fi
             cdate=${NOW}"00"
             NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
-            continue
+            ## continue
         fi
     fi
     run_script=run_${jjob}.sh

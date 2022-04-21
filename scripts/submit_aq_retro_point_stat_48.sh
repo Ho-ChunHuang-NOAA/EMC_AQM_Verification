@@ -99,18 +99,18 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
     FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
-    if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t06z.awpozcon_bc.f48.148.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon_bc.f48.148.grib2 ]; then
+    if [ -s ${fcst_dir}/aqm.${PDYm2}/aqm.t06z.awpozcon_bc.f48.148.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm2}/aqm.t12z.awpozcon_bc.f48.148.grib2 ]; then
         fcst_select=${fcst_dir}
     else
         fcst_dir=${FCST_INPUT_USER}
-        if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t06z.awpozcon_bc.f48.148.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon_bc.f48.148.grib2 ]; then
+        if [ -s ${fcst_dir}/aqm.${PDYm2}/aqm.t06z.awpozcon_bc.f48.148.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm2}/aqm.t12z.awpozcon_bc.f48.148.grib2 ]; then
             fcst_select=${fcst_dir}
         else
-            chkfile=aqm.${PDYm3}/aqm.t06z.awpozcon_bc.f48.148.grib2
+            chkfile=aqm.${PDYm2}/aqm.t06z.awpozcon_bc.f48.148.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
-            chkfile=aqm.${PDYm3}/aqm.t12z.awpozcon_bc.f48.148.grib2
+            chkfile=aqm.${PDYm2}/aqm.t12z.awpozcon_bc.f48.148.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
