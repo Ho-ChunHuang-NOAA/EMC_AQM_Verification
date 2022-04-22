@@ -2,7 +2,7 @@
 module load prod_util/1.1.6
 module load prod_envir/1.1.0
 module load HPSS/5.0.2.5
-MSG="$0 EXP FIRSTDAY LASTDAY"
+MSG="$0 exp [prod|para6d|icmaq|...] FIRSTDAY LASTDAY"
 if [ $# -lt 2 ]; then
     echo ${MSG}
     exit
@@ -15,6 +15,8 @@ else
     FIRSTDAY=$2
     LASTDAY=$3
 fi
+
+set -x
 
 BASE=`pwd`
 export HOMEverif="$(dirname ${BASE})"
@@ -31,15 +33,14 @@ if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 script_dir=`pwd`
 caseid=icmaq
 caseid=aq
-caseid=aqmax
-sub_task=point_stat
+sub_task=point_stat_icmaq
 jobname=metplus_${caseid}_${sub_task}
+
 script_base=run_${jobname}.template
 if [ ! -s ${script_base} ]; then
    echo "Can not find ${script_base}"
    exit
 fi 
-
 #
 # Find EXP Name if envir="EXP"_bc
 #
@@ -66,6 +67,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     PDYm3=$( ${NDATE} -72 ${cdate} | cut -c1-8 )
     PDYm2=$( ${NDATE} -48 ${cdate} | cut -c1-8 )
     PDYm1=$( ${NDATE} -24 ${cdate} | cut -c1-8 )
+    PDY=${NOW}
     PDYp1=$( ${NDATE} +24 ${cdate} | cut -c1-8 )
     jjob=${caseid}_${envir}_${NOW}
     out_logfile=${logdir}/${jjob}.ps.log
@@ -98,22 +100,22 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
     FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
-    if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t06z.ave_1hr_pm25_bc.227.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.ave_1hr_pm25_bc.227.grib2 ]; then
+    if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t06z.awpozcon.f72.148.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2 ]; then
         fcst_select=${fcst_dir}
     else
         fcst_dir=${FCST_INPUT_USER}
-        if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t06z.ave_1hr_pm25_bc.227.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.ave_1hr_pm25_bc.227.grib2 ]; then
+        if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t06z.awpozcon.f72.148.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2 ]; then
             fcst_select=${fcst_dir}
         else
-            chkfile=aqm.${PDYm3}/aqm.t06z.ave_1hr_pm25_bc.227.grib2
+            chkfile=aqm.${PDYm3}/aqm.t06z.awpozcon.f72.148.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
-            chkfile=aqm.${PDYm3}/aqm.t12z.ave_1hr_pm25_bc.227.grib2
+            chkfile=aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
-            if [ 1 -eq 2 ]; then
+            if [ 1 -eq 1 ]; then
                 fcst_select=${fcst_dir}
             else
                 cdate=${NOW}"00"
@@ -123,7 +125,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         fi
     fi
     run_script=run_${jjob}.sh
-    sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEm3!${PDYm3}!" -e "s!xxDATEm2!${PDYm2}!" -e "s!xxDATEm1!${PDYm1}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
+    sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
         cat ${working_dir}/${run_script} | bsub

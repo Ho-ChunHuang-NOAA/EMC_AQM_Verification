@@ -52,15 +52,15 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     else
        fhdr=com_${model}_prod_${model}
     fi
-    cd ${working_dir}
-    job_name=ncobufr_${NOW}
-    batch_script=hpssfetch_${job_name}.sh
-    if [ -e ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
+    declare -a cyc=( 00 06 12 18 )
+    for cycle in "${cyc[@]}"; do
+        cd ${working_dir}
+        job_name=ncobufr_${NOW}${cycle}
+        batch_script=hpssfetch_${job_name}.sh
+        if [ -e ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
 
-    logfile=${logdir}/${job_name}.out
-    if [ -e ${logfile} ]; then /bin/rm -f ${logfile}; fi
-    hpssuser=/5year/NCEPDEV/emc-naqfc/${USER}/Verification_Grib2/prod
-    hsi mkdir -p ${hpssuser}
+        logfile=${logdir}/${job_name}.out
+        if [ -e ${logfile} ]; then /bin/rm -f ${logfile}; fi
 cat > ${batch_script} << EOF
 #!/bin/bash -l
 #BSUB -o ${logfile}
@@ -84,8 +84,8 @@ module load HPSS/5.0.2.5
    bkpdir=${bkpdir}
    rundir=${rundir}
    fhdr=${fhdr}
-   hpssuser=${hpssuser}
    model=${model}
+   declare -a cyc=( ${cycle} )
 EOF
       ##
       ##  Creat part 2 script : exact wording of scripts
@@ -96,7 +96,6 @@ cat > ${batch_script}.add  << 'EOF'
 
    cd ${rundir}
 
-   declare -a cyc=( 00 06 12 18 )
 
    NOW=${FIRSTDAY}
    while [ ${NOW} -le ${LASTDAY} ]; do
@@ -122,27 +121,24 @@ cat > ${batch_script}.add  << 'EOF'
            echo "${NOW}_${i}"
        done  ## cycle time
        echo "Target DIR = ${bkpdir}/${target_dir}"
-       ## hpssdir=${hpssuser}/${YY}/${YM}
-       ## cd ${bkpdir}
-       ## htar -cf ${hpssdir}/${target_dir}.tar ${target_dir}
-       ## echo "HPSS archive ${hpssdir}/${target_dir}.tar"
        cdate=${NOW}"00"
        NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
    done
 exit
 EOF
-    ##
-    ##  Combine both working script together
-    ##
-    cat ${batch_script}.add >> ${batch_script}
-    ##
-    ##  Submit run scripts
-    ##
-    ## bsub < ${batch_script}
-    bash ${batch_script} > ${logfile} 2>&1 &
-    echo "working_dir=${working_dir}"
-    echo "run_scrpt = ${working_dir}/${batch_script}"
-    echo "log_file  = ${logfile}"
+        ##
+        ##  Combine both working script together
+        ##
+        cat ${batch_script}.add >> ${batch_script}
+        ##
+        ##  Submit run scripts
+        ##
+        bsub < ${batch_script}
+        ## bash ${batch_script} > ${logfile} 2>&1 &
+        echo "working_dir=${working_dir}"
+        echo "run_scrpt = ${working_dir}/${batch_script}"
+        echo "log_file  = ${logfile}"
+    done
     cdate=${NOW}"00"
     NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
 done

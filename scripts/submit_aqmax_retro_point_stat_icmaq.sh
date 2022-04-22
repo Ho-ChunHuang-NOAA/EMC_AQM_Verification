@@ -32,7 +32,7 @@ script_dir=`pwd`
 caseid=icmaq
 caseid=aq
 caseid=aqmax
-sub_task=point_stat
+sub_task=point_stat_icmaq
 jobname=metplus_${caseid}_${sub_task}
 script_base=run_${jobname}.template
 if [ ! -s ${script_base} ]; then
@@ -113,7 +113,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
-            if [ 1 -eq 2 ]; then
+            if [ 1 -eq 1 ]; then
                 fcst_select=${fcst_dir}
             else
                 cdate=${NOW}"00"

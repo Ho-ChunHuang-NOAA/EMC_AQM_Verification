@@ -1,13 +1,14 @@
 #!/bin/bash
 
 #BSUB -J metplus_nam
-#BSUB -o /gpfs/dell2/ptmp/${USER}/output/metplus_nam.o%J
-#BSUB -e /gpfs/dell2/ptmp/${USER}/output/metplus_nam.o%J
+#BSUB -o /gpfs/dell2/ptmp/Ho-Chun.Huang/VERF_logs/nam_v161a_20190828.ps.log
+#BSUB -e /gpfs/dell2/ptmp/Ho-Chun.Huang/VERF_logs/nam_v161a_20190828.ps.log
 #BSUB -q "dev2"
 #BSUB -P VERF-T2O
 #BSUB -R "rusage[mem=3000]"
 #BSUB -n 1
 #BSUB -W 04:00
+#BSUB -R affinity[core(1)]
 
 set -x
 #
@@ -21,6 +22,7 @@ echo "experiment run is ${envir} ${envir1}"
 
 set -x
 TODAY=`date +%Y%m%d`
+TODAY=20190828
 
 export cycle=t00z
 export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
@@ -36,8 +38,8 @@ sh $utilscript/setup.sh
 sh $utilscript/setpdy.sh
 . $MET_PLUS_TMP/PDY
 
-export DATE=$PDYm1
-export DATEP1=$PDY
+export DATE=20190828
+export DATEP1=20190829
 export MET_PLUS=/gpfs/dell2/emc/verification/save/${USER}/METplus-4.0.0
 export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/${USER}/METplus-4.0.0/parm/use_cases/perry
 export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_cam
@@ -45,7 +47,7 @@ export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_nam_${DATE}
 
 mkdir -p $MET_PLUS_STD
 
-export model=nam
+export model=${envir}
 model1=`echo $model | tr a-z A-Z`
 echo $model1
 
@@ -84,8 +86,8 @@ EOF
 ## FCST_POINT_STAT_INPUT_DIR = /gpfs/dell1/nco/ops/com/nam/prod
 cat << EOF > ${model}.conf
 [dir]
-PB2NC_INPUT_DIR = /gpfs/dell2/emc/modeling/noscrub/${USER}/verification/com/${model}/prod
-FCST_POINT_STAT_INPUT_DIR = /gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${envir}
+PB2NC_INPUT_DIR = /gpfs/dell2/emc/modeling/noscrub/${USER}/verification/com/nam/prod
+FCST_POINT_STAT_INPUT_DIR = /gpfs/dell2/emc/modeling/noscrub/${USER}/verification/RRFS-CMAQ/${envir}
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/cam/conus_cam
 [config]
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf
@@ -93,7 +95,7 @@ LEAD_SEQ = begin_end_incr(0,72,1)
 MODEL = ${model1}
 [filename_templates]
 OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.nam.{valid?fmt=%Y%m%d%H}.nc
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/postprd/rrfs.t{init?fmt=%2H}z.prslevf{lead?fmt=%3H}.tm00.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/postprd/rrfs.t{init?fmt=%2H}z.natlevf{lead?fmt=%3H}.tm00.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${model}
 EOF
 
