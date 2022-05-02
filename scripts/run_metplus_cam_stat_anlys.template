@@ -6,11 +6,12 @@
 #BSUB -P CMAQ-T2O
 #BSUB -R "rusage[mem=3000]"
 #BSUB -n 1
-#BSUB -W 04:00
+#BSUB -W 01:00
 #BSUB -R affinity[core(1)]
 
 module use /gpfs/dell2/emc/verification/noscrub/emc.metplus/modulefiles
-module load met/10.0.1
+# module load met/10.0.1
+module load met/10.1.0
 module load metplus/4.0.0
 module load python/3.6.3
 module load NetCDF/4.5.0
@@ -55,29 +56,6 @@ export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_cam/${envir}/${DATE}
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
 
-###############################################################################################
-## Define FCST and OBS input location depend on the case of near-real-time or retrospective run
-## METplus will use FCST_INPUT_SELECT and OBS_INPUT_SELECT
-## Assign AQM output directory for various exp, PROD, PARA6D,...or I143_a
-###############################################################################################
-## EXP model output directory, the default is /gpfs/hps/nco/ops/com/aqm/prod
-## Define FCST_INPUT_COMOUT for AQM model output
-##
-## export FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
-## export FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
-## 
-export FCST_INPUT_SELECT=xxFCST_INPUT
-
-## EXP Obs input directory, the default is /gpfs/dell1/nco/ops/com/hourly/prod
-## Define OBS_INPUT_SELECT for EPA bufr --> obsproc --> prepbufpr  location
-## 
-## 
-## export OBS_INPUT_NCO=/gpfs/dell1/nco/ops/com/hourly/prod                        avail after 21Z
-## export OBS_INPUT_USER=/gpfs/dell2/emc/verification/noscrub/Perry.Shafran/com/hourly/prod
-## export OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/com/hourly/prod  avail after 22Z
-## 
-export OBS_INPUT_SELECT=xxOBS_INPUT
-
 mkdir -p ${MET_PLUS_OUT} ${MET_PLUS_STD}
 #
 # For consistent flexible MET_PLUS_OUT.  It is because ${MET_PLUS_CONF}/system_aq.conf
@@ -86,11 +64,6 @@ mkdir -p ${MET_PLUS_OUT} ${MET_PLUS_STD}
 # ${MET_PLUS_CONF}/system_aq.conf
 #
 cd ${MET_PLUS_TMP}
-
-## export model=${envir}
-## export model=nam
-## model1=`echo $model | tr a-z A-Z`
-## echo $model1
 
 #
 # Define high priority enviironment variable used in the METplus
@@ -106,18 +79,6 @@ PROJ_DIR = ${MET_PLUS}/output
 METPLUS_BASE = ${MET_PLUS}
 CONFIG_DIR = ${MET_PLUS_CONF2}
 EOF
-
-cat << EOF > shared_${model}.conf
-[config]
-VALID_BEG = ${DATE}00
-VALID_END = ${DATE}23
-EOF
-
-#
-## FCST_POINT_STAT_INPUT_DIR = /gpfs/dell1/nco/ops/com/nam/prod
-## MODEL = ${model1}
-## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.nam.{valid?fmt=%Y%m%d%H}.nc
-#
 
 cat << EOF > statanalysis.conf
 [dir]

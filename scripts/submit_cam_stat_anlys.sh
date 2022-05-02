@@ -30,7 +30,7 @@ if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 script_dir=`pwd`
 caseid=icmaq
-caseid=cam
+caseid=cam_stat_anlys
 jobname=metplus_${caseid}
 script_base=run_${jobname}.template
 if [ ! -s ${script_base} ]; then
@@ -50,10 +50,6 @@ else
     Bias_Bcorr=''
 fi
 
-declare -a obs_cyc=( 00 06 12 18 )
-declare -a fcst_cyc=( 12 )
-let obs_hour_beg=0
-let obs_hour_end=6
 NOW=${FIRSTDAY}
 while [ ${NOW} -le ${LASTDAY} ]; do
     YY=`echo ${NOW} | cut -c1-4`
@@ -73,76 +69,8 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     err_logfile=${logdir}/${jjob}.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
-    OBS_INPUT_NCO=/gpfs/dell1/nco/ops/com/nam/prod
-    OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/com/nam/prod
-    obs_dir=${OBS_INPUT_NCO}
-    find_obs_prepbufr=yes
-    for i in "${obs_cyc[@]}"; do
-        let t=${obs_hour_beg}
-        while [ ${t} -le ${obs_hour_end} ]; do
-            icnt=`printf %2.2d ${t}`
-            ckfile=${obs_dir}/nam.${PDYm1}/nam.t${i}z.prepbufr.tm${icnt}
-            ckfile=${obs_dir}/nam.${PDYm1}/nam.t${i}z.prepbufr.tm${icnt}.nr
-            if [ -s ${ckfile} ]; then
-                if [ "${icnt}" == "06" ]; then echo "Found        ${ckfile}"; fi
-            else
-                if [ "${icnt}" == "06" ]; then echo "Can not find ${ckfile}"; fi
-                find_obs_prepbufr=no
-                break
-            fi
-            ((t++))
-        done
-        if [ "${find_obs_prepbufr}" == "no" ]; then break; fi
-    done
-    if [ "${find_obs_prepbufr}" == "yes" ]; then
-        obs_select=${obs_dir}
-    else
-        obs_dir=${OBS_INPUT_USER}
-        for i in "${obs_cyc[@]}"; do
-            let t=${obs_hour_beg}
-            while [ ${t} -le ${obs_hour_end} ]; do
-                icnt=`printf %2.2d ${t}`
-                ckfile=${obs_dir}/nam.${PDYm1}/nam.t${i}z.prepbufr.tm${icnt}
-                ckfile=${obs_dir}/nam.${PDYm1}/nam.t${i}z.prepbufr.tm${icnt}.nr
-                if [ -s ${ckfile} ]; then
-                    if [ "${icnt}" == "06" ]; then echo "Found        ${ckfile}";fi
-                else
-                    if [ "${icnt}" == "06" ]; then echo "Can not find ${ckfile}"; fi
-                fi
-                ((t++))
-            done
-        done
-        obs_select=${obs_dir}   ## one need to assign obs_select no matter what, it can failed during the run, it is okay
-    fi
-    FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
-    FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/RRFS-CMAQ/${EXP}
-    fcst_dir=${FCST_INPUT_NCO}
-    find_fcst_grib2=yes
-    for i in "${fcst_cyc[@]}"; do
-        ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/rrfs.t${i}z.natlevf048.tm00.grib2
-        if [ -s ${ckfile} ]; then
-            echo "Found        ${ckfile}"
-        else
-            echo "Can not find ${ckfile}"
-            find_fcst_grib2=no
-        fi
-    done
-    if [ "${find_fcst_grib2}" == "yes" ]; then
-        fcst_select=${fcst_dir}
-    else
-        fcst_dir=${FCST_INPUT_USER}
-        for i in "${fcst_cyc[@]}"; do
-            ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/rrfs.t${i}z.natlevf048.tm00.grib2
-            if [ -s ${ckfile} ]; then
-                echo "Found        ${ckfile}"
-            else
-                echo "Can not find ${ckfile}"
-            fi
-        done
-        fcst_select=${fcst_dir}   ## one need to assign fcst_select no matter what, it can failed during the run, it is okay
-    fi
     run_script=run_${jjob}.sh
-    sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
+    sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
         cat ${working_dir}/${run_script} | bsub
