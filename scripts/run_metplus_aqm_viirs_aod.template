@@ -1,0 +1,230 @@
+#!/bin/bash
+#BSUB -J xxJOB
+#BSUB -o xxOUTLOG
+#BSUB -e xxERRLOG
+#BSUB -q "dev2"
+#BSUB -P CMAQ-T2O
+#BSUB -R "rusage[mem=3000]"
+#BSUB -n 1
+#BSUB -W 04:00
+#BSUB -R affinity[core(1)]
+
+module use /gpfs/dell2/emc/verification/noscrub/emc.metplus/modulefiles
+module load met/10.0.1
+module load metplus/4.0.0
+module load python/3.6.3
+module load NetCDF/4.5.0
+
+envir=xxENVIR
+envir1=`echo ${envir} | tr a-z A-Z`
+echo "experiment run is ${envir} ${envir1}"
+
+set -x
+
+export cycle=t00z
+export UTILHOME=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2
+export utilscript=${UTILHOME}/ush
+export utilexec=${UTILHOME}/exec
+export EXECutil=${UTILHOME}/exec
+
+
+export DATEm1=xxDATEm1
+export DATE=xxDATE
+export DATEp1=xxDATEp1
+export MET_PLUS=xxBASE
+export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/perry
+export MET_PLUS_CONF2=${MET_PLUS}/parm/met_config
+export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_aqmviirsaod
+export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_aqm_viirs_aod/${envir}/${DATE}
+
+#
+# Creat a more distinct temporary directory to store temporary config files for specific model/date/type
+# If both near-real-time and retro run share the same directory, the config files generated for one run
+# can be deleted (for commands below) when another one is activated
+#
+# export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
+export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_aqm_viirs_aod/${envir}/${DATE}
+
+rm -f -r ${MET_PLUS_TMP}
+mkdir -p ${MET_PLUS_TMP} ${MET_PLUS_OUT} ${MET_PLUS_STD}
+
+cd ${MET_PLUS_TMP}
+
+export model=xxMODEL
+model1=`echo $model | tr a-z A-Z`
+echo $model1
+
+export satellite=xxSAT_TYPE
+satellite1=`echo ${satellite} | tr a-z A-Z`
+export verif_obstype=xxAOD_TYPE
+verif_obstype1=`echo ${verif_obstype} | tr a-z A-Z`
+
+export FCST_INPUT_SELECT=xxFCST_INPUT
+
+#
+# OBS_INPUT_SELECT : Either is the location of DCOMROOT or User's personal stored directory
+#
+export OBS_INPUT_SELECT=xxOBS_INPUT
+if [ ! -d ${OBS_INPUT_SELECT}/${DATE} ]; then
+    echo "Can not find ${OBS_INPUT_SELECT}/${DATE}, PROGRAM STOPX"
+    exit
+fi
+#
+# Link or copy from the ${OBS_INPUT_SELECT} to ${DATA} or ${MET_PLUS_TMP}.
+# It is because DATE"00" VIIRS AOD is located in the directory of ${DATEm1}.
+# Need to move all ${DATE} VIIRS AOD in the same directory.  Update
+# OBS_INPUT_SELECT --> ${MET_PLUS_TMP}
+#
+# Do not know whether cp will take too much time if the file is too big.
+# Provide copy (flag_copy=yes) or soft-link (flag_copy=no) options
+# 
+cd ${MET_PLUS_TMP}
+flag_copy=no
+flag_copy=yes
+aod_file=${OBS_INPUT_SELECT}/${DATEm1}/VIIRS-L3-AOD_AQM_${DATE}_000000.nc
+if [ -s ${aod_file} ]; then
+    if [ "${flag_copy}" == "yes" ]; then
+        cp ${aod_file} .
+    else
+        ln -s VIIRS-L3-AOD_AQM_${DATE}_000000.nc ${aod_file}
+    fi
+else
+    echo "Can not find ${aod_file}"
+fi
+let t=1
+let tend=23
+while [ ${t} -le ${tend} ]; do
+    icnt=`printf %2.2d ${t}`
+    aod_file=${OBS_INPUT_SELECT}/${DATE}/VIIRS-L3-AOD_AQM_${DATE}_${icnt}0000.nc
+    if [ -s ${aod_file} ]; then
+        if [ "${flag_copy}" == "yes" ]; then
+            cp ${aod_file} .
+        else
+            ln -s VIIRS-L3-AOD_AQM_${DATE}_${icnt}0000.nc ${aod_file}
+        fi
+    else
+        echo "Can not find ${aod_file}"
+    fi
+    ((t++))
+done
+#
+# Update OBS_INPUT_SELECT --> ${MET_PLUS_TMP}
+#
+export OBS_INPUT_SELECT=${MET_PLUS_TMP}
+#
+# VIIRS_L3_REGRID_AOD_DIR : Regridded VIIRS AOD stored directory.  Can be in the ${DATA}
+#                           or ${MET_PLUS_TMP} if is not to be kept.  or personal directory
+#                           if it is saved for additional diagnosis purpose.
+#
+VIIRS_L3_REGRID_AOD_DIR=xxVIIRS_REGRID_AOD_OUTPUT
+if [ ! -d ${VIIRS_L3_REGRID_AOD_DIR}/${model}.${DATE} ]; then mkdir -p ${VIIRS_L3_REGRID_AOD_DIR}/${model}.${DATE}; fi
+
+#
+# Define high priority venviironment variable used in the METplus
+# to overwrite any prior setting in ~/parm/use_cases/perry 
+# and /parm/met_config
+cat << EOF > user_priority.conf
+[config]
+# Name to identify model data in output
+MODEL = ${envir1}
+MODEL1 = ${envir1}
+#
+# For Regrid_data_plane
+#
+# name of input field to process
+# if unset, OBS_VAR1_NAME will be used
+OBS_REGRID_DATA_PLANE_VAR1_INPUT_FIELD_NAME = ${verif_obstype1}_H_Quality
+# name of output field to create
+# if unset, OBS_VAR1_NAME and OBS_VAR1_LEVELS will be combined to generate an output field name
+OBS_REGRID_DATA_PLANE_VAR1_OUTPUT_FIELD_NAME = ${verif_obstype1}_H_Quality
+# Used by regrid_data_plane to remap data
+REGRID_DATA_PLANE_VERIF_GRID = ${FCST_INPUT_SELECT}/${model}.{init?fmt=%Y%m%d}/${model}.t06z.aot.f01.148.grib2
+#
+# For GriD_Stat
+#
+FCST_VAR1_OPTIONS = GRIB_lvl_typ = 104;
+FCST_VAR1_LEVELS = L1
+OBS_VAR1_NAME = ${verif_obstype1}_H_Quality
+#GRID_STAT_OUTPUT_PREFIX = {MODEL}_{CURRENT_FCST_NAME}_vs_{OBTYPE}_{CURRENT_OBS_NAME}_{CURRENT_FCST_LEVEL}
+#GRID_STAT_OUTPUT_PREFIX = ${model1}_${verif_obstype1}_VS_${satellite1}_${verif_obstype1}
+GRID_STAT_OUTPUT_PREFIX = ${model1}_${satellite1}_${verif_obstype1}
+[dir]
+#
+# For Regrid_data_plane
+#
+OUTPUT_BASE = ${MET_PLUS_OUT}
+PROJ_DIR = ${MET_PLUS}/output
+METPLUS_BASE = ${MET_PLUS}
+CONFIG_DIR = ${MET_PLUS_CONF2}
+# directory containing observation input to RegridDataPlane
+OBS_REGRID_DATA_PLANE_INPUT_DIR = ${OBS_INPUT_SELECT}/
+
+# directory to write observation output from RegridDataPlane
+OBS_REGRID_DATA_PLANE_OUTPUT_DIR = ${VIIRS_L3_REGRID_AOD_DIR}/
+#
+# For GriD_Stat
+#
+# input and output data directories
+FCST_GRID_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
+OBS_GRID_STAT_INPUT_DIR = ${VIIRS_L3_REGRID_AOD_DIR}
+GRID_STAT_OUTPUT_DIR = {OUTPUT_BASE}/${model}/stat
+[filename_templates]
+#
+# For Regrid_data_plane
+#
+# template to use to read input data and write output data for RegridDataPlane
+# if different names for input and output are desired, set OBS_REGRID_DATA_PLANE_INPUT_TEMPLATE
+# and OBS_REGRID_DATA_PLANE_OUTPUT_TEMPLATE instead
+OBS_REGRID_DATA_PLANE_INPUT_TEMPLATE = VIIRS-L3-AOD_AQM_{init?fmt=%Y%m%d}_{init?fmt=%2H}0000.nc
+OBS_REGRID_DATA_PLANE_OUTPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/VIIRS-L3-${verif_obstype1}_${model1}_{init?fmt=%Y%m%d}_{init?fmt=%2H}0000.nc
+#
+# For GriD_Stat
+#
+# format of filenames
+# FCST
+FCST_GRID_STAT_INPUT_TEMPLATE = ${model}.{init?fmt=%Y%m%d}/${model}.t{init?fmt=%2H}z.aot.f{lead?fmt=%2H}.148.grib2
+
+# ANLYS
+OBS_GRID_STAT_INPUT_TEMPLATE = ${model}.{da_init?fmt=%Y%m%d}/VIIRS-L3-${verif_obstype1}_${model1}_{da_init?fmt=%Y%m%d}_{da_init?fmt=%2H}0000.nc
+GRID_STAT_OUTPUT_TEMPLATE = ${envir}
+EOF
+
+cat << EOF > regrid.conf
+[config]
+VALID_BEG = ${DATE}00
+VALID_END = ${DATE}23
+VALID_INCREMENT = 1H
+[dir]
+LOG_DIR = ${MET_PLUS_TMP}/logs
+EOF
+
+
+run_metplus.py -c  ${MET_PLUS_CONF}/regrid_viirs.conf ${MET_PLUS_TMP}/regrid.conf -c ${MET_PLUS_TMP}/user_priority.conf
+
+cp ${MET_PLUS_TMP}/regrid.conf ${MET_PLUS_TMP}/grid_stat.conf
+
+run_metplus.py -c ${MET_PLUS_CONF}/grid_stat_smoke_aod.conf ${MET_PLUS_TMP}/grid_stat.conf -c ${MET_PLUS_TMP}/user_priority.conf
+
+cat << EOF > statanalysis.conf
+[dir]
+OUTPUT_BASE = ${MET_PLUS_OUT}
+PROJ_DIR = ${MET_PLUS}/output
+METPLUS_BASE = ${MET_PLUS}
+CONFIG_DIR = ${MET_PLUS_CONF2}
+LOG_DIR = ${MET_PLUS_TMP}/logs
+STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/${model}
+MODEL1_STAT_ANALYSIS_LOOKIN_DIR = {OUTPUT_BASE}/${model}/stat/${envir}/*{VALID_BEG}*
+[config]
+# Name to identify model data in output
+MODEL = ${envir}
+MODEL1 = ${envir1}
+VALID_BEG = ${DATE}
+VALID_END = ${DATE}
+[filename_templates]
+STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${satellite1}_${verif_obstype1}_{valid_beg?fmt=%Y%m%d}.stat
+EOF
+
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay.conf -c ${MET_PLUS_TMP}/statanalysis.conf
+
+exit
+

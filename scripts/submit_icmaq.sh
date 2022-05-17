@@ -107,12 +107,12 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             fcst_select=${fcst_dir}
         else
             ## chkfile=aqm.${PDYm3}/aqm.t06z.natlevf072.tm00.grib2
-            ## if [ ! -s ${obs_dir}/${chkfile} ]; then
-            ##     echo "Can not find ${chkfile} in ${OBS_INPUT_NCO} and ${OBS_INPUT_USER}, skip to next day"
+            ## if [ ! -s ${fcst_dir}/${chkfile} ]; then
+            ##     echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             ## fi
             chkfile=aqm.${PDYm3}/aqm.t12z.natlevf072.tm00.grib2
-            if [ ! -s ${obs_dir}/${chkfile} ]; then
-                echo "Can not find ${chkfile} in ${OBS_INPUT_NCO} and ${OBS_INPUT_USER}, skip to next day"
+            if [ ! -s ${fcst_dir}/${chkfile} ]; then
+                echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
             echo "Can not find model output data ${PDYm3} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             cdate=${NOW}"00"

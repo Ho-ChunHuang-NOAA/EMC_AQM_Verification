@@ -78,7 +78,7 @@ REGRID_DATA_PLANE_VERIF_GRID =  /gpfs/hps/nco/ops/com/${model}/prod/${model}.{in
 #
 OBS_VAR1_NAME = ${verif_obstype1}_H_Quality
 #GRID_STAT_OUTPUT_PREFIX = {MODEL}_{CURRENT_FCST_NAME}_vs_{OBTYPE}_{CURRENT_OBS_NAME}_{CURRENT_FCST_LEVEL}
-GRID_STAT_OUTPUT_PREFIX = ${model1}_AOD_VS_VIIRS_${verif_obstype1}
+GRID_STAT_OUTPUT_PREFIX = ${model1}_AOD_VS_${satellite1}_${verif_obstype1}
 [dir]
 #
 # For Regrid_data_plane

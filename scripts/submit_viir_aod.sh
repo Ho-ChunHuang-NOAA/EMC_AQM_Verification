@@ -28,9 +28,15 @@ if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 rundir=/gpfs/dell2/ptmp/${USER}/VERF_run
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
+aqm_model=aqm
+satellite=viirs
+verify_var=aod
+verify_var1=`echo ${verify_var} | tr a-z A-Z`
+viirs_regrid_aod=/gpfs/dell2/emc/modeling/noscrub/${USER}/VIIRS_${verify_var1}/METPLUS_REGRID
+
 script_dir=`pwd`
 caseid=icmaq
-caseid=aq
+caseid=aqm_viirs_aod
 jobname=metplus_${caseid}
 script_base=run_${jobname}.template
 if [ ! -s ${script_base} ]; then
@@ -69,24 +75,18 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     err_logfile=${logdir}/${jjob}.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
-    OBS_INPUT_NCO=/gpfs/dell1/nco/ops/com/hourly/prod
-    OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/com/hourly/prod
+    OBS_INPUT_NCO=/gpfs/dell2/emc/modeling/noscrub/${USER}/VIIRS_AOD/AOD
+    OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/VIIRS_AOD/AOD
     obs_dir=${OBS_INPUT_NCO}
-    if [ -s ${obs_dir}/hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024 ] && [ -s ${obs_dir}/hourly.${NOW}/aqm.t12z.prepbufr.tm00 ]; then
+    if [ -s ${obs_dir}/${NOW}/VIIRS-L3-AOD_AQM_${NOW}_230000.nc ]; then
         obs_select=${obs_dir}
     else
         obs_dir=${OBS_INPUT_USER}
-        if [ -s ${obs_dir}/hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024 ] && [ -s ${obs_dir}/hourly.${NOW}/aqm.t12z.prepbufr.tm00 ]; then
+        if [ -s ${obs_dir}/${NOW}/VIIRS-L3-AOD_AQM_${NOW}_230000.nc ]; then
             obs_select=${obs_dir}
         else
-            chkfile=hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024
-            if [ ! -s ${obs_dir}/${chkfile} ]; then
-                echo "Can not find ${chkfile} in ${OBS_INPUT_NCO} and ${OBS_INPUT_USER}, skip to next day"
-            fi
-            chkfile=hourly.${NOW}/aqm.t12z.anowpm.pb.tm024
-            if [ ! -s ${obs_dir}/${chkfile} ]; then
-                echo "Can not find ${chkfile} in ${OBS_INPUT_NCO} and ${OBS_INPUT_USER}, skip to next day"
-            fi
+            chkfile=${NOW}/VIIRS-L3-AOD_AQM_${NOW}_230000.nc
+            echo "Can not find ${chkfile} in ${OBS_INPUT_NCO} and ${OBS_INPUT_USER}, skip to next day"
             cdate=${NOW}"00"
             NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
             continue
@@ -95,28 +95,27 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
     FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
-    if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t06z.awpozcon.f72.148.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2 ]; then
+    if [ -s ${fcst_dir}/aqm.${PDYm2}/aqm.t06z.aot.f72.148.grib2 ]; then
         fcst_select=${fcst_dir}
     else
         fcst_dir=${FCST_INPUT_USER}
-        if [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t06z.awpozcon.f72.148.grib2 ] || [ -s ${fcst_dir}/aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2 ]; then
+        if [ -s ${fcst_dir}/aqm.${PDYm2}/aqm.t06z.aot.f72.148.grib2 ]; then
             fcst_select=${fcst_dir}
         else
-            chkfile=aqm.${PDYm3}/aqm.t06z.awpozcon.f72.148.grib2
-            if [ ! -s ${fcst_dir}/${chkfile} ]; then
-                echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
+            chkfile=aqm.${PDYm2}/aqm.t06z.aot.f72.148.grib2
+            echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
+            if [ 1 -eq 1 ]; then
+                fcst_select=${fcst_dir}
+            else
+                cdate=${NOW}"00"
+                NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
+                continue
             fi
-            chkfile=aqm.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2
-            if [ ! -s ${fcst_dir}/${chkfile} ]; then
-                echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
-            fi
-            cdate=${NOW}"00"
-            NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
-            continue
         fi
     fi
+
     run_script=run_${jjob}.sh
-    sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
+    sed -e "s!xxVIIRS_REGRID_AOD_OUTPUT!${viirs_regrid_aod}!" -e "s!xxAOD_TYPE!${verify_var}!" -e "s!xxSAT_TYPE!${satellite}!" -e "s!xxMODEL!${aqm_model}!" -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEm1!${PDYm1}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
         cat ${working_dir}/${run_script} | bsub
