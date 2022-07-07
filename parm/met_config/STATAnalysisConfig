@@ -107,7 +107,7 @@ wmo_fisher_stats = [ "CNT:PR_CORR", "CNT:SP_CORR",
 
 rank_corr_flag = FALSE;
 vif_flag       = FALSE;
-tmp_dir        = "/gpfs/dell2/ptmp/Ho-Chun.Huang/tmp";
+tmp_dir        = "/lfs/h2/emc/ptmp/Ho-Chun.Huang/tmp";
 //version        = "V8.1";
 
 ////////////////////////////////////////////////////////////////////////////////

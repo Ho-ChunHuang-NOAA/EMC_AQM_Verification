@@ -71,6 +71,8 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
     OBS_INPUT_NCO=/gpfs/dell1/nco/ops/com/hourly/prod
     OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/com/hourly/prod
+    OBS_INPUT_NCO=/lfs/h2/emc/stmp/shelley.melchior/CRON/wc2para/com/obsproc/v1.0
+    OBS_INPUT_USER=/lfs/h2/emc/stmp/shelley.melchior/CRON/wc2para/com/obsproc/v1.0
     obs_dir=${OBS_INPUT_NCO}
     if [ -s ${obs_dir}/hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024 ] && [ -s ${obs_dir}/hourly.${NOW}/aqm.t12z.prepbufr.tm00 ]; then
         obs_select=${obs_dir}

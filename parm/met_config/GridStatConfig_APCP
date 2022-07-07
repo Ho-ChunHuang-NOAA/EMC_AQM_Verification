@@ -172,7 +172,7 @@ nc_pairs_flag   = {
 ////////////////////////////////////////////////////////////////////////////////
 
 rank_corr_flag = FALSE;
-tmp_dir        = "/gpfs/dell2/ptmp/Ho-Chun.Huang/tmp";
+tmp_dir        = "/lfs/h2/emc/ptmp/Ho-Chun.Huang/tmp";
 output_prefix  = "${OUTPUT_PREFIX}";
 version        = "V9.1";
 

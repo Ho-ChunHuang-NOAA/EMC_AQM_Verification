@@ -2,7 +2,7 @@
 
 # Forecast and Obs file input directories (netCDF files)                                                          
 #FCST_INPUT_DIR = /com2/nam/prod
-FCST_INPUT_DIR = /gpfs/hps/nco/ops/com/aqm/prod
+FCST_INPUT_DIR = /lfs/h1/ops/prod/com/aqm/v6.1
 #OBS_INPUT_DIR = {OUTPUT_BASE}/{PREPBUFR_MODEL_DIR_NAME}/conus_sfc
 OBS_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc
 
