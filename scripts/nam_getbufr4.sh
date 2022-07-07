@@ -1,5 +1,5 @@
 #!/bin/ksh
-module load prod_util/1.1.6
+module load prod_util
                                                                                       
 set -x
 
@@ -24,11 +24,11 @@ YEAR=`cut -c 1-4 curdate`
 MONTH=`cut -c 1-6 curdate`
 HOUR=`cut -c 9-10 curdate`
 
-mkdir -p /gpfs/dell2/emc/modeling/noscrub/${USER}/com/nam/prod/nam.${DAY}
+mkdir -p /lfs/h2/emc/physics/noscrub/${USER}/com/nam/prod/nam.${DAY}
 #cd /meso/noscrub/${USER}/com/nam/prod/nam.${DAY}
 
-mkdir -p  /gpfs/dell2/ptmp/${USER}/bufrtmp/${DAY}
-cd /gpfs/dell2/ptmp/${USER}/bufrtmp/${DAY}
+mkdir -p  /lfs/h2/emc/ptmp/${USER}/bufrtmp/${DAY}
+cd /lfs/h2/emc/ptmp/${USER}/bufrtmp/${DAY}
 
 htar -xvf /NCEPPROD/hpssprod/runhistory/rh${YEAR}/${MONTH}/${DAY}/com_nam_prod_nam.${DATE}.bufr.tar ./nam.t${HOUR}z.prepbufr.tm00.nr ./nam.t${HOUR}z.prepbufr.tm01.nr ./nam.t${HOUR}z.prepbufr.tm02.nr ./nam.t${HOUR}z.prepbufr.tm03.nr ./nam.t${HOUR}z.prepbufr.tm04.nr ./nam.t${HOUR}z.prepbufr.tm05.nr ./nam.t${HOUR}z.prepbufr.tm06.nr
 ##tar -xvf com2_nam_prod_nam.${DATE}.bufr.tar
@@ -37,12 +37,11 @@ for hr in 00 01 02 03 04 05 06
 #for hr in 72
 do
 
-cp nam.t${HOUR}z.prepbufr.tm${hr}.nr /gpfs/dell2/emc/verification/noscrub/${USER}/com/nam/prod/nam.${DAY}
+cp nam.t${HOUR}z.prepbufr.tm${hr}.nr /lfs/h2/emc/physics/noscrub/${USER}/com/nam/prod/nam.${DAY}
 rm -f nam.t${HOUR}z.prepbufr.tm${hr}.nr
 
 done
 
-## DATE=`/gpfs/dell1/nco/oe`s/nwprod/prod_util.v1.1.2/exec/ips/ndate +06 $DATE`
 DATE=$(${NDATE} +06 ${DATE})
 
 done

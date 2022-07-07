@@ -1,7 +1,7 @@
 #!/bin/sh
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
-module load HPSS/5.0.2.5
+module load prod_util
+module load prod_envir
+#
 MSG="$0 FIRSTDAY LASTDAY"
 if [ $# -lt 2 ]; then
     echo ${MSG}
@@ -19,20 +19,20 @@ fi
 BASE=`pwd`
 export HOMEverif="$(dirname ${BASE})"
 
-logdir=/gpfs/dell2/ptmp/${USER}/VERF_logs
+logdir=/lfs/h2/emc/ptmp/${USER}/VERF_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
-working_dir=/gpfs/dell2/ptmp/${USER}/VERF_script
+working_dir=/lfs/h2/emc/ptmp/${USER}/VERF_script
 if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
-rundir=/gpfs/dell2/ptmp/${USER}/VERF_run
+rundir=/lfs/h2/emc/ptmp/${USER}/VERF_run
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 aqm_model=aqm
 satellite=viirs
 verify_var=aod
 verify_var1=`echo ${verify_var} | tr a-z A-Z`
-viirs_regrid_aod=/gpfs/dell2/emc/modeling/noscrub/${USER}/VIIRS_${verify_var1}/METPLUS_REGRID
+viirs_regrid_aod=/lfs/h2/emc/physics/noscrub/${USER}/VIIRS_${verify_var1}/METPLUS_REGRID
 
 script_dir=`pwd`
 caseid=icmaq
@@ -75,8 +75,8 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     err_logfile=${logdir}/${jjob}.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
-    OBS_INPUT_NCO=/gpfs/dell2/emc/modeling/noscrub/${USER}/VIIRS_AOD/AOD
-    OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/VIIRS_AOD/AOD
+    OBS_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/VIIRS_AOD/AOD
+    OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/VIIRS_AOD/AOD
     obs_dir=${OBS_INPUT_NCO}
     if [ -s ${obs_dir}/${NOW}/VIIRS-L3-AOD_AQM_${NOW}_230000.nc ]; then
         obs_select=${obs_dir}
@@ -92,17 +92,17 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             continue
         fi
     fi
-    FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
-    FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
+    FCST_INPUT_NCO=/lfs/h1/ops/prod/com/aqm/v6.1
+    FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
-    if [ -s ${fcst_dir}/aqm.${PDYm2}/aqm.t06z.aot.f72.148.grib2 ]; then
+    if [ -s ${fcst_dir}/cs.${PDYm2}/aqm.t06z.aot.f72.148.grib2 ]; then
         fcst_select=${fcst_dir}
     else
         fcst_dir=${FCST_INPUT_USER}
-        if [ -s ${fcst_dir}/aqm.${PDYm2}/aqm.t06z.aot.f72.148.grib2 ]; then
+        if [ -s ${fcst_dir}/cs.${PDYm2}/aqm.t06z.aot.f72.148.grib2 ]; then
             fcst_select=${fcst_dir}
         else
-            chkfile=aqm.${PDYm2}/aqm.t06z.aot.f72.148.grib2
+            chkfile=cs.${PDYm2}/aqm.t06z.aot.f72.148.grib2
             echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             if [ 1 -eq 1 ]; then
                 fcst_select=${fcst_dir}
@@ -118,7 +118,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     sed -e "s!xxVIIRS_REGRID_AOD_OUTPUT!${viirs_regrid_aod}!" -e "s!xxAOD_TYPE!${verify_var}!" -e "s!xxSAT_TYPE!${satellite}!" -e "s!xxMODEL!${aqm_model}!" -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEm1!${PDYm1}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
-        cat ${working_dir}/${run_script} | bsub
+        cat ${working_dir}/${run_script} | qsub
     else
         echo "Can not find ${working_dir}/${run_script}"
     fi

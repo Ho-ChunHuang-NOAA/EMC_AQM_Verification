@@ -1,7 +1,7 @@
 #!/bin/sh
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
-module load HPSS/5.0.2.5
+module load prod_util
+module load prod_envir
+#
 MSG="$0 EXP [para|para1|...] CYC START_DATE END_DATE"
 if [ $# -lt 4 ]; then
    echo ${MSG}
@@ -25,21 +25,21 @@ fi
 echo "out_envir=${out_envir}"
 
 hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/RRFS_postprd_grib2/${in_envir}
-outdir=/scratch1/NCEPDEV/stmp2/Ho-Chun.Huang
-outdir=/gpfs/dell2/emc/modeling/noscrub/Ho-Chun.Huang/verification/RRFS-CMAQ
+outdir=/scratch1/NCEPDEV/stmp2/${USER}
+outdir=/lfs/h2/emc/physics/noscrub/${USER}/verification/RRFS-CMAQ
 hsi mkdir -p ${hpssroot}
 NOW=${FIRSTDAY}
 while [ ${NOW} -le ${LASTDAY} ]; do
-    ## idir=/scratch2/NCEPDEV/stmp1/Jianping.Huang/expt_dirs/${envir}/${NOW}${cyc}/postprd
+    ## idir=/scratch2/NCEPDEV/stmp1/jianping.huang/expt_dirs/${envir}/${NOW}${cyc}/postprd
     ## odir=${outdir}/${envir}/aqm.${NOW}/postprd
-    idir=/gpfs/dell2/emc/retros/noscrub/Jianping.Huang/data/RRFSCMAQ/${in_envir}/${NOW}${cyc}/postprd
+    idir=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}/${NOW}${cyc}/postprd
     odir=${outdir}/${out_envir}/aqm.${NOW}/postprd
     mkdir -p ${odir}
     cp -p ${idir}/*natlevf* ${odir}
     ## cp -p ${idir}/*prslevf* ${odir}
     if [ -d ${idir}/POST_STAT ]; then cp -pr ${idir}/POST_STAT ${odir}; fi
     cd ${outdir}/${out_envir}
-    htar cf ${hpssroot}/aqm.${NOW}.tar aqm.${NOW} > /gpfs/dell2/ptmp/Ho-Chun.Huang/VERF_logs/nam_prebufr.${NOW}.log 2>&1 &
+    htar cf ${hpssroot}/aqm.${NOW}.tar aqm.${NOW} > /lfs/h2/emc/ptmp/${USER}/VERF_logs/nam_prebufr.${NOW}.log 2>&1 &
     cdate=${NOW}"00"
     NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
 done

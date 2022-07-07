@@ -1,21 +1,22 @@
 #!/bin/bash
 
-#BSUB -J metplus_cmaq_aod
-#BSUB -o /gpfs/dell2/ptmp/Perry.Shafran/output/metplus_cmaq_aod.o%J
-#BSUB -e /gpfs/dell2/ptmp/Perry.Shafran/output/metplus_cmaq_aod.o%J
-#BSUB -q "dev2"
-#BSUB -P VERF-T2O
-#BSUB -R "rusage[mem=3000]"
-#BSUB -n 1
-#BSUB -W 04:00
+#PBS -N metplus_cmaq_aod
+#PBS -o /lfs/h2/emc/ptmp/ho-chun.huang/output/metplus_cmaq_aod.o%J
+#PBS -e /lfs/h2/emc/ptmp/ho-chun.huang/output/metplus_cmaq_aod.o%J
+#PBS -q dev
+#PBS -A VERF-DEV
+# 
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l walltime=04:00:00
+#PBS -l debug=true
 
 set -x
 
 export cycle=t00z
-export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
-export utilexec=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export EXECutil=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/Perry.Shafran/metplus_cmaq_aod
+export utilscript=/apps/ops/prod/nco/core/prod_util.v2.0.13/ush
+export utilexec=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export EXECutil=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/ho-chun.huang/metplus_cmaq_aod
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -27,10 +28,10 @@ sh $utilscript/setpdy.sh
 
 export DATE=$PDYm3
 export DATEP1=$PDY
-export MET_PLUS=/gpfs/dell2/emc/verification/save/Perry.Shafran/METplus-4.0.0
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/Perry.Shafran/METplus-4.0.0/parm/use_cases/perry
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/Perry.Shafran/metplus_cmaqaod
-export MET_PLUS_STD=/gpfs/dell2/ptmp/Perry.Shafran/metplus_cmaq_aod_${DATE}
+export MET_PLUS=/lfs/h2/emc/physics/noscrub/Perry.Shafran/METplus-4.0.0
+export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/Perry.Shafran/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/Perry.Shafran/metplus_cmaqaod
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/ho-chun.huang/metplus_cmaq_aod_${DATE}
 
 mkdir -p $MET_PLUS_STD
 

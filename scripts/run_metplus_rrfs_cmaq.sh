@@ -1,13 +1,14 @@
 #!/bin/bash
 
-#BSUB -J metplus_rrfscmaq
-#BSUB -o /gpfs/dell2/ptmp/Ho-Chun.Huang/output/metplus_rrfscmaq.o%J
-#BSUB -e /gpfs/dell2/ptmp/Ho-Chun.Huang/output/metplus_rrfscmaq.o%J
-#BSUB -q "dev2"
-#BSUB -P VERF-T2O
-#BSUB -R "rusage[mem=3000]"
-#BSUB -n 1
-#BSUB -W 07:00
+#PBS -N metplus_rrfscmaq
+#PBS -o /lfs/h2/emc/ptmp/${USER}/output/metplus_rrfscmaq.o%J
+#PBS -e /lfs/h2/emc/ptmp/${USER}/output/metplus_rrfscmaq.o%J
+#PBS -q dev
+#PBS -A VERF-DEV
+# 
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l walltime=07:00:00
+#PBS -l debug=true
 
 set -x
 
@@ -30,10 +31,10 @@ YEARM1=`cut -c 1-4 curdate2`
 MONTHM1=`cut -c 1-6 curdate2`
 
 export cycle=t00z
-export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
-export utilexec=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export EXECutil=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_rrfscmaq
+export utilscript=/apps/ops/prod/nco/core/prod_util.v2.0.13/ush
+export utilexec=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export EXECutil=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_rrfscmaq
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -47,10 +48,10 @@ cd $MET_PLUS_TMP
 #export DATE=20190810
 #export DATEP1=$PDY
 #export DATEP1=20190811
-export MET_PLUS=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0/parm/use_cases/perry
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_cam
-export MET_PLUS_STD=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_rrfscmaq_$DATE
+export MET_PLUS=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0
+export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_cam
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_rrfscmaq_$DATE
 
 mkdir -p $MET_PLUS_STD
 
@@ -66,9 +67,9 @@ EOF
 
 cat << EOF > ${model}.conf
 [dir]
-FCST_POINT_STAT_INPUT_DIR = /gpfs/dell2/emc/retros/noscrub/Jianping.Huang/data/RRFSCMAQ/v143_b
+FCST_POINT_STAT_INPUT_DIR = /lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/v143_b
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/cam/conus_cam
-PB2NC_INPUT_DIR = /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/nam/prod
+PB2NC_INPUT_DIR = /lfs/h2/emc/physics/noscrub/${USER}/com/nam/prod
 PB2NC_INPUT_TEMPLATE =  nam.{da_init?fmt=%Y%m%d}/nam.t{cycle?fmt=%2H}z.prepbufr.tm{offset?fmt=%2H}.nr
 [config]
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf
@@ -94,7 +95,7 @@ mkdir -p ${MET_PLUS_STD}/stat/${model}
 cp ${MET_PLUS_OUT}/cam/stat/${model}/*${DATE}* ${MET_PLUS_STD}/stat/${model}
 mv ${MET_PLUS_OUT}/logs/master_metplus.log.${DATEP1} ${MET_PLUS_TMP}/master_metplus.log.${DATEP1}_${model}
 
-DATE=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate +24 $DATE`
+DATE=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate +24 $DATE`
 
 done
 
@@ -152,8 +153,8 @@ EOF
 
 ###mv ${MET_PLUS_OUT}/logs/master_metplus.log.${DATEP1} ${MET_PLUS_TMP}
 
-/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/aws/mv_load_to_aws.sh perry.shafran ${MET_PLUS_TMP}/stat/ ${MET_PLUS_TMP}/load_met_fv3lam.xml
+/lfs/h2/emc/physics/noscrub/${USER}/aws/mv_load_to_aws.sh perry.shafran ${MET_PLUS_TMP}/stat/ ${MET_PLUS_TMP}/load_met_fv3lam.xml
 
-cp /gpfs/dell2/ptmp/Ho-Chun.Huang/output/metplus_fv3lam.out $MET_PLUS_STD/metplus_fv3lam_$DATE.out
+cp /lfs/h2/emc/ptmp/${USER}/output/metplus_fv3lam.out $MET_PLUS_STD/metplus_fv3lam_$DATE.out
 
 exit

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-#BSUB -J metplus_namretro
-#BSUB -o /gpfs/dell2/ptmp/Perry.Shafran/output/metplus_namretro.o%J
-#BSUB -e /gpfs/dell2/ptmp/Perry.Shafran/output/metplus_namretro.o%J
-#BSUB -q "dev2"
-#BSUB -P VERF-T2O
-#BSUB -R "rusage[mem=3000]"
-#BSUB -n 1
-#BSUB -W 04:00
+#PBS -N metplus_namretro
+#PBS -o /lfs/h2/emc/ptmp/ho-chun.huang/output/metplus_namretro.o%J
+#PBS -e /lfs/h2/emc/ptmp/ho-chun.huang/output/metplus_namretro.o%J
+#PBS -q dev
+#PBS -A VERF-DEV
+# 
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l walltime=04:00:00
 
 set -x
 
@@ -30,10 +30,10 @@ YEARM1=`cut -c 1-4 curdate2`
 MONTHM1=`cut -c 1-6 curdate2`
 
 export cycle=t00z
-export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
-export utilexec=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export EXECutil=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/Perry.Shafran/metplus_namretro
+export utilscript=/apps/ops/prod/nco/core/prod_util.v2.0.13/ush
+export utilexec=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export EXECutil=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/ho-chun.huang/metplus_namretro
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -45,10 +45,10 @@ cd $MET_PLUS_TMP
 
 #export DATE=$PDYm1
 #export DATEP1=$PDY
-export MET_PLUS=/gpfs/dell2/emc/verification/save/Perry.Shafran/METplus-4.0.0
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/Perry.Shafran/METplus-4.0.0/parm/use_cases/perry
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/Perry.Shafran/metplus_cam
-export MET_PLUS_STD=/gpfs/dell2/ptmp/Perry.Shafran/metplus_namretro_${DATE}
+export MET_PLUS=/lfs/h2/emc/physics/noscrub/Perry.Shafran/METplus-4.0.0
+export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/Perry.Shafran/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/Perry.Shafran/metplus_cam
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/ho-chun.huang/metplus_namretro_${DATE}
 
 mkdir -p $MET_PLUS_STD
 
@@ -64,9 +64,9 @@ EOF
 
 cat << EOF > ${model}.conf
 [dir]
-FCST_POINT_STAT_INPUT_DIR = /gpfs/dell2/emc/verification/noscrub/Perry.Shafran/com/nam/prod
+FCST_POINT_STAT_INPUT_DIR = /lfs/h2/emc/physics/noscrub/Perry.Shafran/com/nam/prod
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/cam/conus_cam
-PB2NC_INPUT_DIR = /gpfs/dell2/emc/verification/noscrub/Perry.Shafran/com/nam/prod
+PB2NC_INPUT_DIR = /lfs/h2/emc/physics/noscrub/Perry.Shafran/com/nam/prod
 [config]
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf
 LEAD_SEQ = begin_end_incr(0,84,1)
@@ -109,7 +109,7 @@ ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_cam.conf ${MET_PLUS_CO
 
 #cp ${MET_PLUS_CONF}/load_met.xml load_met_${model}.xml
 
-DATE=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate +24 $DATE`
+DATE=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate +24 $DATE`
 
 done
 
@@ -152,8 +152,8 @@ cat << EOF > load_met_${model}.xml
 </load_spec>
 EOF
 
-/gpfs/dell2/emc/verification/save/Perry.Shafran/aws/mv_load_to_aws.sh perry.shafran ${MET_PLUS_TMP}/stat/ ${MET_PLUS_TMP}/load_met_nam.xml
+/lfs/h2/emc/physics/noscrub/Perry.Shafran/aws/mv_load_to_aws.sh perry.shafran ${MET_PLUS_TMP}/stat/ ${MET_PLUS_TMP}/load_met_nam.xml
 
-cp /gpfs/dell2/ptmp/Perry.Shafran/output/metplus_nam.out $MET_PLUS_STD/metplus_nam_$DATE.out
+cp /lfs/h2/emc/ptmp/ho-chun.huang/output/metplus_nam.out $MET_PLUS_STD/metplus_nam_$DATE.out
 
 exit

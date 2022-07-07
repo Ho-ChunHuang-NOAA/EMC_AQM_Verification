@@ -1,7 +1,7 @@
 #!/bin/sh
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
-module load HPSS/5.0.2.5
+module load prod_util
+module load prod_envir
+#
 MSG="$0 FIRSTDAY LASTDAY"
 if [ $# -lt 2 ]; then
     echo ${MSG}
@@ -19,13 +19,13 @@ fi
 BASE=`pwd`
 export HOMEverif="$(dirname ${BASE})"
 
-logdir=/gpfs/dell2/ptmp/${USER}/VERF_logs
+logdir=/lfs/h2/emc/ptmp/${USER}/VERF_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
-working_dir=/gpfs/dell2/ptmp/${USER}/VERF_script
+working_dir=/lfs/h2/emc/ptmp/${USER}/VERF_script
 if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
-rundir=/gpfs/dell2/ptmp/${USER}/VERF_run
+rundir=/lfs/h2/emc/ptmp/${USER}/VERF_run
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 script_dir=`pwd`
@@ -51,7 +51,7 @@ else
 fi
 
 declare -a obs_cyc=( 00 06 12 18 )
-declare -a fcst_cyc=( 12 )
+declare -a fcst_cyc=( 06 12 )
 let obs_hour_beg=0
 let obs_hour_end=6
 NOW=${FIRSTDAY}
@@ -73,8 +73,8 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     err_logfile=${logdir}/${jjob}.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
-    OBS_INPUT_NCO=/gpfs/dell1/nco/ops/com/nam/prod
-    OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/com/nam/prod
+    OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.0
+    OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/com/nam/prod
     obs_dir=${OBS_INPUT_NCO}
     find_obs_prepbufr=yes
     for i in "${obs_cyc[@]}"; do
@@ -114,12 +114,12 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         done
         obs_select=${obs_dir}   ## one need to assign obs_select no matter what, it can failed during the run, it is okay
     fi
-    FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
-    FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/RRFS-CMAQ/${EXP}
+    FCST_INPUT_NCO=/lfs/h1/ops/prod/com/aqm/v6.1
+    FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/RRFS-CMAQ/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
     find_fcst_grib2=yes
     for i in "${fcst_cyc[@]}"; do
-        ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/rrfs.t${i}z.natlevf048.tm00.grib2
+        ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/rrfs.t${i}z.natlevf072.tm00.grib2
         if [ -s ${ckfile} ]; then
             echo "Found        ${ckfile}"
         else
@@ -132,7 +132,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     else
         fcst_dir=${FCST_INPUT_USER}
         for i in "${fcst_cyc[@]}"; do
-            ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/rrfs.t${i}z.natlevf048.tm00.grib2
+            ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/rrfs.t${i}z.natlevf072.tm00.grib2
             if [ -s ${ckfile} ]; then
                 echo "Found        ${ckfile}"
             else
@@ -145,7 +145,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
-        cat ${working_dir}/${run_script} | bsub
+        cat ${working_dir}/${run_script} | qsub
     else
         echo "Can not find ${working_dir}/${run_script}"
     fi

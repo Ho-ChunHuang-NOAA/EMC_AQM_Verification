@@ -1,21 +1,22 @@
 #!/bin/bash
 
-#BSUB -J metplus_cmaq_viirs_aod
-#BSUB -o /gpfs/dell2/ptmp/Perry.Shafran/output/metplus_cmaq_viirs_aod.o%J
-#BSUB -e /gpfs/dell2/ptmp/Ho-Chun.Huang/output/metplus_cmaq_viirs_aod.o%J
-#BSUB -q "dev2"
-#BSUB -P VERF-T2O
-#BSUB -R "rusage[mem=3000]"
-#BSUB -n 1
-#BSUB -W 04:00
+#PBS -N metplus_cmaq_viirs_aod
+#PBS -o /lfs/h2/emc/ptmp/ho-chun.huang/output/metplus_cmaq_viirs_aod.o%J
+#PBS -e /lfs/h2/emc/ptmp/${USER}/output/metplus_cmaq_viirs_aod.o%J
+#PBS -q dev
+#PBS -A VERF-DEV
+# 
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l walltime=04:00:00
+#PBS -l debug=true
 
 set -x
 
 export cycle=t00z
-export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
-export utilexec=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export EXECutil=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_cmaq_viirs_aod
+export utilscript=/apps/ops/prod/nco/core/prod_util.v2.0.13/ush
+export utilexec=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export EXECutil=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_cmaq_viirs_aod
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -28,10 +29,10 @@ sh $utilscript/setpdy.sh
 export DATE=$PDYm3
 export DATEP1=$PDY
 export DATEM1=$PDYm4
-export MET_PLUS=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0/parm/use_cases/perry
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_cmaqviirsaod
-export MET_PLUS_STD=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_cmaq_viirs_aod_${DATE}
+export MET_PLUS=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0
+export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_cmaqviirsaod
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_cmaq_viirs_aod_${DATE}
 
 mkdir -p $MET_PLUS_STD
 
@@ -43,12 +44,12 @@ satellite1=`echo ${satellite} | tr a-z A-Z`
 export verif_obstype=aod
 verif_obstype1=`echo ${verif_obstype} | tr a-z A-Z`
 
-VIIRS_L3_AOD_DIR=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/VIIRS_AOD/AOD
+VIIRS_L3_AOD_DIR=/lfs/h2/emc/physics/noscrub/${USER}/VIIRS_AOD/AOD
 if [ ! -d ${VIIRS_L3_AOD_DIR}/${DATE} ]; then
     echo "CVan not find ${VIIRS_L3_AOD_DIR}/${DATE}, PROGRAM STOPX"
     exit
 fi
-VIIRS_L3_REGRID_AOD_DIR=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/VIIRS_${verif_obstype1}/METPLUS_REGRID
+VIIRS_L3_REGRID_AOD_DIR=/lfs/h2/emc/physics/noscrub/${USER}/VIIRS_${verif_obstype1}/METPLUS_REGRID
 if [ ! -d ${VIIRS_L3_REGRID_AOD_DIR}/${model}.${DATE} ]; then mkdir -p ${VIIRS_L3_REGRID_AOD_DIR}/${model}.${DATE}; fi
 
 cd $MET_PLUS_TMP

@@ -1,18 +1,19 @@
 #!/bin/bash
 
-#BSUB -J metplus_nam
-#BSUB -o /gpfs/dell2/ptmp/Ho-Chun.Huang/VERF_logs/nam_v161a_20190828.ps.log
-#BSUB -e /gpfs/dell2/ptmp/Ho-Chun.Huang/VERF_logs/nam_v161a_20190828.ps.log
-#BSUB -q "dev2"
-#BSUB -P VERF-T2O
-#BSUB -R "rusage[mem=3000]"
-#BSUB -n 1
-#BSUB -W 04:00
-###BSUB -R affinity[core(1)]
+#PBS -N metplus_nam
+#PBS -o /lfs/h2/emc/ptmp/${USER}/VERF_logs/nam_v161a_20190828.ps.log
+#PBS -e /lfs/h2/emc/ptmp/${USER}/VERF_logs/nam_v161a_20190828.ps.log
+#PBS -q dev
+#PBS -A VERF-DEV
+# 
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l walltime=04:00:00
+#PBS -l debug=true
+### 
 
-module use /gpfs/dell2/emc/verification/noscrub/emc.metplus/modulefiles
-module load met/10.0.1
-module load metplus/4.0.0
+module use /lfs/h2/emc/physics/noscrub/emc.metplus/modulefiles
+module load met/10.1.1
+module load metplus/4.1.1
 module load python/3.6.3
 module load NetCDF/4.5.0
 
@@ -29,10 +30,10 @@ set -x
 TODAY=`date +%Y%m%d`
 
 export cycle=t00z
-export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
-export utilexec=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export EXECutil=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_nam
+export utilscript=/apps/ops/prod/nco/core/prod_util.v2.0.13/ush
+export utilexec=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export EXECutil=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_nam
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -43,10 +44,10 @@ cd $MET_PLUS_TMP
 ## . $MET_PLUS_TMP/PDY
 
 export DATE=20190802
-export MET_PLUS=/gpfs/dell2/emc/verification/save/${USER}/METplus-4.0.0
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/${USER}/METplus-4.0.0/parm/use_cases/perry
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_cam
-export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_nam_${DATE}
+export MET_PLUS=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0
+export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_cam
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_nam_${DATE}
 
 mkdir -p $MET_PLUS_STD
 
@@ -87,14 +88,14 @@ EOF
 # Switch to use prolevf because the pb2nc and point_stat both look for pressure quantities
 # BOTH_VAR1_LEVELS = Z2, P1000, P925, P850, P700, P500, P400, P300, P250, P200, P150, P100, P50
 #
-## FCST_POINT_STAT_INPUT_DIR = /gpfs/dell1/nco/ops/com/nam/prod
+## FCST_POINT_STAT_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.0
 ## MODEL = ${model1}
 ## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.nam.{valid?fmt=%Y%m%d%H}.nc
 cat << EOF > ${model}.conf
 [dir]
-FCST_POINT_STAT_INPUT_DIR = /gpfs/dell2/emc/modeling/noscrub/${USER}/verification/RRFS-CMAQ/${envir}
+FCST_POINT_STAT_INPUT_DIR = /lfs/h2/emc/physics/noscrub/${USER}/verification/RRFS-CMAQ/${envir}
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/cam/conus_cam
-PB2NC_INPUT_DIR = /gpfs/dell2/emc/modeling/noscrub/${USER}/verification/com/nam/prod
+PB2NC_INPUT_DIR = /lfs/h2/emc/physics/noscrub/${USER}/verification/com/nam/prod
 [config]
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf
 LEAD_SEQ = begin_end_incr(0,72,1)
@@ -109,7 +110,7 @@ OBS_VAR16_THRESH =  <805, <1609, <4828, <8045 ,>=8045, <16090
 OBS_VAR16_OPTIONS = censor_thresh = gt16090; censor_val = 16090; desc = "GSL";
 MODEL = namretro
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/postprd/rrfs.t{init?fmt=%2H}z.natlevf{lead?fmt=%3H}.tm00.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/postprd/rrfs.t{init?fmt=%2H}z.natlevf{lead?fmt=%3H}.tm00.grib2
 PB2NC_INPUT_TEMPLATE =  nam.{da_init?fmt=%Y%m%d}/nam.t{cycle?fmt=%2H}z.prepbufr.tm{offset?fmt=%2H}.nr
 POINT_STAT_OUTPUT_TEMPLATE = ${model}
 EOF

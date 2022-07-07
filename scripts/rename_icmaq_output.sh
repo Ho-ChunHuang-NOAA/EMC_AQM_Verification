@@ -1,7 +1,7 @@
 #!/bin/bash
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
-module load HPSS/5.0.2.5
+module load prod_util
+module load prod_envir
+#
 MSG="$0 FIRSTDAY LASTDAY"
 if [ $# -lt 1 ]; then
     echo ${MSG}
@@ -14,18 +14,18 @@ else
     LASTDAY=$2
 fi
 
-logdir=/gpfs/dell2/ptmp/${USER}/rename_icmaq_logs
+logdir=/lfs/h2/emc/ptmp/${USER}/rename_icmaq_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
-working_dir=/gpfs/dell2/ptmp/Ho-Chun.Huang/rename_icmaq_script
+working_dir=/lfs/h2/emc/ptmp/${USER}/rename_icmaq_script
 if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
-rundir=/gpfs/dell2/ptmp/Ho-Chun.Huang/rename_icmaq_run
+rundir=/lfs/h2/emc/ptmp/${USER}/rename_icmaq_run
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 declare -a cyc=( 12 )
-idir=/gpfs/dell2/ptmp/Hsin-Mu.Lin
-odir=/gpfs/dell2/ptmp/${USER}/icmaq
+idir=/lfs/h2/emc/ptmp/ho-chun.huang
+odir=/lfs/h2/emc/ptmp/${USER}/icmaq
 NOW=${FIRSTDAY}
 while [ ${NOW} -le ${LASTDAY} ]; do
     YY=`echo ${NOW} | cut -c1-4`

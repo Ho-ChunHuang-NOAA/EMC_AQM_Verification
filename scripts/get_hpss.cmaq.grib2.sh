@@ -1,7 +1,7 @@
 #!/bin/sh
-module load ips/18.0.5.274    ## require for module load prod_util/1.1.6
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
+#    ## require for module load prod_util
+module load prod_util
+module load prod_envir
 #
 flag_test=yes
 flag_test=no
@@ -28,8 +28,8 @@ elif [ $# -gt 2 ]; then
 fi
 
 model=aqm
-bkpdir=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/${model}/${envir}
-hpssroot=/5year/NCEPDEV/emc-naqfc/${USER} ## archive 5 year
+bkpdir=/lfs/h2/emc/physics/noscrub/${USER}/verification/${model}/${envir}
+hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang ## archive 5 year
 if [ ! -d ${bkpdir} ]; then mkdir -p ${bkpdir}; fi
 
 NOW=${FIRSTDAY}
@@ -40,7 +40,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
    
     target_dir=${model}.${NOW}
 
-    working_dir=/gpfs/dell2/stmp/${USER}/get_hpss_${model}_verification_grib2_${envir}
+    working_dir=/lfs/h2/emc/stmp/${USER}/get_hpss_${model}_verification_grib2_${envir}
     if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
     ## Now at working dir
@@ -50,32 +50,33 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     batch_script=get_hpss_${model}_verif_${envir}_${NOW}.sh
     if [ -s ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
 
-    logdir=/gpfs/dell2/ptmp/${USER}/batch_logs
+    logdir=/lfs/h2/emc/ptmp/${USER}/batch_logs
     if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
     logfile=${logdir}/${job_name}.out
     if [ -s ${logfile} ]; then /bin/rm -f ${logfile}; fi
 
-    task_cpu='01:00'
+    task_cpu='01:00:00'
 cat > ${batch_script} << EOF
 #!/bin/sh
-#BSUB -o ${logfile}
-#BSUB -e ${logfile}
-#BSUB -n 1
-#BSUB -J j${job_name}
-#BSUB -q dev_transfer
-#BSUB -P HYS-T2O
-#BSUB -W ${task_cpu}
-#BSUB -R span[ptile=1]
-#BSUB -R affinity[core]
-#BSUB -R rusage[mem=200]
+#PBS -o ${logfile}
+#PBS -e ${logfile}
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -N j${job_name}
+#PBS -q dev_transfer
+#PBS -A AQM-DEV
+#PBS -l walltime=${task_cpu}
+#PBS -l debug=true
+# 
+# 
+# 
 ##
 ##  Provide fix date daily Hysplit data processing
 ##
 
-module load ips/18.0.5.274    ## require for module load prod_util/1.1.6
-module load prod_util/1.1.6
-module load HPSS/5.0.2.5
+#    ## require for module load prod_util
+module load prod_util
+#
 
 mkdir -p ${bkpdir}
 cd ${bkpdir}
@@ -87,10 +88,10 @@ EOF
     ##  Submit run scripts
     ##
     if [ "${flag_test}" == "no" ]; then
-        ## cat ${batch_script} | bsub
+        ## cat ${batch_script} | qsub
         bash ${batch_script} > ${logfile} 2>&1 &
     else
-        echo "test bsub < ${batch_script} completed"
+        echo "test qsub < ${batch_script} completed"
     fi
     echo "Batch_script : ${working_dir}/${batch_script}"
     cdate=${NOW}"00"

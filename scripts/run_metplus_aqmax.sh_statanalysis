@@ -1,7 +1,7 @@
 #!/bin/bash
-module use /gpfs/dell2/emc/verification/noscrub/emc.metplus/modulefiles
-module load met/10.0.1
-module load metplus/4.0.0
+module use /lfs/h2/emc/physics/noscrub/emc.metplus/modulefiles
+module load met/10.1.1
+module load metplus/4.1.1
 module load python/3.6.3
 module load NetCDF/4.5.0
 
@@ -9,12 +9,12 @@ set -x
 TODAY=`date +%Y%m%d`
 
 export cycle=t00z
-export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
-export utilexec=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export EXECutil=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_aqmax
+export utilscript=/apps/ops/prod/nco/core/prod_util.v2.0.13/ush
+export utilexec=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export EXECutil=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax
 
-export wgrib2=/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.1/exec/wgrib2
+export wgrib2=/apps/ops/prod/libs/intel/19.1.3.304/wgrib2/2.0.8/bin/wgrib2
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -27,13 +27,13 @@ sh $utilscript/setpdy.sh
 export DATEm1=$PDYm4
 export DATE=$PDYm3
 export DATEp1=$PDYm2
-export MET_PLUS=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0/parm/use_cases/perry
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_aq
-export MET_PLUS_STD=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_aqmax
+export MET_PLUS=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0
+export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax
 
-export FCST_INPUT_COMOUT=/gpfs/hps/nco/ops/com/aqm/prod
-export FCST_INPUT_USER=/gpfs/dell2/ptmp/Ho-Chun.Huang/com/aqm/prod
+export FCST_INPUT_COMOUT=/lfs/h1/ops/prod/com/aqm/v6.1
+export FCST_INPUT_USER=/lfs/h2/emc/ptmp/${USER}/com/aqm/prod
 
 mkdir -p ${MET_PLUS_OUT} ${MET_PLUS_STD}
 
@@ -105,7 +105,7 @@ cat << EOF > fcst_input_temp_${model}.conf
 OUTPUT_BASE = ${MET_PLUS_OUT}
 FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_USER}
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3.148.grib2
 EOF
 
 ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf
@@ -168,7 +168,7 @@ cat << EOF > fcst_input_temp_${model}.conf
 OUTPUT_BASE = ${MET_PLUS_OUT}
 FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_USER}
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3.148.grib2
 EOF
 
 ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf
@@ -219,7 +219,7 @@ cat << EOF > fcst_input_temp_${model}.conf
 OUTPUT_BASE = ${MET_PLUS_OUT}
 FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_USER}
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25.148.grib2
 EOF
 
 ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf
@@ -269,7 +269,7 @@ cat << EOF > fcst_input_temp_${model}.conf
 OUTPUT_BASE = ${MET_PLUS_OUT}
 FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_USER}
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25.148.grib2
 EOF
 
 ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf

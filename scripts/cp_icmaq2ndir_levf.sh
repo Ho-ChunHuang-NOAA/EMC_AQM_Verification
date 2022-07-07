@@ -1,7 +1,7 @@
 #!/bin/bash
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
-module load HPSS/5.0.2.5
+module load prod_util
+module load prod_envir
+#
 MSG="$0 FIRSTDAY LASTDAY"
 if [ $# -lt 1 ]; then
     echo ${MSG}
@@ -14,13 +14,13 @@ else
     LASTDAY=$2
 fi
 
-logdir=/gpfs/dell2/ptmp/${USER}/rename_icmaq_logs
+logdir=/lfs/h2/emc/ptmp/${USER}/rename_icmaq_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
-working_dir=/gpfs/dell2/ptmp/Ho-Chun.Huang/rename_icmaq_script
+working_dir=/lfs/h2/emc/ptmp/${USER}/rename_icmaq_script
 if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
-rundir=/gpfs/dell2/ptmp/Ho-Chun.Huang/rename_icmaq_run
+rundir=/lfs/h2/emc/ptmp/${USER}/rename_icmaq_run
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 in_envir=v161_a
@@ -36,8 +36,8 @@ else
     out_envir=${in_envir}
 fi
 echo "out_envir=${out_envir}"
-idir=/gpfs/dell2/emc/retros/noscrub/Jianping.Huang/data/RRFSCMAQ/${in_envir}
-odir=/gpfs/dell2/emc/modeling/noscrub/Ho-Chun.Huang/verification/aqm/${out_envir}
+idir=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}
+odir=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${out_envir}
 NOW=${FIRSTDAY}
 while [ ${NOW} -le ${LASTDAY} ]; do
     YY=`echo ${NOW} | cut -c1-4`

@@ -15,7 +15,7 @@ DAY=`cut -c 1-8 curdate`
 YEAR=`cut -c 1-4 curdate`
 MONTH=`cut -c 1-6 curdate`
 
-DATEP1=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate +24 $DATE`
+DATEP1=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate +24 $DATE`
 
 echo $DATEP1 > curdate2
 DAYP1=`cut -c 1-8 curdate2`
@@ -23,10 +23,10 @@ YEARP1=`cut -c 1-4 curdate2`
 MONTHP1=`cut -c 1-6 curdate2`
 
 export cycle=t00z
-export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
-export utilexec=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export EXECutil=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_aq
+export utilscript=/apps/ops/prod/nco/core/prod_util.v2.0.13/ush
+export utilexec=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export EXECutil=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aq
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -42,10 +42,10 @@ cd $MET_PLUS_TMP
 #export DATE=20190810
 #export DATEP1=20190811
 #export DATEP2=20190812
-export MET_PLUS=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0/parm/use_cases/perry
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_aq
-export MET_PLUS_STD=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_aq
+export MET_PLUS=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0
+export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aq
 
 cat << EOF > shared.conf_aq
 [config]
@@ -67,9 +67,9 @@ echo $model1
 
 cat << EOF > ${model}.conf
 [dir]
-FCST_POINT_STAT_INPUT_DIR =  /gpfs/dell2/emc/retros/noscrub/Jianping.Huang/data/RRFSCMAQ/v143_b
+FCST_POINT_STAT_INPUT_DIR =  /lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/v143_b
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc
-PB2NC_INPUT_DIR = /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/hourly/prod
+PB2NC_INPUT_DIR = /lfs/h2/emc/physics/noscrub/${USER}/com/hourly/prod
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPO
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf
@@ -115,9 +115,9 @@ echo $model1
 
 cat << EOF > ${model}.conf
 [dir]
-FCST_POINT_STAT_INPUT_DIR =  /gpfs/dell2/emc/retros/noscrub/Jianping.Huang/data/RRFSCMAQ/v143_b
+FCST_POINT_STAT_INPUT_DIR =  /lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/v143_b
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc
-PB2NC_INPUT_DIR = /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/hourly/prod
+PB2NC_INPUT_DIR = /lfs/h2/emc/physics/noscrub/${USER}/com/hourly/prod
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPOPM
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf
@@ -140,7 +140,7 @@ EOF
 
 ${MET_PLUS}/ush/master_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_aq.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf
 
-DATE=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate +24 $DATE`
+DATE=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate +24 $DATE`
 
 done
 

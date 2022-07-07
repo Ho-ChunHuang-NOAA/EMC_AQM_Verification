@@ -1,19 +1,29 @@
 #!/bin/bash
-#BSUB -J xxJOB
-#BSUB -o xxOUTLOG
-#BSUB -e xxERRLOG
-#BSUB -q "dev2"
-#BSUB -P CMAQ-T2O
-#BSUB -R "rusage[mem=3000]"
-#BSUB -n 1
-#BSUB -W 04:00
-#BSUB -R affinity[core(1)]
+#PBS -N xxJOB
+#PBS -o xxOUTLOG
+#PBS -e xxERRLOG
+#PBS -q dev
+#PBS -A AQM-DEV
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l walltime=04:00:00
+#PBS -l debug=true
+# 
 
-module use /gpfs/dell2/emc/verification/noscrub/emc.metplus/modulefiles
-module load met/10.0.1
-module load metplus/4.0.0
-module load python/3.6.3
-module load NetCDF/4.5.0
+module purge
+export HPC_OPT=/apps/ops/para/libs
+module use /apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304/
+module load intel
+module load gsl
+module load python/3.8.6
+module load netcdf/4.7.4
+module load met/10.1.1
+module load metplus/4.1.1
+export MET_BASE=/apps/ops/para/libs/intel/19.1.3.304/met/10.1.1/share/met
+export MET_ROOT=/apps/ops/para/libs/intel/19.1.3.304/met/10.1.1
+export PATH=/apps/ops/para/libs/intel/19.1.3.304/met/10.1.1/bin:${PATH}
+
+module load prod_util/2.0.13
+module load prod_envir/2.0.6
 
 #
 # This template is for multiple days point-stat verification.  Mainly for restrospective
@@ -41,12 +51,12 @@ fi
 
 caseid="_test"
 export cycle=t00z
-export UTILHOME=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2
+export UTILHOME=/apps/ops/prod/nco/core/prod_util.v2.0.13
 export utilscript=${UTILHOME}/ush
 export utilexec=${UTILHOME}/exec
 export EXECutil=${UTILHOME}/exec
 
-export wgrib2=/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.1/exec/wgrib2
+export wgrib2=/apps/ops/prod/libs/intel/19.1.3.304/wgrib2/2.0.8/bin/wgrib2
 
 ## sh $utilscript/setup.sh  ## no longer existed in the system
 ## sh $utilscript/setpdy.sh
@@ -60,18 +70,18 @@ export DATEp1=xxDATEp1
 export MET_PLUS=xxBASE
 export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/perry
 export MET_PLUS_CONF2=${MET_PLUS}/parm/met_config
-# export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_aq${caseid}
-# export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_aq
-export MET_PLUS_STD=/gpfs/dell2/ptmp/${USER}/metplus_aqmax/${envir}/${DATE}
+# export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq${caseid}
+# export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax/${envir}/${DATE}
 
 #
 # Creat a more distinct temporary directory to store temporary config files for specific model/date/type
 # If both near-real-time and retro run share the same directory, the config files generated for one run
 # can be deleted (for commands below) when another one is activated
 #
-## export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/${USER}/metplus_aqmax/${envir}/${DATE}
+## export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax/${envir}/${DATE}
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
 
@@ -80,21 +90,21 @@ mkdir -p $MET_PLUS_TMP
 ## METplus will use FCST_INPUT_SELECT and OBS_INPUT_SELECT
 ## Assign AQM output directory for various exp, PROD, PARA6D,...or ICMAQ
 ###############################################################################################
-## EXP model output directory, the default is /gpfs/hps/nco/ops/com/aqm/prod
+## EXP model output directory, the default is /lfs/h1/ops/prod/com/aqm/v6.1
 ## Define FCST_INPUT_COMOUT for AQM model output
 ##
-## export FCST_INPUT_NCO=/gpfs/hps/nco/ops/com/aqm/prod
-## export FCST_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/aqm/${EXP}
+## export FCST_INPUT_NCO=/lfs/h1/ops/prod/com/aqm/v6.1
+## export FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
 ## 
 export FCST_INPUT_COMOUT=xxFCST_INPUT
-export FCST_INPUT_SELECT=/gpfs/dell2/ptmp/${USER}/com/aqm/${EXP}
+export FCST_INPUT_SELECT=/lfs/h2/emc/ptmp/${USER}/com/aqm/${EXP}
 
-## EXP Obs input directory, the default is /gpfs/dell1/nco/ops/com/hourly/prod
+## EXP Obs input directory, the default is /lfs/h1/ops/prod/com/obsproc/v1.0
 ## Define OBS_INPUT_SELECT for EPA bufr --> obsproc --> prepbufpr  location
 ## 
 ## 
-## export OBS_INPUT_NCO=/gpfs/dell1/nco/ops/com/hourly/prod                        avail after 21Z
-## export OBS_INPUT_USER=/gpfs/dell2/emc/modeling/noscrub/${USER}/com/hourly/prod  avail after 22Z
+## export OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.0                        avail after 21Z
+## export OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/com/hourly/prod  avail after 22Z
 ## 
 export OBS_INPUT_SELECT=xxOBS_INPUT
 
@@ -159,20 +169,20 @@ do
     model1=`echo ${model} | tr a-z A-Z`
     ifile=aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
-        mkdir -p ${FCST_INPUT_SELECT}/aqm.${iday}
+        mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
         if [ -s out1.grb2 ]; then /bin/rm -f out1.grb2; fi
         if [ -s out2.grb2 ]; then /bin/rm -f out2.grb2; fi
         if [ -s out3.grb2 ]; then /bin/rm -f out3.grb2; fi
         if [ $hour -eq 06 ]; then
-            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "-1-22 hour ave fcst" -grib out1.grb2
-            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "23-46 hour ave fcst" -grib out2.grb2
-            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "47-70 hour ave fcst" -grib out3.grb2
+            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "-1-22 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "23-46 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "47-70 hour ave fcst" -grib out3.grb2
         elif [ $hour -eq 12 ]; then
-            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "-7-16 hour ave fcst" -grib out1.grb2
-            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "17-40 hour ave fcst" -grib out2.grb2
-            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "41-64 hour ave fcst" -grib out3.grb2
+            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "-7-16 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "17-40 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "41-64 hour ave fcst" -grib out3.grb2
         fi
-        cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/aqm.${iday}/${ifile}
+        cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/cs.${iday}/${ifile}
     done
 
 cat << EOF > fcst_input_temp_${model}.conf
@@ -188,7 +198,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
@@ -202,20 +212,20 @@ do
     model1=`echo ${model} | tr a-z A-Z`
     ifile=aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
-        mkdir -p ${FCST_INPUT_SELECT}/aqm.${iday}
+        mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
         if [ -s out1.grb2 ]; then /bin/rm -f out1.grb2; fi
         if [ -s out2.grb2 ]; then /bin/rm -f out2.grb2; fi
         if [ -s out3.grb2 ]; then /bin/rm -f out3.grb2; fi
         if [ $hour -eq 06 ]; then
-            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "6-29 hour ave fcst" -grib out1.grb2
-            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "30-53 hour ave fcst" -grib out2.grb2
-            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "54-77 hour ave fcst" -grib out3.grb2
+            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "6-29 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "30-53 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "54-77 hour ave fcst" -grib out3.grb2
         elif [ $hour -eq 12 ]; then
-            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "0-23 hour ave fcst" -grib out1.grb2
-            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "24-47 hour ave fcst" -grib out2.grb2
-            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} -set_ftime "48-71 hour ave fcst" -grib out3.grb2
+            ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "0-23 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "24-47 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "48-71 hour ave fcst" -grib out3.grb2
         fi
-        cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/aqm.${iday}/${ifile}
+        cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/cs.${iday}/${ifile}
     done
 
 
@@ -231,7 +241,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
@@ -279,8 +289,8 @@ do
     ## Need to copy to ${FCST_INPUT_SELECT} if FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
     ifile=aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
-        mkdir -p ${FCST_INPUT_SELECT}/aqm.${iday}
-        cp -p ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} ${FCST_INPUT_SELECT}/aqm.${iday}
+        mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
+        cp -p ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} ${FCST_INPUT_SELECT}/cs.${iday}
     done
 
 cat << EOF > fcst_input_temp_${model}.conf
@@ -295,7 +305,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
@@ -343,8 +353,8 @@ do
     ## Need to copy to ${FCST_INPUT_SELECT} if FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
     ifile=aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
-        mkdir -p ${FCST_INPUT_SELECT}/aqm.${iday}
-        cp -p ${FCST_INPUT_COMOUT}/aqm.${iday}/${ifile} ${FCST_INPUT_SELECT}/aqm.${iday}
+        mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
+        cp -p ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} ${FCST_INPUT_SELECT}/cs.${iday}
     done
 
 #
@@ -368,7 +378,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 

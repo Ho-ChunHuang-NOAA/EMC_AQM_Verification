@@ -1,7 +1,7 @@
 #!/bin/bash
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
-module load HPSS/5.0.2.5
+module load prod_util
+module load prod_envir
+#
 TODAY=`date +%Y%m%d`
 
 MSG="$0 EXP start_date end_date"
@@ -31,24 +31,24 @@ else
     EXP=${envir}
 fi
 
-logdir=/gpfs/dell2/ptmp/${USER}/archive_verification_stat_${envir}_logs
+logdir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_${envir}_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
-working_dir=/gpfs/dell2/ptmp/${USER}/archive_verification_stat_${envir}_script
+working_dir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_${envir}_script
 if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
-datadir=/gpfs/dell2/ptmp/${USER}/archive_verification_stat_${envir}_data
+datadir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_${envir}_data
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
-hpssroot=/5year/NCEPDEV/emc-naqfc/${USER} ## archive 5 year
+hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang ## archive 5 year
 
 YY0=`echo ${FIRSTDAY} | cut -c1-4`
 YM0=`echo ${FIRSTDAY} | cut -c1-6`
 hpssdir=${hpssroot}/metplus_cam_pb2nc/${EXP}/${YY0}/${YM0}
 hsi mkdir -p ${hpssdir}
 
-cam_pb2nc_datadir=/gpfs/dell2/emc/verification/noscrub/${USER}/metplus_cam/cam/conus_cam
-cam_pb2nc_datadir=/gpfs/dell2/emc/verification/noscrub/Perry.Shafran/metplus_cam/cam/conus_cam
+cam_pb2nc_datadir=/lfs/h2/emc/physics/noscrub/${USER}/metplus_cam/cam/conus_cam
+cam_pb2nc_datadir=/lfs/h2/emc/physics/noscrub/Perry.Shafran/metplus_cam/cam/conus_cam
 
 declare -a hr_type=( cam )
 declare -a case=( ${envir} )

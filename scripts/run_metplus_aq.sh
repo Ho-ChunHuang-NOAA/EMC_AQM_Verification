@@ -1,25 +1,26 @@
 #!/bin/bash
 
-#BSUB -J metplus_aq
-#BSUB -o /gpfs/dell2/ptmp/Ho-Chun.Huang/output/metplus_aq.o%J
-#BSUB -e /gpfs/dell2/ptmp/Ho-Chun.Huang/output/metplus_aq.o%J
-#BSUB -q "dev2"
-#BSUB -P VERF-T2O
-#BSUB -R "rusage[mem=3000]"
-#BSUB -n 1
-#BSUB -W 04:00
+#PBS -N metplus_aq
+#PBS -o /lfs/h2/emc/ptmp/${USER}/output/metplus_aq.o%J
+#PBS -e /lfs/h2/emc/ptmp/${USER}/output/metplus_aq.o%J
+#PBS -q dev
+#PBS -A VERF-DEV
+# 
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l walltime=04:00:00
+#PBS -l debug=true
 
-module load met/10.0.1
-module load metplus/4.0.0
+module load met/10.1.1
+module load metplus/4.1.1
 module load python/3.6.3
 
 set -x
 
 export cycle=t00z
-export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
-export utilexec=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export EXECutil=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_aqtest
+export utilscript=/apps/ops/prod/nco/core/prod_util.v2.0.13/ush
+export utilexec=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export EXECutil=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aqtest
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -31,10 +32,10 @@ sh $utilscript/setpdy.sh
 
 export DATE=$PDYm1
 export DATEP1=$PDY
-export MET_PLUS=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-4.0.0/parm/use_cases/perry
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_aqtest
-export MET_PLUS_STD=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_aqtest
+export MET_PLUS=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0
+export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aqtest
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aqtest
 
 mkdir -p ${MET_PLUS_OUT} ${MET_PLUS_STD}
 
@@ -58,16 +59,16 @@ model1=`echo $model | tr a-z A-Z`
 echo $model1
 
 
-## FCST_POINT_STAT_INPUT_DIR = /gpfs/hps/nco/ops/com/aqm/prod
-## PB2NC_INPUT_DIR = /gpfs/dell1/nco/ops/com/hourly/prod
-## FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.awpozcon.f{lead?fmt=%2H}.148.grib2
+## FCST_POINT_STAT_INPUT_DIR = /lfs/h1/ops/prod/com/aqm/v6.1
+## PB2NC_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.0
+## FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.awpozcon.f{lead?fmt=%2H}.148.grib2
 ## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## PB2NC_OUTPUT_TEMPLATE  = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 cat << EOF > ${model}.conf
 [dir]
-FCST_POINT_STAT_INPUT_DIR = /gpfs/dell1/ptmp/Jianping.Huang/expt_dirs/test_cmaq13_a
+FCST_POINT_STAT_INPUT_DIR = /lfs/h2/emc/ptmp/ho-chun.huang/expt_dirs/test_cmaq13_a
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc
-PB2NC_INPUT_DIR = /gpfs/dell2/emc/verification/noscrub/Perry.Shafran/com/hourly/prod
+PB2NC_INPUT_DIR = /lfs/h2/emc/physics/noscrub/Perry.Shafran/com/hourly/prod
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPO
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf
@@ -117,15 +118,15 @@ model=icmaq150a_pm
 model1=`echo $model | tr a-z A-Z`
 echo $model1
 
-## FCST_POINT_STAT_INPUT_DIR = /gpfs/hps/nco/ops/com/aqm/prod
-## FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.pm25.f{lead?fmt=%2H}.148.grib2
+## FCST_POINT_STAT_INPUT_DIR = /lfs/h1/ops/prod/com/aqm/v6.1
+## FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.pm25.f{lead?fmt=%2H}.148.grib2
 ## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.pm.{valid?fmt=%Y%m%d%H}.nc
 ## PB2NC_OUTPUT_TEMPLATE  = prepbufr.pm.{valid?fmt=%Y%m%d%H}.nc
 cat << EOF > ${model}.conf
 [dir]
-FCST_POINT_STAT_INPUT_DIR = /gpfs/dell1/ptmp/Jianping.Huang/expt_dirs/test_cmaq13_a
+FCST_POINT_STAT_INPUT_DIR = /lfs/h2/emc/ptmp/ho-chun.huang/expt_dirs/test_cmaq13_a
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc
-PB2NC_INPUT_DIR = /gpfs/dell2/emc/verification/noscrub/Perry.Shafran/com/hourly/prod
+PB2NC_INPUT_DIR = /lfs/h2/emc/physics/noscrub/Perry.Shafran/com/hourly/prod
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPOPM
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf

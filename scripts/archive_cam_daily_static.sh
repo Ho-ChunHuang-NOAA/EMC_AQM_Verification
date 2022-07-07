@@ -1,7 +1,7 @@
 #!/bin/bash
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
-module load HPSS/5.0.2.5
+module load prod_util
+module load prod_envir
+#
 MSG="$0 EXP [prod|para6d|...] FIRSTDAY LASTDAY"
 if [ $# -lt 2 ]; then
     echo ${MSG}
@@ -18,19 +18,19 @@ fi
 
 EXP=`echo ${envir} | tr a-z A-Z`
 
-logdir=/gpfs/dell2/ptmp/${USER}/archive_verification_stat_logs
+logdir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
-working_dir=/gpfs/dell2/ptmp/Ho-Chun.Huang/archive_verification_stat_script
+working_dir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_script
 if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
-rundir=/gpfs/dell2/ptmp/Ho-Chun.Huang/archive_verification_stat_data
+rundir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_data
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/metplus_cam_daily_point_stat
-hpsshourly=/5year/NCEPDEV/emc-ncamfc/Ho-Chun.Huang/metplus_cam_hourly_point_stat
+hpsshourly=/5year/NCEPDEV/emc-ncamfc/${USER}/metplus_cam_hourly_point_stat
 
-datadir=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_cam/stat/cam
+datadir=/lfs/h2/emc/physics/noscrub/${USER}/metplus_cam/stat/cam
 
 YY0=`echo ${FIRSTDAY} | cut -c1-4`
 YM0=`echo ${FIRSTDAY} | cut -c1-6`

@@ -1,13 +1,14 @@
 #!/bin/bash
 
-#BSUB -J metplus_pcp_fv3lam
-#BSUB -o /gpfs/dell2/ptmp/Ho-Chun.Huang/output/metplus_pcp_fv3lam.out
-#BSUB -e /gpfs/dell2/ptmp/Ho-Chun.Huang/output/metplus_pcp_fv3lam.out
-#BSUB -q "dev"
-#BSUB -P VERF-T2O
-#BSUB -R "rusage[mem=3000]"
-#BSUB -n 1
-#BSUB -W 12:00
+#PBS -N metplus_pcp_fv3lam
+#PBS -o /lfs/h2/emc/ptmp/${USER}/output/metplus_pcp_fv3lam.out
+#PBS -e /lfs/h2/emc/ptmp/${USER}/output/metplus_pcp_fv3lam.out
+#PBS -q dev
+#PBS -A VERF-DEV
+# 
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l walltime=12:00:00
+#PBS -l debug=true
 
 set -x
 
@@ -16,10 +17,10 @@ ENDDATE=2019090100
 DATE=$STARTDATE
 
 export cycle=t00z
-export utilscript=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/ush
-export utilexec=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export EXECutil=/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec
-export temp=/gpfs/dell2/ptmp/Ho-Chun.Huang/rrfscmaq_date
+export utilscript=/apps/ops/prod/nco/core/prod_util.v2.0.13/ush
+export utilexec=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export EXECutil=/apps/ops/prod/nco/core/prod_util.v2.0.13/exec
+export temp=/lfs/h2/emc/ptmp/${USER}/rrfscmaq_date
 
 rm -f -r $temp
 mkdir -p $temp
@@ -27,13 +28,13 @@ cd $temp
 
 while [ $DATE -le $ENDDATE ]; do
 
-DATEP1=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate +24 $DATE`
-DATEP2=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate +24 $DATEP1`
-DATEM1=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate -24 $DATE`
-DATEM2=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate -24 $DATEM1`
-DATEM3=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate -24 $DATEM2`
-DATEM4=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate -24 $DATEM3`
-DATEM5=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate -24 $DATEM4`
+DATEP1=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate +24 $DATE`
+DATEP2=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate +24 $DATEP1`
+DATEM1=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate -24 $DATE`
+DATEM2=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate -24 $DATEM1`
+DATEM3=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate -24 $DATEM2`
+DATEM4=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate -24 $DATEM3`
+DATEM5=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate -24 $DATEM4`
 
 #sh $utilscript/setup.sh
 #sh $utilscript/setpdy.sh
@@ -42,7 +43,7 @@ DATEM5=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate -24 $DATEM4`
 #export DATE=$PDYm2
 #export DATEP1=$PDY
 
-export MET_PLUS_TMP=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_pcp_rrfscmaq_$DATE
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_pcp_rrfscmaq_$DATE
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -88,10 +89,10 @@ PDYm5=$DAYM3
 #export DATE=$PDYm2
 #export DATEP1=$PDY
 
-export MET_PLUS=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-3.1
-export MET_PLUS_CONF=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-3.1/parm/use_cases/precip
-export MET_PLUS_OUT=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_pcp
-export MET_PLUS_STD=/gpfs/dell2/ptmp/Ho-Chun.Huang/metplus_pcp_rrfscmaq_$DATE
+export MET_PLUS=/lfs/h2/emc/physics/noscrub/${USER}/METplus-3.1
+export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/${USER}/METplus-3.1/parm/use_cases/precip
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_pcp
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_pcp_rrfscmaq_$DATE
 
 mkdir -p $MET_PLUS_STD
 
@@ -99,31 +100,31 @@ export model=rrfscmaqv143b
 model1=`echo $model | tr a-z A-Z`
 echo $model1
 
-export model_dir=/gpfs/dell2/emc/retros/noscrub/Jianping.Huang/data/RRFSCMAQ/v143_b
-export EXPTDIR=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_pcp
-export OBS_DIR=/gpfs/dell2/ptmp/Ho-Chun.Huang/ccpa
+export model_dir=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/v143_b
+export EXPTDIR=/lfs/h2/emc/physics/noscrub/${USER}/metplus_pcp
+export OBS_DIR=/lfs/h2/emc/ptmp/${USER}/ccpa
 export acc=6hr
 export fhr_list="begin_end_incr(0,48,6)"
 export CDATE=${DATE}00
 
 export METPLUS_PATH=${MET_PLUS}
-export MET_INSTALL_DIR=/gpfs/dell2/emc/verification/noscrub/emc.metplus/met/9.1
-export METPLUS_CONF=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-3.1/parm
-export MET_CONFIG=/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/METplus-3.1/parm/met_config
+export MET_INSTALL_DIR=/lfs/h2/emc/physics/noscrub/emc.metplus/met/9.1
+export METPLUS_CONF=/lfs/h2/emc/physics/noscrub/${USER}/METplus-3.1/parm
+export MET_CONFIG=/lfs/h2/emc/physics/noscrub/${USER}/METplus-3.1/parm/met_config
 
-mkdir -p /gpfs/dell2/ptmp/Ho-Chun.Huang/ccpa/ccpa.$PDYm2
+mkdir -p /lfs/h2/emc/ptmp/${USER}/ccpa/ccpa.$PDYm2
 
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm3/00/ccpa.*.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm3
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm3/06/ccpa.*.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm3
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm3/12/ccpa.*.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm3
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm3/18/ccpa.*.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm3
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm4/00/ccpa.t00z.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm3
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm3/00/ccpa.*.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm3
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm3/06/ccpa.*.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm3
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm3/12/ccpa.*.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm3
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm3/18/ccpa.*.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm3
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm4/00/ccpa.t00z.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm3
 
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm2/00/ccpa.*.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm2
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm2/06/ccpa.*.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm2
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm2/12/ccpa.*.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm2
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm2/18/ccpa.*.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm2
-cp /gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/com/ccpa/prod/ccpa.$PDYm3/00/ccpa.t00z.06h.hrap.conus.gb2 /gpfs/dell2/ptmp/Perry.Shafran/ccpa/ccpa.$PDYm2
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm2/00/ccpa.*.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm2
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm2/06/ccpa.*.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm2
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm2/12/ccpa.*.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm2
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm2/18/ccpa.*.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm2
+cp /lfs/h2/emc/physics/noscrub/${USER}/com/ccpa/prod/ccpa.$PDYm3/00/ccpa.t00z.06h.hrap.conus.gb2 /lfs/h2/emc/ptmp/ho-chun.huang/ccpa/ccpa.$PDYm2
 
 cat << EOF > ${model}.conf
 [config]
@@ -184,7 +185,7 @@ mv ${MET_PLUS_OUT}/logs/master_metplus.log.${DATEP1} ${MET_PLUS_TMP}/master_metp
 
 #cp ${MET_PLUS_CONF}/load_met.xml load_met_${model}.xml
 
-DATE=`/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.2/exec/ips/ndate +24 $DATE`
+DATE=`/apps/ops/prod/nco/core/prod_util.v2.0.13/exec/ndate +24 $DATE`
 
 done
 
@@ -228,8 +229,8 @@ cat << EOF > load_met_${model}.xml
 </load_spec>
 EOF
 
-/gpfs/dell2/emc/verification/save/Ho-Chun.Huang/aws/mv_load_to_aws.sh perry.shafran ${MET_PLUS_TMP}/stat/ ${MET_PLUS_TMP}/load_met_fv3lam.xml
+/lfs/h2/emc/physics/noscrub/${USER}/aws/mv_load_to_aws.sh perry.shafran ${MET_PLUS_TMP}/stat/ ${MET_PLUS_TMP}/load_met_fv3lam.xml
 
-cp /gpfs/dell2/ptmp/Ho-Chun.Huang/output/metplus_fv3lam_pcp.out $MET_PLUS_STD/metplus_fv3lam_$DATE.out
+cp /lfs/h2/emc/ptmp/${USER}/output/metplus_fv3lam_pcp.out $MET_PLUS_STD/metplus_fv3lam_$DATE.out
 
 exit

@@ -1,15 +1,16 @@
 #!/bin/bash
-#BSUB -J xxJOB
-#BSUB -o xxOUTLOG
-#BSUB -e xxERRLOG
-#BSUB -q "dev2"
-#BSUB -P CMAQ-T2O
-#BSUB -R "rusage[mem=3000]"
-#BSUB -n 1
-#BSUB -W 04:00
-#BSUB -R affinity[core(1)]
+#PBS -N xxJOB
+#PBS -o xxOUTLOG
+#PBS -e xxERRLOG
+#PBS -q dev
+#PBS -A AQM-DEV
+# 
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l walltime=04:00:00
+#PBS -l debug=true
+# 
 
-module load prod_util/1.1.6
+module load prod_util
 envir=$1
 EXP=`echo ${envir} | tr a-z A-Z`
 echo "experiment run is ${envir} ${envir1}"
@@ -19,7 +20,7 @@ TODAY=`date +%Y%m%d`
 
 export DATE=$2
 
-data_dir=/gpfs/dell2/emc/verification/noscrub/Ho-Chun.Huang/metplus_aq/stat/aqm/${DATE}
+data_dir=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq/stat/aqm/${DATE}
 if [ ! -d ${data_dir} ]; then
     echo "Can not find ${data_dir}"
     exit
@@ -51,7 +52,7 @@ fi
 # Load statistic to AWS MET database
 # Can interfere with others hourly prod, prodbc and max prod_prod_bc for removing the LOAD_DIR
 #
-script_dir=/gpfs/dell2/emc/modeling/noscrub/Ho-Chun.Huang/METviewer_AWS
+script_dir=/lfs/h2/emc/physics/noscrub/${USER}/METviewer_AWS
 script_name=cron_load_g2o_met_verf_o3pm.sh
 bash ${script_dir}/${script_name} ${envir} ${DATE} ${DATE}
 echo "Load ${script_name} ${envir} ${DATE} ${DATE}"

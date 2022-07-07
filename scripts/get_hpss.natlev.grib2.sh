@@ -1,7 +1,7 @@
 #!/bin/sh
-module load ips/18.0.5.274    ## require for module load prod_util/1.1.6
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
+#    ## require for module load prod_util
+module load prod_util
+module load prod_envir
 #
 flag_test=yes
 flag_test=no
@@ -36,12 +36,12 @@ fi
 # if [ "${envir}" == "v161_a" ]; then local_envir=v161a; fi
 # if [ "${envir}" == "v161_b" ]; then local_envir=v161b; fi
 model=rrfs_cmaq
-logdir=/gpfs/dell2/ptmp/Ho-Chun.Huang/com/${model}_output/${envir}
+logdir=/lfs/h2/emc/ptmp/${USER}/com/${model}_output/${envir}
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
 model=RRFS-CMAQ
-hpssroot=/5year/NCEPDEV/emc-naqfc/${USER}/RRFS_postprd_grib2/${envir} ## archive 5 year
-bkpdir=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/${model}/${local_envir}
+hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/RRFS_postprd_grib2/${envir} ## archive 5 year
+bkpdir=/lfs/h2/emc/physics/noscrub/${USER}/verification/${model}/${local_envir}
 if [ ! -d ${bkpdir} ]; then mkdir -p ${bkpdir}; fi
 
 NOW=${FIRSTDAY}

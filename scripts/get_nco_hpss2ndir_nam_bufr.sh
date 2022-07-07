@@ -1,7 +1,6 @@
-
-module load prod_util/1.1.6
-module load prod_envir/1.1.0
-module load HPSS/5.0.2.5
+#!/bin/bash
+module load prod_util
+module load prod_envir
 #
 #  HPSS tar is also handled by cronjob at
 #  ~/cronjob/transfer_daily_hysplit_smoke_ncopara.sh
@@ -17,23 +16,22 @@ else
    LASTDAY=$2
 fi
 
-task_cpu='05:00'
+task_cpu='05:00:00'
 envir=prod
 local_envir=${envir}
 model=nam
-runid=pm
 
-bkpdir=/gpfs/dell2/emc/modeling/noscrub/Ho-Chun.Huang/verification/${model}/${envir}
-bkpdir=/gpfs/dell2/emc/modeling/noscrub/${USER}/verification/com/${model}/${envir}
+bkpdir=/lfs/h2/emc/physics/noscrub/${USER}/verification/${model}/${envir}
+bkpdir=/lfs/h2/emc/physics/noscrub/${USER}/verification/com/${model}/${envir}
 if [ ! -d ${bkpdir} ]; then mkdir -p ${bkpdir}; fi
 
-logdir=/gpfs/dell2/ptmp/Ho-Chun.Huang/com/${model}_output/${envir}
+logdir=/lfs/h2/emc/ptmp/${USER}/com/${model}_output/${envir}
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
-working_dir=/gpfs/dell2/ptmp/Ho-Chun.Huang/${model}_script/${envir}
+working_dir=/lfs/h2/emc/ptmp/${USER}/${model}_script/${envir}
 if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
-rundir=/gpfs/dell2/ptmp/Ho-Chun.Huang/${model}_run/${envir}
+rundir=/lfs/h2/emc/ptmp/${USER}/${model}_run/${envir}
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 hpssprod=/NCEPPROD/hpssprod/runhistory
@@ -63,21 +61,19 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         if [ -e ${logfile} ]; then /bin/rm -f ${logfile}; fi
 cat > ${batch_script} << EOF
 #!/bin/bash -l
-#BSUB -o ${logfile}
-#BSUB -e ${logfile}
-#BSUB -n 1
-#BSUB -J j${job_name}
-#BSUB -q "dev_transfer"
-#BSUB -P CMAQ-T2O
-#BSUB -W ${task_cpu}
-#BSUB -R affinity[core(1)]
-#BSUB -M 100
+#PBS -o ${logfile}
+#PBS -e ${logfile}
+#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -N j${job_name}
+#PBS -q dev_transfer
+#PBS -A AQM-DEV
+#PBS -l walltime=${task_cpu}
+#PBS -l debug=true
 ##
 ##  Provide fix date daily Hysplit data processing
 ##
 
-module load prod_util/1.1.6
-module load HPSS/5.0.2.5
+module load prod_util
    FIRSTDAY=${NOW}
    LASTDAY=${NOW}
    hpssprod=${hpssprod}
@@ -133,7 +129,7 @@ EOF
         ##
         ##  Submit run scripts
         ##
-        bsub < ${batch_script}
+        qsub < ${batch_script}
         ## bash ${batch_script} > ${logfile} 2>&1 &
         echo "working_dir=${working_dir}"
         echo "run_scrpt = ${working_dir}/${batch_script}"
