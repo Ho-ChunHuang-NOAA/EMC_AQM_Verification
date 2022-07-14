@@ -69,8 +69,6 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     err_logfile=${logdir}/${jjob}.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
-    OBS_INPUT_NCO=/lfs/h2/emc/stmp/shelley.melchior/CRON/wc2para/com/obsproc/v1.0
-    OBS_INPUT_USER=/lfs/h2/emc/stmp/shelley.melchior/CRON/wc2para/com/obsproc/v1.0
     OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.0
     OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/com/hourly/prod
     obs_dir=${OBS_INPUT_NCO}
@@ -94,7 +92,8 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             continue
         fi
     fi
-    FCST_INPUT_NCO=/lfs/h1/ops/prod/com/aqm/v6.1
+    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
+    FCST_INPUT_NCO=/lfs/h1/ops/${EXP}/com/aqm/v6.1
     FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
     if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon.f72.148.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon.f72.148.grib2 ]; then
