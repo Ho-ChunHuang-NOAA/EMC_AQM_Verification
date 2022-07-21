@@ -45,9 +45,8 @@ cat << EOF > ${batch_script}
 #PBS -e ${logfile}
 #PBS -q dev_transfer
 #PBS -A AQM-DEV
-# 
-#PBS -l place=shared,select=1:ncpus=1:mem=4GB
-#PBS -l walltime=02:00:00
+#PBS -l place=shared,select=1:ncpus=1:mem=4500MB
+#PBS -l walltime=04:00:00
 #PBS -l debug=true
 # 
 

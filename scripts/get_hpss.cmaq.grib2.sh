@@ -56,12 +56,12 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     logfile=${logdir}/${job_name}.out
     if [ -s ${logfile} ]; then /bin/rm -f ${logfile}; fi
 
-    task_cpu='01:00:00'
+    task_cpu='04:59:00'
 cat > ${batch_script} << EOF
 #!/bin/sh
 #PBS -o ${logfile}
 #PBS -e ${logfile}
-#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l place=shared,select=1:ncpus=1:mem=4500MB
 #PBS -N j${job_name}
 #PBS -q dev_transfer
 #PBS -A AQM-DEV

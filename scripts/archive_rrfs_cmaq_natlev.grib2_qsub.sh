@@ -53,7 +53,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         hsi mkdir -p ${hpssroot}/${YY}/${YM}
     fi
     cd ${working_dir}
-    task_cpu='00:30:00'
+    task_cpu='04:59:00'
     job_name=daily_bkp_rrfs_natlevf_${NOW}
     batch_script=${job_name}.sh
     if [ -e ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
@@ -65,7 +65,7 @@ cat > ${batch_script} << EOF
 #PBS -o ${logfile}
 #PBS -e ${logfile}
 #PBS -S /bin/bash
-#PBS -l place=shared,select=1:ncpus=1:mem=4GB
+#PBS -l place=shared,select=1:ncpus=1:mem=4500MB
 #PBS -N j${job_name}
 #PBS -q dev_transfer
 #PBS -A HYS-DEV
