@@ -1,71 +1,97 @@
-#!/bin/bash
-module load prod_util
-module load prod_envir
-#
-MSG="$0 EXP [prod|para6d|...] FIRSTDAY LASTDAY"
-if [ $# -lt 2 ]; then
-    echo ${MSG}
-    exit
-elif [ $# -lt 3 ]; then
-    envir=$1
-    FIRSTDAY=$2
-    LASTDAY=$2
-else
-    envir=$1
-    FIRSTDAY=$2
-    LASTDAY=$3
-fi
+#PBS -N metplus_hysplit_dust
+#PBS -j oe
+#PBS -o /lfs/h2/emc/ptmp/perry.shafran/output/metplus_hysplit_dust.out
+#PBS -e /lfs/h2/emc/ptmp/perry.shafran/output/metplus_hysplit_dust.out
+#PBS -q "dev"
+#PBS -A VERF-DEV
+#PBS -S /bin/bash
+#PBS -l select=1:ncpus=1:mem=3000MB
+#PBS -l walltime=01:00:00
+#PBS -l debug=true
 
-EXP=`echo ${envir} | tr a-z A-Z`
+set -x
 
-logdir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_logs
-if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
+export cycle=t00z
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/perry.shafran/metplus_hysplit_dust
 
-working_dir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_script
-if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
+module purge
+export HPC_OPT=/apps/ops/para/libs
+module use /apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304/
+module load intel
+module load gsl
+module load python/3.8.6
+module load netcdf/4.7.4
+module load met/10.1.1
+module load metplus/4.1.1
 
-rundir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_data
-if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
+module load prod_util/2.0.13
+module load prod_envir/2.0.6
+module load wgrib2
 
-hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/metplus_aq_daily_point_stat
-hpsshourly=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/metplus_aq_hourly_point_stat
+rm -f -r $MET_PLUS_TMP
+mkdir -p $MET_PLUS_TMP
+cd $MET_PLUS_TMP
 
-datadir=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq/stat/aqm
+sh setpdy.sh
+. $MET_PLUS_TMP/PDY
 
-YY0=`echo ${FIRSTDAY} | cut -c1-4`
-YM0=`echo ${FIRSTDAY} | cut -c1-6`
-hpssdir=${hpssroot}/${YY0}/${YM0}
-hsi mkdir -p ${hpssdir}
-cd ${rundir}
-NOW=${FIRSTDAY}
-while [ ${NOW} -le ${LASTDAY} ]; do
-    YY=`echo ${NOW} | cut -c1-4`
-    YM=`echo ${NOW} | cut -c1-6`
-    hpssdir=${hpssroot}/${YY}/${YM}
-    if [ ${YY} -ne ${YY0} ] | [ ${YM} -ne ${YM0} ]; then
-        echo "${YY0} ${YM0} to ${YY} ${YM}, hpss mkdir"
-        YY0=${YY}
-        YM0=${YM}
-        hsi mkdir -p ${hpssdir}
-    fi
-    if [ -d ${datadir}/${NOW} ]; then
-        if [ -d aqm_${envir}.${NOW} ]; then /bin/rm -rf aqm_${envir}.${NOW}; fi
-        mkdir -p aqm_${envir}.${NOW}
-        cp -p  ${datadir}/${NOW}/${EXP}*  aqm_${envir}.${NOW}
-        if [ -s a1 ]; then /bin/rm -f a1; fi
-        ls aqm_${envir}.${NOW} > a1
-        nline=$(wc -l a1 | awk -F" " '{print $1}')
-        if [ ${nline} -ge 1 ]; then
-           ## echo "aqm_${envir}.${NOW} contain ${nline} files"
-           htar -cf ${hpssdir}/aqm_${envir}_${NOW}.tar aqm_${envir}.${NOW}
-        else
-            echo "${rundir}/aqm_${envir}.${NOW} contain zero file"
-        fi
-    else
-        echo "Can not find ${datadir}/${NOW}"
-    fi
-    echo ${NOW}
-    cdate=${NOW}"00"
-    NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
+export DATE=$PDYm2
+export DATEP1=$PDY
+export MET_PLUS_CONF=/lfs/h2/emc/vpppg/save/perry.shafran/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS_OUT=/lfs/h2/emc/vpppg/noscrub/perry.shafran/metplus_hysplit
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/perry.shafran/metplus_hysplit_dust_${DATE}
+
+mkdir -p $MET_PLUS_STD
+
+export model=hysplit
+model1=`echo $model | tr a-z A-Z`
+echo $model1
+
+mkdir -p  /lfs/h2/emc/ptmp/perry.shafran/com/hysplit/prod/dustcs.${DATE}
+
+for cyc in 06 12
+do
+for fhr in 1 2 3 4 5 6 7 8 9
+do
+
+wgrib2 -d ${fhr} /lfs/h1/ops/prod/com/hysplit/v7.9/dustcs.${DATE}/dustcs.t${cyc}z.pbl.1hr.grib2 -set_ftime "${fhr} hour fcst" -grib /lfs/h2/emc/ptmp/perry.shafran/com/hysplit/prod/dustcs.${DATE}/dustcs.t${cyc}z.pbl.f0${fhr}.grib2
+
 done
+
+for fhr in 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+do
+
+wgrib2 -d ${fhr} /lfs/h1/ops/prod/com/hysplit/v7.9/dustcs.${DATE}/dustcs.t${cyc}z.pbl.1hr.grib2 -set_ftime "${fhr} hour fcst" -grib /lfs/h2/emc/ptmp/perry.shafran/com/hysplit/prod/dustcs.${DATE}/dustcs.t${cyc}z.pbl.f${fhr}.grib2
+
+done
+
+done
+
+cat << EOF > grid_stat.conf
+[config]
+VALID_BEG = ${DATE}00
+VALID_END = ${DATE}23
+EOF
+
+run_metplus.py -c ${MET_PLUS_CONF}/grid_stat_hysplit.conf ${MET_PLUS_TMP}/grid_stat.conf
+
+mkdir -p ${MET_PLUS_STD}/stat/${model}
+cp ${MET_PLUS_OUT}/cam/stat/${model}/*${DATE}* ${MET_PLUS_STD}/stat/${model}
+mv ${MET_PLUS_OUT}/logs/master_metplus.log.${DATEP1} ${MET_PLUS_TMP}/master_metplus.log.${DATEP1}_${model}
+
+cat << EOF > statanalysis.conf
+[config]
+VALID_BEG = $DATE
+VALID_END = $DATE
+MODEL = $model
+MODEL1 = $model1
+EOF
+
+run_metplus.py -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_hysplit.conf ${MET_PLUS_TMP}/statanalysis.conf
+
+###mv ${MET_PLUS_OUT}/logs/master_metplus.log.${DATEP1} ${MET_PLUS_TMP}
+
+#cp ${MET_PLUS_CONF}/load_met.xml load_met_${model}.xml
+
 exit
+
