@@ -32,65 +32,68 @@ envir=xxENVIR
 envir1=`echo ${envir} | tr a-z A-Z`
 echo "experiment run is ${envir} ${envir1}"
 
+export model=hysplit
+model1=`echo $model | tr a-z A-Z`
+echo $model1
+
 TODAY=`date +%Y%m%d`
 
-export DATEm3=xxDATEm3
 export DATEm2=xxDATEm2
 export DATEm1=xxDATEm1
 export DATE=xxDATE
 export DATEp1=xxDATEp1
 export MET_PLUS=xxBASE
 export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/perry
+## export MET_PLUS_CONF2=/lfs/h2/emc/verification/save/Perry.Shafran/METplus-4.0/parm/met_config
 export MET_PLUS_CONF2=${MET_PLUS}/parm/met_config
-# export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq${caseid}
-# export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
-export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_hysplit
-export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_hysplit/${envir}/${DATE}
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_${model}
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_${model}/${envir}/${DATE}
 #
 # Creat a more distinct temporary directory to store temporary config files for specific model/date/type
 # If both near-real-time and retro run share the same directory, the config files generated for one run
 # can be deleted (for commands below) when another one is activated
 #
-## export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
-export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_hysplit/${envir}/${DATE}
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_${model}/${envir}/${DATE}
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
 
 export FCST_INPUT_COMOUT=xxFCST_INPUT
-export FCST_INPUT_SELECT=/lfs/h2/emc/ptmp/${USER}/com/hysplit/${envir}
+export FCST_INPUT_SELECT=/lfs/h2/emc/ptmp/${USER}/com/${model}/${envir}
 
 export OBS_INPUT_SELECT=xxOBS_INPUT
 
-mkdir -p ${MET_PLUS_OUT} ${MET_PLUS_STD}
+mkdir -p ${FCST_INPUT_SELECT} ${MET_PLUS_OUT} ${MET_PLUS_STD}
 
 cd ${MET_PLUS_TMP}
 
-## export DATE=$PDYm2
-
-
-export model=hysplit
-model1=`echo $model | tr a-z A-Z`
-echo $model1
-
-mkdir -p  ${FCST_INPUT_SELECT}/dustcs.${DATE}
-
-for cyc in 06 12
-do
-for fhr in 1 2 3 4 5 6 7 8 9
-do
-
-wgrib2 -d ${fhr} ${FCST_INPUT_COMOUT}/dustcs.${DATE}/dustcs.t${cyc}z.pbl.1hr.grib2 -set_ftime "${fhr} hour fcst" -grib ${FCST_INPUT_SELECT}/dustcs.${DATE}/dustcs.t${cyc}z.pbl.f0${fhr}.grib2
-
+declare -a cycle=( 06 12 )
+NOW=${DATEm2}
+while [ ${NOW} -le ${DATE} ]; do
+    for cyc in "${cycle[@]}"; do
+        input_pbl_file=${FCST_INPUT_COMOUT}/dustcs.${NOW}/dustcs.t${cyc}z.pbl.1hr.grib2
+        if [ -s ${input_pbl_file} ]; then
+	    mkdir -p ${FCST_INPUT_SELECT}/dustcs.${NOW}
+            let ic=0
+	    while [ ${ic} -le 48 ]; do
+                fhr=`printf %2.2d ${ic}`
+	        output_pbl_hr_file=${FCST_INPUT_SELECT}/dustcs.${NOW}/dustcs.t${cyc}z.pbl.f${fhr}.grib2
+                wgrib2 -d ${ic} ${input_pbl_file} -set_ftime "${ic} hour fcst" -grib ${output_pbl_hr_file}
+                ((ic++))
+            done
+        else
+            echo "Can not find ${input_pbl_file}, skip to the next cycle"
+        fi
+    done
+    cdate=${NOW}"00"
+    NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
 done
 
-for fhr in 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
-do
-
-wgrib2 -d ${fhr} ${FCST_INPUT_COMOUT}/dystcs.${DATE}/dustcs.t${cyc}z.pbl.1hr.grib2 -set_ftime "${fhr} hour fcst" -grib ${FCST_INPUT_SELECT}/dustcs.${DATE}/dustcs.t${cyc}z.pbl.f${fhr}.grib2
-
-done
-
-done
+cat << EOF > user_priority.conf
+[dir]
+OUTPUT_BASE = ${MET_PLUS_OUT}
+METPLUS_BASE = ${MET_PLUS}
+CONFIG_DIR = ${MET_PLUS_CONF2}
+EOF
 
 cat << EOF > grid_stat.conf
 [config]
@@ -102,18 +105,19 @@ LEAD_SEQ_MAX = 48
 
 EOF
 
+## GRID_STAT_OUTPUT_TEMPLATE = ${envir}
+## USER stored directory path is different from the NCO's
+## OBS_GRID_STAT_INPUT_TEMPLATE = {da_init?fmt=%Y%m%d}/wgrbbul/dust/MYDdust.aod_conc.v6.3.4.{da_init?fmt=%Y%m%d}.hr{da_init?fmt=%2H}.grib
+# LEAD_SEQ = begin_end_incr(1,72,1)
 cat << EOF > ${model}.conf
 [dir]
-OUTPUT_BASE = ${MET_PLUS_OUT}
 LOG_DIR = ${MET_PLUS_TMP}/logs
 FCST_GRID_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
 OBS_GRID_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
-GRID_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
+GRID_STAT_OUTPUT_DIR = {OUTPUT_BASE}/${model}/stat
 [config]
-METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW
-# LEAD_SEQ = begin_end_incr(1,72,1)
-MODEL = ${envir1}
+MODEL=${envir}
+GRID_STAT_CONFIG_FILE = {PARM_BASE}/met_config/GridStatConfig_wrapped
 FCST_VAR1_NAME = LIPMF
 FCST_VAR1_LEVELS = Z0-5000
 FCST_VAR1_OPTIONS = censor_thresh = <9.99999999999999995e-91; censor_val = 0.; convert(x) = 10^x;
@@ -124,25 +128,28 @@ OBS_VAR1_LEVELS = Z5000
 OBS_VAR1_THRESH = <1.0,  >1.0, >2.0, >5.0, >10.0, >15.0, >20.0
 [filename_templates]
 FCST_GRID_STAT_INPUT_TEMPLATE = dustcs.{init?fmt=%Y%m%d}/dustcs.t{init?fmt=%2H}z.pbl.f{lead?fmt=%2H}.grib2
-OBS_GRID_STAT_INPUT_TEMPLATE = {da_init?fmt=%Y%m%d}/wgrbbul/dust/MYDdust.aod_conc.v6.3.4.{da_init?fmt=%Y%m%d}.hr{da_init?fmt=%2H}.grib
-GRID_STAT_OUTPUT_TEMPLATE = ${envir}
+OBS_GRID_STAT_INPUT_TEMPLATE = MYDdust.aod_conc.v6.3.4.{da_init?fmt=%Y%m%d}.hr{da_init?fmt=%2H}.grib
 EOF
 
-run_metplus.py -c ${MET_PLUS_CONF}/grid_stat_hysplit.conf ${MET_PLUS_TMP}/grid_stat.conf
+run_metplus.py -c ${MET_PLUS_CONF}/grid_stat_hysplit.conf ${MET_PLUS_TMP}/grid_stat.conf ${MET_PLUS_TMP}/${model}.conf ${MET_PLUS_TMP}/user_priority.conf
 
 mkdir -p ${MET_PLUS_STD}/stat/${model}
-cp ${MET_PLUS_OUT}/cam/stat/${model}/*${DATE}* ${MET_PLUS_STD}/stat/${model}
-mv ${MET_PLUS_OUT}/logs/master_metplus.log.${DATEP1} ${MET_PLUS_TMP}/master_metplus.log.${DATEP1}_${model}
 
 cat << EOF > statanalysis.conf
+[dir]
+STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/${model}
+MODEL1_STAT_ANALYSIS_LOOKIN_DIR = {OUTPUT_BASE}/${model}/stat/${envir}/*{VALID_BEG}*
 [config]
-VALID_BEG = $DATE
-VALID_END = $DATE
-MODEL = $model
-MODEL1 = $model1
+METPLUS_CONF={OUTPUT_BASE}/conf/${envir}/metplus_final_statanalysis_gatherbydate.conf
+VALID_BEG = ${DATE}
+VALID_END = ${DATE}
+MODEL = ${envir}
+MODEL1 = ${envir1}
+[filename_templates]
+STAT_ANALYSIS_DUMP_ROW_TEMPLATE = {valid_beg?fmt=%Y%m%d}/{valid_beg?fmt=%Y%m%d}/{MODEL1}_{valid_beg?fmt=%Y%m%d}.stat
 EOF
 
-run_metplus.py -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_hysplit.conf ${MET_PLUS_TMP}/statanalysis.conf
+run_metplus.py -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_hysplit.conf ${MET_PLUS_TMP}/statanalysis.conf ${MET_PLUS_TMP}/user_priority.conf
 
 ###mv ${MET_PLUS_OUT}/logs/master_metplus.log.${DATEP1} ${MET_PLUS_TMP}
 
