@@ -74,7 +74,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     batch_script=${job_name}.sh
     if [ -e ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
 
-    logfile=${log_dir}/${job_name}.out
+    logfile=${logdir}/${job_name}.out
     if [ -e ${logfile} ]; then /bin/rm -f ${logfile}; fi
 cat > ${batch_script} << EOF
 #!/bin/bash
@@ -128,7 +128,7 @@ EOF
 ##
     cat ${batch_script} | qsub
     echo "batch_script=${working_dir}/${batch_script}"
-    echo "logfile=${log_dir}/${job_name}.out"
+    echo "logfile=${logfile}"
 
     cdate=${NOW}"00"
     NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
