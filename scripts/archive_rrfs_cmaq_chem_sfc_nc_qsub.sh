@@ -31,13 +31,17 @@ if [ "${in_envir}" == "v70b1" ]; then
     out_envir=${in_envir}
 fi
 
-working_dir=/lfs/h2/emc/ptmp/${USER}/VERF_script
-log_dir=/lfs/h2/emc/ptmp/${USER}/VERF_logs
-mkdir -p ${working_dir} ${log_dir}
+logdir=/lfs/h2/emc/ptmp/${USER}/archive_chem_met_sfc_nc_${envir}_logs
+if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
+
+working_dir=/lfs/h2/emc/ptmp/${USER}/archive_chem_met_sfc_nc_${envir}_script
+if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
+
+datadir=/lfs/h2/emc/ptmp/${USER}/archive_chem_met_sfc_nc_${envir}_data
+if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/RRFS_sfc_chem_met/${in_envir}
 outdir=/lfs/h2/emc/physics/noscrub/${USER}/rrfs_sfc_chem_met
-
 
 NOW=${FIRSTDAY}
 YY0=`echo ${NOW} | cut -c1-4`
