@@ -31,46 +31,28 @@ else
     EXP=${envir}
 fi
 
-logdir=/lfs/h2/emc/ptmp/${USER}/archive_cam_pb2nc_${envir}_logs
+logdir=/lfs/h2/emc/ptmp/${USER}/archive_aqm_pb2nc_${envir}_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
-working_dir=/lfs/h2/emc/ptmp/${USER}/archive_cam_pb2nc_${envir}_script
+working_dir=/lfs/h2/emc/ptmp/${USER}/archive_aqm_pb2nc_${envir}_script
 if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
-
-datadir=/lfs/h2/emc/ptmp/${USER}/archive_cam_pb2nc_${envir}_data
-if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
 hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang ## archive 5 year
 
 #
 # /5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/metplus_aqmax_pb2nc/prod/2022
-# /5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/metplus_cam_pb2nc/prod/2022/202205
+# /5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/metplus_aqm_pb2nc/prod/2022/202205
 #
-cam_pb2nc_datadir=/lfs/h2/emc/physics/noscrub/Perry.Shafran/metplus_cam/cam/conus_cam
-cam_pb2nc_datadir=/lfs/h2/emc/physics/noscrub/${USER}/metplus_cam/cam/conus_cam
-
-declare -a hr_type=( cam )
-declare -a case=( ${envir} )
-
+aqm_pb2nc_datadir=/lfs/h2/emc/physics/noscrub/Perry.Shafran/metplus_cam/cam/conus_cam
+datadir=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq
 
 NOW=${FIRSTDAY}
-YY0=`echo ${NOW} | cut -c1-4`
-YM0=`echo ${NOW} | cut -c1-6`
-hpssdir=${hpssroot}/metplus_cam_pb2nc/${EXP}/${YY0}/${YM0}
-hsi mkdir -p ${hpssdir}
 while [ ${NOW} -le ${LASTDAY} ]; do
     YY=`echo ${NOW} | cut -c1-4`
     YM=`echo ${NOW} | cut -c1-6`
-    if [ ${YY} -ne ${YY0} ] | [ ${YM} -ne ${YM0} ]; then
-        echo "${YY0} ${YM0} to ${YY} ${YM}, hpss mkdir"
-        YY0=${YY}
-        YM0=${YM}
-        hpssdir=${hpssroot}/metplus_cam_pb2nc/${EXP}/${YY}/${YM}
-        hsi mkdir -p ${hpssdir}
-    fi
     cd ${working_dir}
     task_cpu='04:30:00'
-    job_name=arch_cam_pb2nc_nc_${NOW}
+    job_name=arch_aqm_pb2nc_nc_${NOW}
     batch_script=${job_name}.sh
     if [ -e ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
 
@@ -94,28 +76,42 @@ module load craype/2.7.8
 module load cray-mpich/8.1.9
 
 module load prod_util
+    declare -a var=( aq pm aqmax1 aqmax8 pmmax pmave )
     cd ${working_dir}
+    YY=${YY}
+    YM=${YM}
     NOW=${NOW}
     USER=${USER}
-    cam_pb2nc_datadir=${cam_pb2nc_datadir}
-    hpssdir=${hpssdir}
+    hpssroot=${hpssroot}
+    datadir=${datadir}
 EOF
    
 if [ -s ${batch_script}.add ]; then /bin/rm -f ${batch_script}.add; fi
 cat > ${batch_script}.add << 'EOF'
-    cd ${cam_pb2nc_datadir}
-    let tbeg=0
-    let tend=23
-    let t0=${tbeg}
-    while [ ${t0} -le ${tend} ]; do
-        ic=`printf %2.2d ${t0}`
-        cpfile=prepbufr.nam.${NOW}${ic}.nc
-        if [ -s ${cpfile} ]; then
-            hsi "cd ${hpssdir}; put ${cpfile}"
+    for i in "${var[@]}"; do
+        case ${i} in
+            aq) indir=${datadir}/aqm/conus_sfc/prod/aq;;
+            pm) indir=${datadir}/aqm/conus_sfc/prod/pm;;
+            aqmax1) indir=${datadir}/aqmmax/aqmax1/prod;;
+            aqmax8) indir=${datadir}/aqmmax/aqmax8/prod;;
+            pmmax) indir=${datadir}/pmmax/pmmax/prod;;
+            pmave) indir=${datadir}/pmmax/pmave/prod;;
+        esac
+	if [ "${i}" == "aq" ]; then
+           hsifile=prepbufr.aqm.${NOW}.nc
+	elif [ "${i}" == "pm" ]; then
+           hsifile=prepbufr.pm.${NOW}.nc
         else
-            echo "Can not find ${cam_pb2nc_datadir}/${cpfile}"
+           hsifile=prepbufr.aqm.${NOW}00.nc
         fi
-        ((t0++))
+	hpssdir=${hpssroot}/metplus_${i}_pb2nc/prod/${YY}/${YM}
+        hsi mkdir -p ${hpssdir}
+	cd ${indir}
+        if [ -s ${hsifile} ]; then
+            hsi "cd ${hpssdir}; put ${hsifile}"
+        else
+            echo "Can not find ${indir}/${hsifile}"
+        fi
     done
 exit
 EOF
