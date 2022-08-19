@@ -74,7 +74,7 @@ cat > ${batch_script} << EOF
 #PBS -q dev_transfer
 #PBS -A HYS-DEV
 #PBS -l walltime=${task_cpu}
-#PBS -l debug=true
+#####PBS -l debug=true
 module load envvar/1.0
 module load PrgEnv-intel/8.2.0
 module load intel/19.1.3.304
