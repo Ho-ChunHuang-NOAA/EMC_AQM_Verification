@@ -21,27 +21,28 @@ else
     out_envir=${in_envir}
 fi
 echo "out_envir=${out_envir}"
+expid=`echo ${out_envir} | cut -c4-5`
+
+out_envir=${in_envir}
 data_in=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}
-if [ "${in_envir}" == "v70a1" ]; then
-    data_in=/lfs/h2/emc/ptmp/jianping.huang/para/com/aqm/v7.0/aqm.v7.0.a1
-    out_envir=${in_envir}
-fi
-if [ "${in_envir}" == "v70b1" ]; then
-    data_in=/lfs/h2/emc/ptmp/jianping.huang/para/com/aqm/v7.0/aqm.v7.0.b1
-    out_envir=${in_envir}
+data_in=/lfs/h2/emc/ptmp/jianping.huang/para/com/aqm/v7.0/aqm.v7.0.${expid}
+if [ ! -d ${data_in} ]; then
+    echo "Can not find ${data_in}, program exit"
+    exit
 fi
 
-logdir=/lfs/h2/emc/ptmp/${USER}/archive_chem_met_sfc_nc_${envir}_logs
+logdir=/lfs/h2/emc/ptmp/${USER}/archive_chem_met_sfc_nc_${out_envir}_logs
 if [ ! -d ${logdir} ]; then mkdir -p ${logdir}; fi
 
-working_dir=/lfs/h2/emc/ptmp/${USER}/archive_chem_met_sfc_nc_${envir}_script
+working_dir=/lfs/h2/emc/ptmp/${USER}/archive_chem_met_sfc_nc_${out_envir}_script
 if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 
-datadir=/lfs/h2/emc/ptmp/${USER}/archive_chem_met_sfc_nc_${envir}_data
+datadir=/lfs/h2/emc/ptmp/${USER}/archive_chem_met_sfc_nc_${out_envir}_data
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
-hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/RRFS_sfc_chem_met/${in_envir}
-outdir=/lfs/h2/emc/physics/noscrub/${USER}/rrfs_sfc_chem_met
+hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/RRFS_sfc_chem_met/${out_envir}
+outdir=/lfs/h2/emc/physics/noscrub/${USER}/rrfs_sfc_chem_met/${out_envir}
+if [ ! -d ${outdir} ]; then mkdir -p ${outdir}; fi
 
 NOW=${FIRSTDAY}
 YY0=`echo ${NOW} | cut -c1-4`
@@ -58,11 +59,11 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     fi
     cd ${working_dir}
     task_cpu='04:30:00'
-    job_name=daily_bkp_rrfs_chem_sfc_nc_${NOW}
+    job_name=daily_bkp_${out_envir}_chem_sfc_nc_${NOW}
     batch_script=${job_name}.sh
     if [ -e ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
 
-    logfile=${log_dir}/${job_name}.out
+    logfile=${logdir}/${job_name}.out
     if [ -e ${logfile} ]; then /bin/rm -f ${logfile}; fi
 cat > ${batch_script} << EOF
 #!/bin/bash
@@ -98,7 +99,7 @@ EOF
 if [ -s ${batch_script}.add ]; then /bin/rm -f ${batch_script}.add; fi
 cat > ${batch_script}.add << 'EOF'
     declare -a cyc=( 06 12 )
-    odir=${outdir}/${out_envir}/aqm.${NOW}
+    odir=${outdir}/aqm.${NOW}
     mkdir -p ${odir}
     for i in "${cyc[@]}"; do
         idir=${data_in}/${NOW}${i}
@@ -110,7 +111,7 @@ cat > ${batch_script}.add << 'EOF'
 	    echo "Can not find ${idir}"
 	fi
     done
-    cd ${outdir}/${out_envir}
+    cd ${outdir}
     if [ -d aqm.${NOW} ]; then
         htar -cf ${hpssroot}/aqm.${NOW}.tar aqm.${NOW} 
     else
