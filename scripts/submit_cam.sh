@@ -47,7 +47,7 @@ if [[ "${envir}" == *"_bc"* ]]; then
     Bias_Corr='_bc'
 else
     EXP=${envir}
-    Bias_Bcorr=''
+    Bias_Corr=''
 fi
 
 declare -a obs_cyc=( 00 06 12 18 )

@@ -53,7 +53,7 @@ if [[ "${envir}" == *"_bc"* ]]; then
     Bias_Corr='_bc'
 else
     EXP=${envir}
-    Bias_Bcorr=''
+    Bias_Corr=''
 fi
 
 NOW=${FIRSTDAY}
