@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #    ## require for module load prod_util
 module load prod_util
 module load prod_envir
