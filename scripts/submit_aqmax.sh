@@ -113,9 +113,13 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
-            cdate=${NOW}"00"
-            NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
-            continue
+            if [ 1 -eq 1 ]; then
+                fcst_select=${fcst_dir}
+            else
+                cdate=${NOW}"00"
+                NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
+                continue
+            fi
         fi
     fi
     run_script=run_${jjob}.sh

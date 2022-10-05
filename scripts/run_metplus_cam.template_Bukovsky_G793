@@ -62,8 +62,8 @@ export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_cam/${envir}/${DATE}
 # If both near-real-time and retro run share the same directory, the config files generated for one run
 # can be deleted (for commands below) when another one is activated
 #
-## export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_cam/${envir}/${DATE}
-export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_cam_test/${envir}/${DATE}
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_cam/${envir}/${DATE}
+## export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_cam_test/${envir}/${DATE}
 
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
@@ -127,7 +127,7 @@ VALID_END = ${DATE}23
 EOF
 
 #
-# Inline-CMAQ natlev fcst_var = "SPFH" (2m/10m[kg/kg]), "TMP"(2m[K]), "HGT"(sfc), "UGRD"(10m), "VGRD"(10m), "RH" (2m[%]), "CAPE" (sfc[J/kg]), "HPBL" (sfc[m]),
+# Inline-CMAQ all. fcst_var = "SPFH" (2m/10m[kg/kg]), "TMP"(2m[K]), "HGT"(sfc), "UGRD"(10m), "VGRD"(10m), "RH" (2m[%]), "CAPE" (sfc[J/kg]), "HPBL" (sfc[m]),
 #                           "PRMSL"(MSL[Pa]), "DPT"(2m[K}), "PWO", "TCDC"(hybrid level[%]), "VIS"(sfc[m]), "CEILING", "GUST"i(sfc[m/s])
 # 
 # PB2NC sample :  obs_var = "SPFH"[KG/KG], "TMP"[K], "HGT"[m], "UGRD"[m/s], "VGRD"[m/s], "RH", "CAPE", "PBL",
@@ -149,7 +149,7 @@ FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/cam/conus_cam
 PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_cam_Bukovsky_G148
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_cam_Bukovsky_G793
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf
 LEAD_SEQ = begin_end_incr(0,72,1)
 BOTH_VAR8_OPTIONS = GRIB_lvl_typ = 1; censor_thresh = gt16090; censor_val = 16090; desc = "EMC";
@@ -163,7 +163,7 @@ OBS_VAR16_THRESH =  <805, <1609, <4828, <8045 ,>=8045, <16090
 OBS_VAR16_OPTIONS = censor_thresh = gt16090; censor_val = 16090; desc = "GSL";
 MODEL = ${envir1}
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/postprd/rrfs.t{init?fmt=%2H}z.natlevf{lead?fmt=%3H}.tm00.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/postprd/aqm.t{init?fmt=%2H}z.all.f{lead?fmt=%3H}.793.grib2
 PB2NC_INPUT_TEMPLATE =  nam.{da_init?fmt=%Y%m%d}/nam.t{cycle?fmt=%2H}z.prepbufr.tm{offset?fmt=%2H}.nr
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF

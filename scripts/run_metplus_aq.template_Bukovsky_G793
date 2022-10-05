@@ -6,7 +6,7 @@
 #PBS -A AQM-DEV
 #PBS -l place=shared,select=1:ncpus=1:mem=4500MB
 #PBS -l walltime=04:00:00
-#PBS -l debug=true
+#####PBS -l debug=true
 # 
 
 module purge
@@ -72,8 +72,8 @@ export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aq/${envir}/${DATE}
 # If both near-real-time and retro run share the same directory, the config files generated for one run
 # can be deleted (for commands below) when another one is activated
 #
-export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
-# export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aq/${envir}/${DATE}
+# export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aq/${envir}/${DATE}
 
 rm -f -r ${MET_PLUS_TMP}
 mkdir -p ${MET_PLUS_TMP}
@@ -159,23 +159,17 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPO
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_Bukovsky_G148
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_Bukovsky_G793
 # LEAD_SEQ = begin_end_incr(1,72,1)
 MODEL = ${envir1}
 FCST_VAR1_NAME = OZCON
-FCST_VAR1_LEVELS = A1
+FCST_VAR1_LEVELS = L1
 FCST_VAR1_OPTIONS = set_attr_name = "OZCON1";
 OBS_VAR1_NAME= COPO
 OBS_VAR1_LEVELS= A1
 OBS_VAR1_OPTIONS =  convert(x) = x * 10^9;
-FCST_VAR2_NAME = OZCON
-FCST_VAR2_LEVELS = A8
-FCST_VAR2_OPTIONS = set_attr_name = "OZCON8";
-OBS_VAR2_NAME= COPO
-OBS_VAR2_LEVELS= A8
-OBS_VAR2_OPTIONS =  convert(x) = x * 10^9;
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.awpozcon${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.awpozcon${Bias_Corr}.f{lead?fmt=%2H}.793.grib2
 OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.aqm.${DATE}.nc
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 PB2NC_INPUT_TEMPLATE = hourly.{da_init?fmt=%Y%m%d}/aqm.t12z.prepbufr.tm00
@@ -217,7 +211,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPOPM
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_Bukovsky_G793
 ## LEAD_SEQ = begin_end_incr(1,72,1)
 FCST_VAR1_NAME = PMTF
 FCST_VAR1_LEVELS = L1
@@ -226,7 +220,7 @@ OBS_VAR1_LEVELS= A1
 OBS_VAR1_OPTIONS =  convert(x) = x * 10^9;
 MODEL = ${envir1}
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.pm25${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.pm25${Bias_Corr}.f{lead?fmt=%2H}.793.grib2
 OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.pm.${DATE}.nc
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 PB2NC_INPUT_TEMPLATE = hourly.{da_init?fmt=%Y%m%d?shift=86400}/aqm.t12z.anowpm.pb.tm024

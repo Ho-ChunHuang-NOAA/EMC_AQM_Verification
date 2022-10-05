@@ -6,7 +6,7 @@
 #PBS -A AQM-DEV
 #PBS -l place=shared,select=1:ncpus=1:mem=4500MB
 #PBS -l walltime=04:00:00
-#PBS -l debug=true
+#####PBS -l debug=true
 # 
 
 module purge
@@ -76,8 +76,8 @@ export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax/${envir}/${DATE}
 # If both near-real-time and retro run share the same directory, the config files generated for one run
 # can be deleted (for commands below) when another one is activated
 #
-export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
-## export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax/${envir}/${DATE}
+## export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax${caseid}/${envir}/${DATE}
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aqmax/${envir}/${DATE}
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
 
@@ -161,7 +161,7 @@ do
 for model in aqmax1 
 do
     model1=`echo ${model} | tr a-z A-Z`
-    ifile=aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
+    ifile=aqm.t${hour}z.max_1hr_o3${Bias_Corr}.793.grib2
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
         mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
         if [ -s out1.grb2 ]; then /bin/rm -f out1.grb2; fi
@@ -189,11 +189,11 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 ## POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/${model}/${envir}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G793
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.793.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
@@ -205,7 +205,7 @@ for model in aqmax8
 do
 
     model1=`echo ${model} | tr a-z A-Z`
-    ifile=aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
+    ifile=aqm.t${hour}z.max_8hr_o3${Bias_Corr}.793.grib2
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
         mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
         if [ -s out1.grb2 ]; then /bin/rm -f out1.grb2; fi
@@ -233,11 +233,11 @@ PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/${model}/${envir}
 OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G793
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.793.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
@@ -277,7 +277,7 @@ do
 
     model1=`echo ${model} | tr a-z A-Z`
     ## Need to copy to ${FCST_INPUT_SELECT} if FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
-    ifile=aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
+    ifile=aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.793.grib2
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
         mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
         cp -p ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} ${FCST_INPUT_SELECT}/cs.${iday}
@@ -292,11 +292,11 @@ PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/${model}/${envir}
 OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_max_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_max_Bukovsky_G793
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.793.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
@@ -335,7 +335,7 @@ do
 
     model1=`echo ${model} | tr a-z A-Z`
     ## Need to copy to ${FCST_INPUT_SELECT} if FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
-    ifile=aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
+    ifile=aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.793.grib2
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
         mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
         cp -p ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} ${FCST_INPUT_SELECT}/cs.${iday}
@@ -359,11 +359,11 @@ PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/${model}/${envir}
 OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_ave_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_ave_Bukovsky_G793
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.793.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
