@@ -42,8 +42,8 @@ cd $MET_PLUS_TMP
 #export DATE=20190810
 #export DATEP1=20190811
 #export DATEP2=20190812
-export MET_PLUS=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0
-export MET_PLUS_CONF=/lfs/h2/emc/physics/noscrub/${USER}/METplus-4.0.0/parm/use_cases/perry
+export MET_PLUS=/lf/sh2/emc/vpppg/save/${USER}/METplus-4.0.0
+export MET_PLUS_CONF=/lf/sh2/emc/vpppg/save/${USER}/METplus-4.0.0/parm/use_cases/perry
 export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq
 export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aq
 
