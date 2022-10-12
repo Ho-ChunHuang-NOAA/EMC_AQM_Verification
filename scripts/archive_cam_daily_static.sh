@@ -27,7 +27,6 @@ if [ ! -d ${working_dir} ]; then mkdir -p ${working_dir}; fi
 rundir=/lfs/h2/emc/ptmp/${USER}/archive_verification_stat_data
 if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 
-hpsshourly=/5year/NCEPDEV/emc-ncamfc/${USER}/metplus_cam_hourly_point_stat
 hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/metplus_cam_daily_point_stat
 
 datadir=/lfs/h2/emc/physics/noscrub/${USER}/metplus_cam/stat/cam
