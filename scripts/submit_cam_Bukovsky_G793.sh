@@ -2,7 +2,7 @@
 module load prod_util
 module load prod_envir
 #
-MSG="$0 FIRSTDAY LASTDAY"
+MSG="$0 envir FIRSTDAY LASTDAY"
 if [ $# -lt 2 ]; then
     echo ${MSG}
     exit

@@ -32,7 +32,7 @@ script_dir=`pwd`
 caseid=icmaq
 caseid=aq
 jobname=metplus_${caseid}
-script_base=run_${jobname}.template_Bukovsky_G793
+script_base=retro_${jobname}.template_Bukovsky_G148
 if [ ! -s ${script_base} ]; then
    echo "Can not find ${script_base}"
    exit
@@ -64,7 +64,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     PDYm2=$( ${NDATE} -48 ${cdate} | cut -c1-8 )
     PDYm1=$( ${NDATE} -24 ${cdate} | cut -c1-8 )
     PDYp1=$( ${NDATE} +24 ${cdate} | cut -c1-8 )
-    jjob=${caseid}_${envir}_b793_${NOW}
+    jjob=${caseid}_${envir}_b148_${NOW}
     out_logfile=${logdir}/${jjob}.log
     err_logfile=${logdir}/${jjob}.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
@@ -96,18 +96,18 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     FCST_INPUT_NCO=/lfs/h1/ops/${EXP}/com/aqm/v6.1
     FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
-    if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.793.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.793.grib2 ]; then
+    if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.148.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.148.grib2 ]; then
         fcst_select=${fcst_dir}
     else
         fcst_dir=${FCST_INPUT_USER}
-        if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.793.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.793.grib2 ]; then
+        if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.148.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.148.grib2 ]; then
             fcst_select=${fcst_dir}
         else
-            chkfile=cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.793.grib2
+            chkfile=cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.148.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
-            chkfile=cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.793.grib2
+            chkfile=cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.148.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi

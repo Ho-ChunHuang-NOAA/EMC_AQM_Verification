@@ -32,7 +32,7 @@ script_dir=`pwd`
 caseid=icmaq
 caseid=aq
 jobname=metplus_${caseid}
-script_base=run_${jobname}.template_Bukovsky_G793
+script_base=retro_${jobname}.template_Bukovsky_G793
 if [ ! -s ${script_base} ]; then
    echo "Can not find ${script_base}"
    exit

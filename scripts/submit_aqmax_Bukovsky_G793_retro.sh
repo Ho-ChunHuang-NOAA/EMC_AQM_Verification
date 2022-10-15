@@ -31,12 +31,14 @@ if [ ! -d ${rundir} ]; then mkdir -p ${rundir}; fi
 script_dir=`pwd`
 caseid=icmaq
 caseid=aq
+caseid=aqmax
 jobname=metplus_${caseid}
-script_base=run_${jobname}.template_Bukovsky_G793
+script_base=retro_${jobname}.template_Bukovsky_G793
 if [ ! -s ${script_base} ]; then
    echo "Can not find ${script_base}"
    exit
 fi 
+
 #
 # Find EXP Name if envir="EXP"_bc
 #
@@ -96,18 +98,18 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     FCST_INPUT_NCO=/lfs/h1/ops/${EXP}/com/aqm/v6.1
     FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
-    if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.793.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.793.grib2 ]; then
+    if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.ave_24hr_pm25${Bias_Corr}.793.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.ave_24hr_pm25${Bias_Corr}.793.grib2 ]; then
         fcst_select=${fcst_dir}
     else
         fcst_dir=${FCST_INPUT_USER}
-        if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.793.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.793.grib2 ]; then
+        if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.ave_24hr_pm25${Bias_Corr}.793.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.ave_24hr_pm25${Bias_Corr}.793.grib2 ]; then
             fcst_select=${fcst_dir}
         else
-            chkfile=cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.793.grib2
+            chkfile=cs.${PDYm3}/aqm.t06z.ave_24hr_pm25${Bias_Corr}.793.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
-            chkfile=cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.793.grib2
+            chkfile=cs.${PDYm3}/aqm.t12z.ave_24hr_pm25${Bias_Corr}.793.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
@@ -121,7 +123,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         fi
     fi
     run_script=run_${jjob}.sh
-    sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
+    sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEm3!${PDYm3}!" -e "s!xxDATEm2!${PDYm2}!" -e "s!xxDATEm1!${PDYm1}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
         cat ${working_dir}/${run_script} | qsub
