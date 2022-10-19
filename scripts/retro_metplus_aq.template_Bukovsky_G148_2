@@ -257,7 +257,7 @@ ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_
 ## Define LOG_DIR using MET_PLUS_TMP, thus avodiing moving logs file
 ## mv ${MET_PLUS_OUT}/logs/master_metplus.log.${TODAY}* ${MET_PLUS_TMP}
 ## mv ${MET_PLUS_OUT}/logs/${envir}/${DATE}/master_metplus.statanalysis.log.${TODAY}* ${MET_PLUS_TMP}
-info_dir=/lfs/h2/emc/ptmp/${USER}/run_status/evs/aq148
+info_dir=/lfs/h2/emc/ptmp/${USER}/run_status/evs/aq148_2
 if [ ! -d ${info_dir} ]; then mkdir -p ${info_dir}; fi
 status_file=${info_dir}/evs_retro_run.status
 echo "EVS ${envir} ${DATE}" > ${status_file}
