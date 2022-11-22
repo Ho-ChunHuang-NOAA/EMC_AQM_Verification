@@ -21,13 +21,13 @@ else
     out_envir=${in_envir}
 fi
 echo "out_envir=${out_envir}"
-expid=`echo ${out_envir} | cut -c4-5`
+expid=`echo ${out_envir} | cut -c4-6`
 
 out_envir=${in_envir}
 data_in=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}
-data_in=/lfs/h2/emc/ptmp/jianping.huang/para/com/aqm/v7.0/aqm.v7.0.${expid}
-if [ ! -d ${data_in} ]; then
-    echo "Can not find ${data_in}, program exit"
+data_in=/lfs/h2/emc/ptmp/jianping.huang/emc.para/com/aqm/v7.0/aqm.v7.0.${expid}
+if [ ! -d ${data_in}.${FIRSTDAY} ]; then
+    echo "Can not find ${data_in}.${FIRSTDAY}, program exit"
     exit
 fi
 
@@ -102,7 +102,7 @@ cat > ${batch_script}.add << 'EOF'
     odir=${outdir}/aqm.${NOW}
     mkdir -p ${odir}
     for i in "${cyc[@]}"; do
-        idir=${data_in}/${NOW}${i}
+        idir=${data_in}.${NOW}/${i}
 	if [ -d ${idir} ]; then
             cp -p ${idir}/aqm.t${i}z.chem_sfc.*.nc ${odir}
             cp -p ${idir}/aqm.t${i}z.met_sfc.*.nc ${odir}

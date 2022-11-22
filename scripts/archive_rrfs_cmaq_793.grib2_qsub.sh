@@ -21,12 +21,12 @@ else
     out_envir=${in_envir}
 fi
 echo "out_envir=${out_envir}"
-expid=`echo ${out_envir} | cut -c4-5`
+expid=`echo ${out_envir} | cut -c4-6`
 
 data_in=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}
-data_in=/lfs/h2/emc/ptmp/jianping.huang/para/com/aqm/v7.0/aqm.v7.0.${expid}
-if [ ! -d ${data_in} ]; then
-    echo "Can not find ${data_in}, program exit"
+data_in=/lfs/h2/emc/ptmp/jianping.huang/emc.para/com/aqm/v7.0/aqm.v7.0.${expid}
+if [ ! -d ${data_in}.${FIRSTDAY} ]; then
+    echo "Can not find ${data_in}.${FIRSTDAY}, program exit"
     exit
 fi
 
@@ -96,9 +96,9 @@ cat > ${batch_script}.add << 'EOF'
     odir=${outdir}/${out_envir}/aqm.${NOW}/postprd
     mkdir -p ${odir}/POST_STAT
     for i in "${cyc[@]}"; do
-        idir=${data_in}/${NOW}${i}/postprd
+        idir=${data_in}.${NOW}/${i}
 	if [ -d ${idir} ]; then
-            cp -p ${idir}/*793.grib2 ${odir}
+            cp -p ${idir}/aqm.t${i}z.all.f*.793.grib2 ${odir}
             ## cp -p ${idir}/*prslevf* ${odir}
             if [ -d ${idir}/POST_STAT ]; then cp -pr ${idir}/POST_STAT/*  ${odir}/POST_STAT; fi
 	    echo "${NOW} ${i}"
