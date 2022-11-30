@@ -10,8 +10,8 @@
 #PBS -l walltime=04:00:00
 #PBS -l debug=true
 
-module load met/10.1.1
-module load metplus/4.1.1
+module load met/10.1.2
+module load metplus/4.1.4
 module load python/3.6.3
 
 set -x
@@ -60,7 +60,7 @@ echo $model1
 
 
 ## FCST_POINT_STAT_INPUT_DIR = /lfs/h1/ops/prod/com/aqm/v6.1
-## PB2NC_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.0
+## PB2NC_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.1
 ## FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.awpozcon.f{lead?fmt=%2H}.148.grib2
 ## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## PB2NC_OUTPUT_TEMPLATE  = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc

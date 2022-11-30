@@ -10,8 +10,8 @@
 # 
 
 module use /lfs/h2/emc/physics/noscrub/emc.metplus/modulefiles
-module load met/10.1.1
-module load metplus/4.1.1
+module load met/10.1.2
+module load metplus/4.1.4
 module load python/3.6.3
 
 set -x
@@ -73,7 +73,7 @@ LOG_DIR = ${MET_PLUS_TMP}/logs
 OUTPUT_BASE = ${MET_PLUS_OUT}
 FCST_POINT_STAT_INPUT_DIR = /lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/prod
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc
-PB2NC_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.0
+PB2NC_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.1
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPO
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf

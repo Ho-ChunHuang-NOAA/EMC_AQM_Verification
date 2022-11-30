@@ -12,8 +12,8 @@
 ### 
 
 module use /lfs/h2/emc/physics/noscrub/emc.metplus/modulefiles
-module load met/10.1.1
-module load metplus/4.1.1
+module load met/10.1.2
+module load metplus/4.1.4
 module load python/3.6.3
 module load NetCDF/4.5.0
 
@@ -88,7 +88,7 @@ EOF
 # Switch to use prolevf because the pb2nc and point_stat both look for pressure quantities
 # BOTH_VAR1_LEVELS = Z2, P1000, P925, P850, P700, P500, P400, P300, P250, P200, P150, P100, P50
 #
-## FCST_POINT_STAT_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.0
+## FCST_POINT_STAT_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.1
 ## MODEL = ${model1}
 ## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.nam.{valid?fmt=%Y%m%d%H}.nc
 cat << EOF > ${model}.conf

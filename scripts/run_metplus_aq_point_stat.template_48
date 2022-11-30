@@ -10,8 +10,8 @@
 # 
 
 module use /lfs/h2/emc/physics/noscrub/emc.metplus/modulefiles
-module load met/10.1.1
-module load metplus/4.1.1
+module load met/10.1.2
+module load metplus/4.1.4
 module load python/3.6.3
 module load NetCDF/4.5.0
 
@@ -84,11 +84,11 @@ mkdir -p ${MET_PLUS_TMP}
 ## 
 export FCST_INPUT_SELECT=xxFCST_INPUT
 
-## EXP Obs input directory, the default is /lfs/h1/ops/prod/com/obsproc/v1.0
+## EXP Obs input directory, the default is /lfs/h1/ops/prod/com/obsproc/v1.1
 ## Define OBS_INPUT_SELECT for EPA bufr --> obsproc --> prepbufpr  location
 ## 
 ## 
-## export OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.0                        avail after 21Z
+## export OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.1                        avail after 21Z
 ## export OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/Perry.Shafran/com/hourly/prod
 ## export OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/com/hourly/prod  avail after 22Z
 ## 

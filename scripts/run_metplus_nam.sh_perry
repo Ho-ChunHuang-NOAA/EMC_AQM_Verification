@@ -46,7 +46,7 @@ EOF
 
 cat << EOF > ${model}.conf
 [dir]
-FCST_POINT_STAT_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.0
+FCST_POINT_STAT_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.1
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/cam/conus_cam
 [config]
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf

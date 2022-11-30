@@ -73,7 +73,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     err_logfile=${logdir}/${jjob}.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
-    OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.0
+    OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.1
     OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/com/nam/prod
     obs_dir=${OBS_INPUT_NCO}
     find_obs_prepbufr=yes

@@ -21,8 +21,8 @@ module load intel
 module load gsl
 module load python/3.8.6
 module load netcdf/4.7.4
-module load met/10.1.1
-module load metplus/4.1.1
+module load met/10.1.2
+module load metplus/4.1.4
 
 module load prod_util/2.0.13
 module load prod_envir/2.0.6

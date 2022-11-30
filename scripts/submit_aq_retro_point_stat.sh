@@ -74,7 +74,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     err_logfile=${logdir}/${jjob}.ps.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
-    OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.0
+    OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.1
     OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/com/hourly/prod
     obs_dir=${OBS_INPUT_NCO}
     if [ -s ${obs_dir}/hourly.${PDYp1}/aqm.t12z.anowpm.pb.tm024 ] && [ -s ${obs_dir}/hourly.${NOW}/aqm.t12z.prepbufr.tm00 ]; then
