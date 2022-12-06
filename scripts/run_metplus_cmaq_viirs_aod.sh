@@ -15,8 +15,8 @@ export cycle=t00z
 export MET_PLUS_TMP=/lfs/h2/emc/ptmp/perry.shafran/metplus_cmaq_aod
 
 module purge
-export HPC_OPT=/apps/ops/para/libs
-module use /apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304/
+export HPC_OPT=/apps/ops/prod/libs
+module use /apps/ops/prod/libs/modulefiles/compiler/intel/19.1.3.304/
 module load intel
 module load gsl
 module load python/3.8.6
