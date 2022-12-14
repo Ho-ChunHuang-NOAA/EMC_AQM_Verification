@@ -196,7 +196,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_wrapper
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_wrapped
 POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
 POINT_STAT_OUTPUT_FLAG_FHO = STAT
 POINT_STAT_OUTPUT_FLAG_CTC = STAT
@@ -247,7 +247,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_wrapper
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_wrapped
 POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
 POINT_STAT_OUTPUT_FLAG_FHO = STAT
 POINT_STAT_OUTPUT_FLAG_CTC = STAT
@@ -319,7 +319,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_wrapper
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_wrapped
 POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
 POINT_STAT_OUTPUT_FLAG_FHO = STAT
 POINT_STAT_OUTPUT_FLAG_CTC = STAT
