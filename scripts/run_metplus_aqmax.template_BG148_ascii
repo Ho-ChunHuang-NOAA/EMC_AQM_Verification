@@ -185,6 +185,7 @@ do
         fi
     done
 
+## POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 cat << EOF > fcst_input_temp_${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
@@ -193,9 +194,14 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 ## POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/${model}/${envir}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_wrapper
+POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
+POINT_STAT_OUTPUT_FLAG_FHO = STAT
+POINT_STAT_OUTPUT_FLAG_CTC = STAT
+POINT_STAT_OUTPUT_FLAG_SL1L2 = STAT
+POINT_STAT_MET_CONFIG_OVERRIDES = cat_thresh = [ >50, >60, >65, >70, >75, >85, >105, >125, >150 ]; message_type   = [];
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
 OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_daily_{valid?fmt=%Y%m%d}.nc
@@ -231,6 +237,7 @@ do
     done
 
 
+## POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 cat << EOF > fcst_input_temp_${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
@@ -238,9 +245,14 @@ FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
 OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_wrapper
+POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
+POINT_STAT_OUTPUT_FLAG_FHO = STAT
+POINT_STAT_OUTPUT_FLAG_CTC = STAT
+POINT_STAT_OUTPUT_FLAG_SL1L2 = STAT
+POINT_STAT_MET_CONFIG_OVERRIDES = cat_thresh = [ >50, >60, >65, >70, >75, >85, >105, >125, >150 ]; message_type   = [];
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
 OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_daily_{valid?fmt=%Y%m%d}.nc
@@ -288,6 +300,7 @@ do
         cp -p ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} ${FCST_INPUT_SELECT}/cs.${iday}
     done
 
+## POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_ave_Bukovsky_G148
 #
 # Ed has those in [config] section; but is defined in ${MET_PLUS}/parm/use_cases/perry/point_stat_pmave.conf
 # FCST_VAR1_NAME = PMTF
@@ -304,9 +317,14 @@ FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
 OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_ave_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_wrapper
+POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
+POINT_STAT_OUTPUT_FLAG_FHO = STAT
+POINT_STAT_OUTPUT_FLAG_CTC = STAT
+POINT_STAT_OUTPUT_FLAG_SL1L2 = STAT
+POINT_STAT_MET_CONFIG_OVERRIDES = cat_thresh = [ >5, >10, >12, >15, >20, >25, >35, >40, >45, >50, >55, >60, >65 ]; message_type   = [];
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
 OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_daily_{valid?fmt=%Y%m%d}.nc
