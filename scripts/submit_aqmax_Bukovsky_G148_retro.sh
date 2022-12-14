@@ -33,7 +33,7 @@ caseid=icmaq
 caseid=aq
 caseid=aqmax
 jobname=metplus_${caseid}
-script_base=retro_${jobname}.template_Bukovsky_G148
+script_base=retro_${jobname}.template_Bukovsky_G148_48
 if [ ! -s ${script_base} ]; then
    echo "Can not find ${script_base}"
    exit
@@ -94,22 +94,22 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             continue
         fi
     fi
-    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     FCST_INPUT_NCO=/lfs/h1/ops/${EXP}/com/aqm/v6.1
+    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/com/aqm/${EXP}
     FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
-    if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.ave_24hr_pm25${Bias_Corr}.227.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.ave_24hr_pm25${Bias_Corr}.227.grib2 ]; then
+    if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.ave_24hr_pm25${Bias_Corr}.148.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.ave_24hr_pm25${Bias_Corr}.148.grib2 ]; then
         fcst_select=${fcst_dir}
     else
         fcst_dir=${FCST_INPUT_USER}
-        if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.ave_24hr_pm25${Bias_Corr}.227.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.ave_24hr_pm25${Bias_Corr}.227.grib2 ]; then
+        if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.ave_24hr_pm25${Bias_Corr}.148.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.ave_24hr_pm25${Bias_Corr}.148.grib2 ]; then
             fcst_select=${fcst_dir}
         else
-            chkfile=cs.${PDYm3}/aqm.t06z.ave_24hr_pm25${Bias_Corr}.227.grib2
+            chkfile=cs.${PDYm3}/aqm.t06z.ave_24hr_pm25${Bias_Corr}.148.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi
-            chkfile=cs.${PDYm3}/aqm.t12z.ave_24hr_pm25${Bias_Corr}.227.grib2
+            chkfile=cs.${PDYm3}/aqm.t12z.ave_24hr_pm25${Bias_Corr}.148.grib2
             if [ ! -s ${fcst_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${FCST_INPUT_NCO} and ${FCST_INPUT_USER}, skip to next day"
             fi

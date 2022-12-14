@@ -60,7 +60,7 @@ export EXECutil=${UTILHOME}/exec
 export DATE=xxDATE
 export DATEp1=xxDATEp1
 export MET_PLUS=xxBASE
-export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/hochun
+export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/perry
 export MET_PLUS_CONF2=${MET_PLUS}/parm/met_config
 # export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq${caseid}
 # export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
@@ -137,7 +137,7 @@ OBS_WINDOW_END = 86400
 VALID_INCREMENT = 1H
 INIT_SEQ = 6, 12
 LEAD_SEQ_MIN = 1
-LEAD_SEQ_MAX = 72
+LEAD_SEQ_MAX = 48
 EOF
 
 model=aq
@@ -152,26 +152,37 @@ cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
 FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
-OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
+OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc/${envir}/${model}
+PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
+PB2NC_OUTPUT_DIR = {OBS_POINT_STAT_INPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
+PB2NC_OBS_BUFR_VAR_LIST= COPO
+METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_Bukovsky_G148
-METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat.conf
 # LEAD_SEQ = begin_end_incr(1,72,1)
 MODEL = ${envir1}
 FCST_VAR1_NAME = OZCON
 FCST_VAR1_LEVELS = A1
 FCST_VAR1_OPTIONS = set_attr_name = "OZCON1";
-OBS_VAR1_NAME= OZONE
+OBS_VAR1_NAME= COPO
 OBS_VAR1_LEVELS= A1
-OBS_VAR1_OPTIONS =  message_type = "AIRNOW_HOURLY_AQOBS"; censor_thresh = [ <=0.0 ]; censor_val=[ 0.0 ];
+OBS_VAR1_OPTIONS =  convert(x) = x * 10^9;
+FCST_VAR2_NAME = OZCON
+FCST_VAR2_LEVELS = A8
+FCST_VAR2_OPTIONS = set_attr_name = "OZCON8";
+OBS_VAR2_NAME= COPO
+OBS_VAR2_LEVELS= A8
+OBS_VAR2_OPTIONS =  convert(x) = x * 10^9;
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.awpozcon${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
-OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_{valid?fmt=%Y%m%d%H}.nc
+OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.aqm.${DATE}.nc
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+PB2NC_INPUT_TEMPLATE = hourly.{da_init?fmt=%Y%m%d}/aqm.t12z.prepbufr.tm00
+PB2NC_OUTPUT_TEMPLATE = prepbufr.aqm.${DATE}.nc
 EOF
 
-${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs_ascii.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_aq.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 cat << EOF > statanalysis.conf
 [dir]
@@ -199,25 +210,30 @@ cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
 FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
-OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
+OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc/${envir}/${model}
+PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
+PB2NC_OUTPUT_DIR = {OBS_POINT_STAT_INPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
+PB2NC_OBS_BUFR_VAR_LIST= COPOPM
+METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
-METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat.conf
 ## LEAD_SEQ = begin_end_incr(1,72,1)
 FCST_VAR1_NAME = PMTF
 FCST_VAR1_LEVELS = L1
-OBS_VAR1_NAME= PM25
+OBS_VAR1_NAME= COPOPM
 OBS_VAR1_LEVELS= A1
-OBS_VAR1_OPTIONS =  message_type = "AIRNOW_HOURLY_AQOBS"; censor_thresh = [ <=0.0 ]; censor_val=[ 0.0 ];
+OBS_VAR1_OPTIONS =  convert(x) = x * 10^9;
 MODEL = ${envir1}
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.pm25${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
-OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_{valid?fmt=%Y%m%d%H}.nc
+OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.pm.${DATE}.nc
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+PB2NC_INPUT_TEMPLATE = hourly.{da_init?fmt=%Y%m%d?shift=86400}/aqm.t12z.anowpm.pb.tm024
+PB2NC_OUTPUT_TEMPLATE = prepbufr.pm.${DATE}.nc
 EOF
 
-${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs_ascii.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_aq.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 ## in ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf
 ## STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/{MODEL}
