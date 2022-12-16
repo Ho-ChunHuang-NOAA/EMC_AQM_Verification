@@ -92,7 +92,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             continue
         fi
     fi
-    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
+    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/com/aqm/${EXP}
     FCST_INPUT_NCO=/lfs/h1/ops/${EXP}/com/aqm/v6.1
     FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
