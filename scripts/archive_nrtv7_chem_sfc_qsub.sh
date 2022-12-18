@@ -27,6 +27,7 @@ out_envir=${in_envir}
 data_in=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}
 data_in=/lfs/h2/emc/ptmp/jianping.huang/emc.para/com/aqm/v7.0/aqm.v7.0.${expid}
 data_in=/lfs/h2/emc/aqmtemp/para/com/aqm/v7.0
+data_in=/lfs/h2/emc/ptmp/jianping.huang/emc.para/com/aqm/v7.0
 if [ ! -d ${data_in}/${expid}.${FIRSTDAY} ]; then
     echo "Can not find ${data_in}/${expid}.${FIRSTDAY}, program exit"
     exit
@@ -95,6 +96,7 @@ module load cray-mpich/8.1.9
     outdir=${outdir}
     data_in=${data_in}
     out_envir=${out_envir}
+    expid=${expid}
 EOF
    
 if [ -s ${batch_script}.add ]; then /bin/rm -f ${batch_script}.add; fi

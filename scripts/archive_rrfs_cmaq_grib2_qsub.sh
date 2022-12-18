@@ -26,8 +26,8 @@ expid=`echo ${out_envir} | cut -c4-6`
 data_in=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}
 data_in=/lfs/h2/emc/ptmp/jianping.huang/emc.para/com/aqm/v7.0/aqm.v7.0.${expid}
 data_in=/lfs/h2/emc/aqmtemp/para/com/aqm/v7.0
-if [ ! -d ${data_in}/na.${FIRSTDAY} ]; then
-    echo "Can not find ${data_in}/na.${FIRSTDAY}, program exit"
+if [ ! -d ${data_in}/${expid}.${FIRSTDAY} ]; then
+    echo "Can not find ${data_in}/${expid}.${FIRSTDAY}, program exit"
     exit
 fi
 
@@ -97,7 +97,7 @@ cat > ${batch_script}.add << 'EOF'
     odir=${outdir}/${out_envir}/aqm.${NOW}/postprd
     mkdir -p ${odir}/POST_STAT
     for i in "${cyc[@]}"; do
-        idir=${data_in}/na.${NOW}/${i}
+        idir=${data_in}/${expid}.${NOW}/${i}
 	if [ -d ${idir} ]; then
             cp -p ${idir}/aqm.t${i}z.cmaq.f*.793.grib2 ${odir}
             if [ -d ${idir}/POST_STAT ]; then cp -pr ${idir}/POST_STAT/*  ${odir}/POST_STAT; fi
