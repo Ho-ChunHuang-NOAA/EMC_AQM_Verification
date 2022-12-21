@@ -95,9 +95,10 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     fi
     hour_check=f48
     hour_check=f72
-    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/com/aqm/${EXP}
     FCST_INPUT_NCO=/lfs/h1/ops/${EXP}/com/aqm/v6.1
     FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
+    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/com/aqm/${EXP}
+    FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/com/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
     if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.${hour_check}.148.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.${hour_check}.148.grib2 ]; then
         fcst_select=${fcst_dir}
