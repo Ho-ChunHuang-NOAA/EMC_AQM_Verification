@@ -109,6 +109,14 @@ cat > ${batch_script}.add << 'EOF'
 	if [ -d ${idir} ]; then
             cp -p ${idir}/aqm.t${i}z.chem_sfc.*.nc ${odir}
             cp -p ${idir}/aqm.t${i}z.met_sfc.*.nc ${odir}
+	    cpfile=${idir}/ozone.corrected.${NOW}.${i}z.nc
+	    if [ -s ${cpfile} ]; then
+	        cp -p ${cpfile} ${odir}
+	    fi
+	    cpfile=${idir}/pm2.5.corrected.${NOW}.${i}z.nc
+	    if [ -s ${cpfile} ]; then
+	        cp -p ${cpfile} ${odir}
+	    fi
 	    echo "${NOW} ${i}"
         else
 	    echo "Can not find ${idir}"

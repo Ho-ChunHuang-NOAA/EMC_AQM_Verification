@@ -33,7 +33,7 @@ hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/metplus_aq_daily_point_stat
 datadir=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq/stat/aqm
 
 cd ${working_dir}
-task_cpu='04:30:00'
+task_cpu='01:30:00'
 job_name=arch_o3pm_stat_${envir}_${FIRSTDAY}_${LASTDAY}
 batch_script=${job_name}.sh
 if [ -e ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
