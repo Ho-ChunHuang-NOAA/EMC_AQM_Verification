@@ -94,6 +94,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     fi
     FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/com/aqm/${EXP}
     FCST_INPUT_NCO=/lfs/h1/ops/${EXP}/com/aqm/v6.1
+    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
     if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.148.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.148.grib2 ]; then

@@ -95,6 +95,7 @@ module load cray-mpich/8.1.9
     outdir=${outdir}
     data_in=${data_in}
     out_envir=${out_envir}
+    expid=${expid}
 EOF
    
 if [ -s ${batch_script}.add ]; then /bin/rm -f ${batch_script}.add; fi
