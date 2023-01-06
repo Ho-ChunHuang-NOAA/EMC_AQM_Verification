@@ -155,7 +155,8 @@ FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
 OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_Bukovsky_G148
+PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
+POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat.conf
 # LEAD_SEQ = begin_end_incr(1,72,1)
 MODEL = ${envir1}
@@ -202,7 +203,8 @@ FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
 OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
-POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
+PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
+POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat.conf
 ## LEAD_SEQ = begin_end_incr(1,72,1)
 FCST_VAR1_NAME = PMTF
