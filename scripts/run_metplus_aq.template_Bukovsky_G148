@@ -148,6 +148,7 @@ echo ${model1}
 ## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## PB2NC_OUTPUT_TEMPLATE  = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## OUTPUT_BASE = ${MET_PLUS_OUT}
+# PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
@@ -159,8 +160,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPO
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
-PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
-POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_AIRNOW_Bukovsky_G148
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_Bukovsky_G148
 # LEAD_SEQ = begin_end_incr(1,72,1)
 MODEL = ${envir1}
 FCST_VAR1_NAME = OZCON
@@ -183,7 +183,7 @@ PB2NC_INPUT_TEMPLATE = hourly.{da_init?fmt=%Y%m%d}/aqm.t12z.prepbufr.tm00
 PB2NC_OUTPUT_TEMPLATE = prepbufr.aqm.${DATE}.nc
 EOF
 
-${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_aq.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_aq.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 cat << EOF > statanalysis.conf
 [dir]
@@ -199,14 +199,15 @@ MODEL1 = ${envir1}
 STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
 EOF
 
-## ${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByHour_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf
-${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/user_priority.conf
+## ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByHour_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 model=pm
 model1=`echo ${model} | tr a-z A-Z`
 echo ${model1}
 
 ## FCST_POINT_STAT_INPUT_TEMPLATE = {init?fmt=%Y%m%d%H}/postprd/rrfs.t{init?fmt=%2H}z.natlevf{lead?fmt=%3H}.tm00.grib2
+# PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
@@ -218,8 +219,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPOPM
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
-PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
-POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
 ## LEAD_SEQ = begin_end_incr(1,72,1)
 FCST_VAR1_NAME = PMTF
 FCST_VAR1_LEVELS = L1
@@ -235,7 +235,7 @@ PB2NC_INPUT_TEMPLATE = hourly.{da_init?fmt=%Y%m%d?shift=86400}/aqm.t12z.anowpm.p
 PB2NC_OUTPUT_TEMPLATE = prepbufr.pm.${DATE}.nc
 EOF
 
-${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_aq.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_aq.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 ## in ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf
 ## STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/{MODEL}
@@ -253,8 +253,8 @@ MODEL1 = ${envir1}
 STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
 EOF
 
-## ${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf ${MET_PLUS_CONF}/StatAnalysis_gatherByHour_aq.conf ${MET_PLUS_TMP}/statanalysis.conf
-${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/user_priority.conf
+## ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf ${MET_PLUS_CONF}/StatAnalysis_gatherByHour_aq.conf ${MET_PLUS_TMP}/statanalysis.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 ## Define LOG_DIR using MET_PLUS_TMP, thus avodiing moving logs file
 ## mv ${MET_PLUS_OUT}/logs/master_metplus.log.${TODAY}* ${MET_PLUS_TMP}

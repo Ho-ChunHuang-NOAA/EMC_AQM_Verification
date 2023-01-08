@@ -60,7 +60,7 @@ export EXECutil=${UTILHOME}/exec
 export DATE=xxDATE
 export DATEp1=xxDATEp1
 export MET_PLUS=xxBASE
-export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/hochun
+export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/perry
 export MET_PLUS_CONF2=${MET_PLUS}/parm/met_config
 # export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq${caseid}
 # export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
@@ -115,7 +115,6 @@ cd ${MET_PLUS_TMP}
 cat << EOF > user_priority.conf
 [config]
 PB2NC_SKIP_IF_OUTPUT_EXISTS=true
-METPLUS_MASK_POLY=[ "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Appalachia.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_Central.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_East.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_South.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_West.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_DeepSouth.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatBasin.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatLakes.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Mezquital.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_MidAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NorthAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NRockies.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificNW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificSW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Prairie.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southeast.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southwest.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SRockies.nc" ];
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output
@@ -149,31 +148,42 @@ echo ${model1}
 ## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## PB2NC_OUTPUT_TEMPLATE  = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## OUTPUT_BASE = ${MET_PLUS_OUT}
+# PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
 FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
-OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
+OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc/${envir}/${model}
+PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
+PB2NC_OUTPUT_DIR = {OBS_POINT_STAT_INPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
-PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
-POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
-METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat.conf
+PB2NC_OBS_BUFR_VAR_LIST= COPO
+METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_Bukovsky_G148
 # LEAD_SEQ = begin_end_incr(1,72,1)
 MODEL = ${envir1}
 FCST_VAR1_NAME = OZCON
 FCST_VAR1_LEVELS = A1
 FCST_VAR1_OPTIONS = set_attr_name = "OZCON1";
-OBS_VAR1_NAME= OZONE
+OBS_VAR1_NAME= COPO
 OBS_VAR1_LEVELS= A1
-OBS_VAR1_OPTIONS =  message_type = "AIRNOW_HOURLY_AQOBS"; censor_thresh = [ <=0.0 ]; censor_val=[ 0.0 ];
+OBS_VAR1_OPTIONS =  convert(x) = x * 10^9;
+FCST_VAR2_NAME = OZCON
+FCST_VAR2_LEVELS = A8
+FCST_VAR2_OPTIONS = set_attr_name = "OZCON8";
+OBS_VAR2_NAME= COPO
+OBS_VAR2_LEVELS= A8
+OBS_VAR2_OPTIONS =  convert(x) = x * 10^9;
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.awpozcon${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
-OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_{valid?fmt=%Y%m%d%H}.nc
+OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.aqm.${DATE}.nc
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+PB2NC_INPUT_TEMPLATE = hourly.{da_init?fmt=%Y%m%d}/aqm.t12z.prepbufr.tm00
+PB2NC_OUTPUT_TEMPLATE = prepbufr.aqm.${DATE}.nc
 EOF
 
-${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs_ascii.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_aq.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 cat << EOF > statanalysis.conf
 [dir]
@@ -197,30 +207,35 @@ model1=`echo ${model} | tr a-z A-Z`
 echo ${model1}
 
 ## FCST_POINT_STAT_INPUT_TEMPLATE = {init?fmt=%Y%m%d%H}/postprd/rrfs.t{init?fmt=%2H}z.natlevf{lead?fmt=%3H}.tm00.grib2
+# PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
 FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
-OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
+OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/aqm/conus_sfc/${envir}/${model}
+PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
+PB2NC_OUTPUT_DIR = {OBS_POINT_STAT_INPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
-PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
-POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
-METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat.conf
+PB2NC_OBS_BUFR_VAR_LIST= COPOPM
+METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
+POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
 ## LEAD_SEQ = begin_end_incr(1,72,1)
 FCST_VAR1_NAME = PMTF
 FCST_VAR1_LEVELS = L1
-OBS_VAR1_NAME= PM25
+OBS_VAR1_NAME= COPOPM
 OBS_VAR1_LEVELS= A1
-OBS_VAR1_OPTIONS =  message_type = "AIRNOW_HOURLY_AQOBS"; censor_thresh = [ <=0.0 ]; censor_val=[ 0.0 ];
+OBS_VAR1_OPTIONS =  convert(x) = x * 10^9;
 MODEL = ${envir1}
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.pm25${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
-OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_{valid?fmt=%Y%m%d%H}.nc
+OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.pm.${DATE}.nc
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+PB2NC_INPUT_TEMPLATE = hourly.{da_init?fmt=%Y%m%d?shift=86400}/aqm.t12z.anowpm.pb.tm024
+PB2NC_OUTPUT_TEMPLATE = prepbufr.pm.${DATE}.nc
 EOF
 
-${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs_ascii.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_aq.conf -c ${MET_PLUS_CONF}/point_stat_aq.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared.conf_aq -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 ## in ${MET_PLUS_CONF}/StatAnalysis_gatherByDay_aq.conf
 ## STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/{MODEL}
