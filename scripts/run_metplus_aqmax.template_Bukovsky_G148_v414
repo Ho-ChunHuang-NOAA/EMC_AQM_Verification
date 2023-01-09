@@ -191,7 +191,7 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 ## POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/${model}/${envir}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
-PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
+PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
@@ -238,7 +238,7 @@ PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/${model}/${envir}
 OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
-PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
+PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
@@ -298,7 +298,7 @@ PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/${model}/${envir}
 OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
-PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
+PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_max_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no
@@ -366,7 +366,7 @@ PB2NC_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/${model}/${envir}
 OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
-PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
+PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_ave_Bukovsky_G148
 MODEL = ${envir1}
 PB2NC_SKIP_IF_OUTPUT_EXISTS=no

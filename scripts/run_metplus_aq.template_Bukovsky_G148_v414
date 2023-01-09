@@ -148,7 +148,6 @@ echo ${model1}
 ## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## PB2NC_OUTPUT_TEMPLATE  = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## OUTPUT_BASE = ${MET_PLUS_OUT}
-# PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
@@ -158,6 +157,7 @@ PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
 PB2NC_OUTPUT_DIR = {OBS_POINT_STAT_INPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
+PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 PB2NC_OBS_BUFR_VAR_LIST= COPO
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_Bukovsky_G148
@@ -217,6 +217,7 @@ PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
 PB2NC_OUTPUT_DIR = {OBS_POINT_STAT_INPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
+PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 PB2NC_OBS_BUFR_VAR_LIST= COPOPM
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
