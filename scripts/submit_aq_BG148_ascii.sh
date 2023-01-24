@@ -70,6 +70,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
     if [ -s ${err_logfile} ]; then /bin/rm ${err_logfile}; fi
     OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.1
+    OBS_INPUT_NCO=/lfs/h2/emc/vpppg/noscrub/ho-chun.huang/dcom_ascii2nc_airnow
     OBS_INPUT_USER=/lfs/h2/emc/vpppg/noscrub/ho-chun.huang/dcom_ascii2nc_airnow
     obs_dir=${OBS_INPUT_NCO}
     if [ -s ${obs_dir}/${NOW}/airnow_hourly_${NOW}23.nc ]; then
@@ -83,8 +84,8 @@ while [ ${NOW} -le ${LASTDAY} ]; do
 	    exit
         fi
     fi
-    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     FCST_INPUT_NCO=/lfs/h1/ops/${EXP}/com/aqm/v6.1
+    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
     if [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t06z.awpozcon${Bias_Corr}.f72.148.grib2 ] || [ -s ${fcst_dir}/cs.${PDYm3}/aqm.t12z.awpozcon${Bias_Corr}.f72.148.grib2 ]; then

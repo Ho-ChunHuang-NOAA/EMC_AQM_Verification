@@ -112,10 +112,23 @@ cd ${MET_PLUS_TMP}
 # Define high priority enviironment variable used in the METplus
 # to overwrite any prior setting in ~/parm/use_cases/perry 
 # and /parm/met_config
+## POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
 cat << EOF > user_priority.conf
 [config]
 PB2NC_SKIP_IF_OUTPUT_EXISTS=true
-METPLUS_MASK_POLY=[ "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Appalachia.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_Central.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_East.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_South.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_West.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_DeepSouth.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatBasin.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatLakes.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Mezquital.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_MidAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NorthAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NRockies.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificNW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificSW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Prairie.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southeast.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southwest.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SRockies.nc" ];
+LOG_POINT_STAT_VERBOSITY = 3
+POINT_STAT_DESC = NA
+POINT_STAT_POLY=[ "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Appalachia.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_Central.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_East.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_South.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_West.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_DeepSouth.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatBasin.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatLakes.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Mezquital.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_MidAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NorthAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NRockies.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificNW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificSW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Prairie.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southeast.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southwest.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SRockies.nc" ];
+POINT_STAT_OUTPUT_FLAG_CTC = STAT
+POINT_STAT_OUTPUT_FLAG_FHO = STAT
+POINT_STAT_OUTPUT_FLAG_SL1L2 = STAT
+POINT_STAT_CLIMO_MEAN_TIME_INTERP_METHOD = DW_MEAN
+POINT_STAT_CLIMO_CDF_BINS = 1
+POINT_STAT_INTERP_VLD_THRESH = 1.0
+POINT_STAT_INTERP_SHAPE = SQUARE
+POINT_STAT_INTERP_TYPE_METHOD = BILIN
+POINT_STAT_REGRID_TO_GRID = NONE
+POINT_STAT_REGRID_WIDTH = 1
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output
@@ -149,6 +162,7 @@ echo ${model1}
 ## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## PB2NC_OUTPUT_TEMPLATE  = prepbufr.aqm.{valid?fmt=%Y%m%d%H}.nc
 ## OUTPUT_BASE = ${MET_PLUS_OUT}
+## POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_AIRNOW_Bukovsky_G148
 cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
@@ -157,7 +171,10 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
-POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
+POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
+POINT_STAT_INTERP_TYPE_WIDTH = 2
+POINT_STAT_REGRID_METHOD = BILIN
+POINT_STAT_MET_CONFIG_OVERRIDES = cat_thresh = [ >50, >60, >65, >70, >75, >85, >105, >125, >150 ];
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat.conf
 # LEAD_SEQ = begin_end_incr(1,72,1)
 MODEL = ${envir1}
@@ -169,7 +186,7 @@ OBS_VAR1_LEVELS= A1
 OBS_VAR1_OPTIONS =  message_type = "AIRNOW_HOURLY_AQOBS"; censor_thresh = [ <=0.0 ]; censor_val=[ 0.0 ];
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.awpozcon${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
-OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_{valid?fmt=%Y%m%d%H}.nc
+OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_{valid?fmt=%Y%m%d%H?shift=-3600}.nc
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
@@ -197,6 +214,7 @@ model1=`echo ${model} | tr a-z A-Z`
 echo ${model1}
 
 ## FCST_POINT_STAT_INPUT_TEMPLATE = {init?fmt=%Y%m%d%H}/postprd/rrfs.t{init?fmt=%2H}z.natlevf{lead?fmt=%3H}.tm00.grib2
+## POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
 cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
@@ -205,7 +223,10 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
-POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_Bukovsky_G148
+POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
+POINT_STAT_INTERP_TYPE_WIDTH = 1
+POINT_STAT_REGRID_METHOD = NEAREST
+POINT_STAT_MET_CONFIG_OVERRIDES = cat_thresh = [ >5, >10, >12, >15, >20, >25, >35, >40, >45, >50, >55, >60, >65 ];
 METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat.conf
 ## LEAD_SEQ = begin_end_incr(1,72,1)
 FCST_VAR1_NAME = PMTF
@@ -216,7 +237,7 @@ OBS_VAR1_OPTIONS =  message_type = "AIRNOW_HOURLY_AQOBS"; censor_thresh = [ <=0.
 MODEL = ${envir1}
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.pm25${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
-OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_{valid?fmt=%Y%m%d%H}.nc
+OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_{valid?fmt=%Y%m%d%H?shift=-3600}.nc
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
@@ -244,5 +265,10 @@ ${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_P
 ## Define LOG_DIR using MET_PLUS_TMP, thus avodiing moving logs file
 ## mv ${MET_PLUS_OUT}/logs/master_metplus.log.${TODAY}* ${MET_PLUS_TMP}
 ## mv ${MET_PLUS_OUT}/logs/${envir}/${DATE}/master_metplus.statanalysis.log.${TODAY}* ${MET_PLUS_TMP}
+
+info_dir=/lfs/h2/emc/ptmp/${USER}/run_status/evs/aq148_3
+if [ ! -d ${info_dir} ]; then mkdir -p ${info_dir}; fi
+status_file=${info_dir}/evs_retro_run.status
+echo "EVS ${envir} ${DATE}" > ${status_file}
 
 exit
