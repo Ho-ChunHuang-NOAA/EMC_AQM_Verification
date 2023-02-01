@@ -155,7 +155,7 @@ OBS_PB2NC_FILE_WINDOW_BEGIN = 0
 OBS_PB2NC_FILE_WINDOW_END = 86400
 EOF
 
-for hour in 12
+for hour in 06 12
 do
 
 for model in aqmax1 
@@ -165,12 +165,18 @@ do
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
         mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
         if [ -s out1.grb2 ]; then /bin/rm -f out1.grb2; fi
+        if [ -s out2.grb2 ]; then /bin/rm -f out2.grb2; fi
+        if [ -s out3.grb2 ]; then /bin/rm -f out3.grb2; fi
         if [ $hour -eq 06 ]; then
             ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "-1-22 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "23-46 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "47-70 hour ave fcst" -grib out3.grb2
         elif [ $hour -eq 12 ]; then
             ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "-7-16 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "17-40 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "41-64 hour ave fcst" -grib out3.grb2
         fi
-        cat out1.grb2 > ${FCST_INPUT_SELECT}/cs.${iday}/${ifile}
+        cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/cs.${iday}/${ifile}
     done
 
 cat << EOF > fcst_input_temp_${model}.conf
@@ -191,7 +197,7 @@ FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
-${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}_24.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 done
 
@@ -203,12 +209,18 @@ do
     for iday in ${DATE} ${DATEm1} ${DATEm2}; do
         mkdir -p ${FCST_INPUT_SELECT}/cs.${iday}
         if [ -s out1.grb2 ]; then /bin/rm -f out1.grb2; fi
+        if [ -s out2.grb2 ]; then /bin/rm -f out2.grb2; fi
+        if [ -s out3.grb2 ]; then /bin/rm -f out3.grb2; fi
         if [ $hour -eq 06 ]; then
             ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "6-29 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "30-53 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "54-77 hour ave fcst" -grib out3.grb2
         elif [ $hour -eq 12 ]; then
             ${wgrib2} -d 1 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "0-23 hour ave fcst" -grib out1.grb2
+            ${wgrib2} -d 2 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "24-47 hour ave fcst" -grib out2.grb2
+            ${wgrib2} -d 3 ${FCST_INPUT_COMOUT}/cs.${iday}/${ifile} -set_ftime "48-71 hour ave fcst" -grib out3.grb2
         fi
-        cat out1.grb2 > ${FCST_INPUT_SELECT}/cs.${iday}/${ifile}
+        cat out1.grb2 out2.grb2 out3.grb2 > ${FCST_INPUT_SELECT}/cs.${iday}/${ifile}
     done
 
 
@@ -229,7 +241,7 @@ FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
-${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}_24.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 done
 
@@ -260,7 +272,7 @@ ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_
 for model in pmmax
 do
 
-for hour in 12
+for hour in 06 12
 do
 
     model1=`echo ${model} | tr a-z A-Z`
@@ -288,7 +300,7 @@ FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
-${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}_24.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 done
 
@@ -318,7 +330,7 @@ done
 for model in pmave
 do
 
-for hour in 12
+for hour in 06 12
 do
 
     model1=`echo ${model} | tr a-z A-Z`
@@ -355,7 +367,7 @@ FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
-${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}_24.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
+${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_${model}.conf -c ${MET_PLUS_CONF}/point_stat_${model}.conf -c ${MET_PLUS_TMP}/shared.conf_aqmax -c ${MET_PLUS_CONF}/system_aq.conf -c ${MET_PLUS_TMP}/fcst_input_temp_${model}.conf -c ${MET_PLUS_TMP}/user_priority.conf
 
 done
 

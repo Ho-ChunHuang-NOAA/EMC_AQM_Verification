@@ -24,8 +24,8 @@ echo "out_envir=${out_envir}"
 expid=`echo ${out_envir} | cut -c4-6`
 
 ## send output to v70c43"
-out_envir=${in_envir}
 out_envir=v70c43
+out_envir=${in_envir}
 
 
 data_in=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}
