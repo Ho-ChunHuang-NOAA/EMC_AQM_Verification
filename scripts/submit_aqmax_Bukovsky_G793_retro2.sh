@@ -66,7 +66,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     PDYm2=$( ${NDATE} -48 ${cdate} | cut -c1-8 )
     PDYm1=$( ${NDATE} -24 ${cdate} | cut -c1-8 )
     PDYp1=$( ${NDATE} +24 ${cdate} | cut -c1-8 )
-    jjob=${caseid}_${envir}_b793_${NOW}
+    jjob=${caseid}_${envir}_r2b793_${NOW}
     out_logfile=${logdir}/${jjob}.log
     err_logfile=${logdir}/${jjob}.log
     if [ -s ${out_logfile} ]; then /bin/rm ${out_logfile}; fi
