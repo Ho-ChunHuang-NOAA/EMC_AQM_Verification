@@ -83,7 +83,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             if [ ! -s ${obs_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${OBS_INPUT_NCO} and ${OBS_INPUT_USER}, skip to next day"
             fi
-            chkfile=hourly.${NOW}/aqm.t12z.anowpm.pb.tm024
+            chkfile=hourly.${NOW}/aqm.t12z.prepbufr.tm00
             if [ ! -s ${obs_dir}/${chkfile} ]; then
                 echo "Can not find ${chkfile} in ${OBS_INPUT_NCO} and ${OBS_INPUT_USER}, skip to next day"
             fi
