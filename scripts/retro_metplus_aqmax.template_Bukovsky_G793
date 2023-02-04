@@ -113,7 +113,7 @@ cd ${MET_PLUS_TMP}
 # and /parm/met_config
 cat << EOF > user_priority.conf
 [config]
-PB2NC_SKIP_IF_OUTPUT_EXISTS=true
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output
@@ -190,7 +190,8 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
+METPLUS_CONF = {OUTPUT_BASE}/{MODEL}/metplus_final_pb2nc_pointstat_aqmax1_${DATE}.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G793
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.793.grib2
@@ -234,7 +235,8 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
+METPLUS_CONF = {OUTPUT_BASE}/{MODEL}/metplus_final_pb2nc_pointstat_aqmax8_${DATE}.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G793
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.793.grib2
@@ -261,6 +263,7 @@ VALID_BEG = ${DATEp1}
 VALID_END = ${DATEp1}
 MODEL = ${envir}
 MODEL1 = ${envir1}
+METPLUS_CONF = {OUTPUT_BASE}/conf/{MODEL}/metplus_final_statanalysis_gatherbydate_aqmax_${DATE}.conf
 [filename_templates]
 STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_AQMAX_{valid_beg?fmt=%Y%m%d}.stat
 EOF
@@ -293,7 +296,8 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
+METPLUS_CONF = {OUTPUT_BASE}/{MODEL}/metplus_final_pb2nc_pointstat_pmmax_${DATE}.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_max_Bukovsky_G793
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.793.grib2
@@ -318,6 +322,7 @@ VALID_BEG = ${DATEp1}
 VALID_END = ${DATEp1}
 MODEL = ${envir}
 MODEL1 = ${envir1}
+METPLUS_CONF = {OUTPUT_BASE}/conf/{MODEL}/metplus_final_statanalysis_gatherbydate_pmmax_${DATE}.conf
 [filename_templates]
 STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
 EOF
@@ -360,7 +365,8 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
+METPLUS_CONF = {OUTPUT_BASE}/{MODEL}/metplus_final_pb2nc_pointstat_pmave_${DATE}.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_ave_Bukovsky_G793
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.793.grib2
@@ -385,6 +391,7 @@ VALID_BEG = ${DATEp1}
 VALID_END = ${DATEp1}
 MODEL = ${envir}
 MODEL1 = ${envir1}
+METPLUS_CONF = {OUTPUT_BASE}/conf/{MODEL}/metplus_final_statanalysis_gatherbydate_pmave_${DATE}.conf
 [filename_templates]
 STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
 EOF

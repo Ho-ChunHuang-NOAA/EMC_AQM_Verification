@@ -210,7 +210,7 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
 POINT_STAT_MET_CONFIG_OVERRIDES = cat_thresh = [ >50, >60, >65, >70, >75, >85, >105, >125, >150 ]; message_type   = [];
@@ -258,7 +258,7 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
 POINT_STAT_MET_CONFIG_OVERRIDES = cat_thresh = [ >50, >60, >65, >70, >75, >85, >105, >125, >150 ]; message_type   = [];
@@ -327,7 +327,7 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
 POINT_STAT_OUTPUT_FLAG_FHO = STAT

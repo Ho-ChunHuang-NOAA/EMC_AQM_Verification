@@ -197,7 +197,7 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
@@ -240,7 +240,7 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
@@ -303,7 +303,7 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
@@ -376,7 +376,7 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}

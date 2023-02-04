@@ -113,7 +113,7 @@ cd ${MET_PLUS_TMP}
 # and /parm/met_config
 cat << EOF > user_priority.conf
 [config]
-PB2NC_SKIP_IF_OUTPUT_EXISTS=true
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
@@ -196,7 +196,7 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
 POINT_STAT_OUTPUT_FLAG_FHO = STAT
@@ -247,7 +247,7 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
 POINT_STAT_OUTPUT_FLAG_FHO = STAT
@@ -319,7 +319,7 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
 POINT_STAT_OUTPUT_FLAG_FHO = STAT

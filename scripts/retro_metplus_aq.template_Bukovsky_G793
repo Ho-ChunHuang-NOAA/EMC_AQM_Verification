@@ -114,7 +114,7 @@ cd ${MET_PLUS_TMP}
 # and /parm/met_config
 cat << EOF > user_priority.conf
 [config]
-PB2NC_SKIP_IF_OUTPUT_EXISTS=true
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output
@@ -158,7 +158,7 @@ PB2NC_OUTPUT_DIR = {OBS_POINT_STAT_INPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPO
-METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
+METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat_${DATE}.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_AIRNOW_Bukovsky_G793
 # LEAD_SEQ = begin_end_incr(1,72,1)
 MODEL = ${envir1}
@@ -188,6 +188,7 @@ VALID_BEG = ${DATE}
 VALID_END = ${DATE}
 MODEL = ${envir}
 MODEL1 = ${envir1}
+METPLUS_CONF = {OUTPUT_BASE}/conf/{MODEL}/metplus_final_statanalysis_gatherbydate_${DATE}.conf
 [filename_templates]
 STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
 EOF
@@ -210,7 +211,7 @@ PB2NC_OUTPUT_DIR = {OBS_POINT_STAT_INPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
 [config]
 PB2NC_OBS_BUFR_VAR_LIST= COPOPM
-METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat.conf
+METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pb2nc_pointstat_${DATE}.conf
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_ANOWPM_Bukovsky_G793
 ## LEAD_SEQ = begin_end_incr(1,72,1)
 FCST_VAR1_NAME = PMTF
@@ -241,6 +242,7 @@ VALID_BEG = ${DATE}
 VALID_END = ${DATE}
 MODEL = ${envir}
 MODEL1 = ${envir1}
+METPLUS_CONF = {OUTPUT_BASE}/conf/{MODEL}/metplus_final_statanalysis_gatherbydate_${DATE}.conf
 [filename_templates]
 STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
 EOF

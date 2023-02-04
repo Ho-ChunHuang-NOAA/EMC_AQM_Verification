@@ -113,7 +113,7 @@ cd ${MET_PLUS_TMP}
 # and /parm/met_config
 cat << EOF > user_priority.conf
 [config]
-PB2NC_SKIP_IF_OUTPUT_EXISTS=true
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output
@@ -194,7 +194,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
@@ -241,7 +241,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_AIRNOW_max_Bukovsky_G148
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
@@ -301,7 +301,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_max_Bukovsky_G148
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
@@ -369,7 +369,7 @@ POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc_414
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_ANOWPM_ave_Bukovsky_G148
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=no
+PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
