@@ -408,5 +408,5 @@ done
 info_dir=/lfs/h2/emc/ptmp/${USER}/run_status/evs/aqmax148_2
 if [ ! -d ${info_dir} ]; then mkdir -p ${info_dir}; fi
 status_file=${info_dir}/evs_retro_run.status
-echo "EVS ${envir} ${DATE} - `date`" > ${status_file}
+echo "EVS ${envir} ${DATE}" > ${status_file}
 exit
