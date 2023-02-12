@@ -14,11 +14,11 @@ set -x
 export cycle=t00z
 export MET_PLUS_TMP=/lfs/h2/emc/ptmp/perry.shafran/metplus_cmaq_aod
 
-module purge
+module reset
 export HPC_OPT=/apps/ops/prod/libs
 module use /apps/ops/prod/libs/modulefiles/compiler/intel/19.1.3.304/
 module load intel
-module load gsl
+module load gsl/2.7
 module load python/3.8.6
 module load netcdf/4.7.4
 module load met/10.0.1

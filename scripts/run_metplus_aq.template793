@@ -9,11 +9,11 @@
 #####PBS -l debug=true
 # 
 
-module purge
-export HPC_OPT=/apps/ops/prod/libs
+module reset
 module use /apps/ops/prod/libs/modulefiles/compiler/intel/19.1.3.304/
+export HPC_OPT=/apps/ops/prod/libs
 module load intel
-module load gsl
+module load gsl/2.7
 module load python/3.8.6
 module load netcdf/4.7.4
 module load met/10.1.2
@@ -112,9 +112,16 @@ cd ${MET_PLUS_TMP}
 # Define high priority enviironment variable used in the METplus
 # to overwrite any prior setting in ~/parm/use_cases/perry 
 # and /parm/met_config
+##
+## Leave the PB2NC_SKIP_IF_OUTPUT_EXISTS=True
+## Otherwise it will be overwritten 23 time from  ${DATE}02 - ${DATEp1}00
+## The last one generated will change the valid time from ${DATE}_HH ${DATEp1}_HH.
+## This will cause the problem in point_stat lead sto valid time mis-matched.
+## Thus use the very 1st one generated with corrrect valid-time
+##
 cat << EOF > user_priority.conf
 [config]
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output

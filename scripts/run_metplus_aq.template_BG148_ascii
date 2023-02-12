@@ -6,7 +6,7 @@
 #PBS -A AQM-DEV
 #PBS -l place=shared,select=1:ncpus=1:mem=4500MB
 #PBS -l walltime=04:00:00
-#PBS -l debug=true
+######PBS -l debug=true
 # 
 
 module reset
@@ -112,10 +112,10 @@ cd ${MET_PLUS_TMP}
 # Define high priority enviironment variable used in the METplus
 # to overwrite any prior setting in ~/parm/use_cases/perry 
 # and /parm/met_config
+##
 ## POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
 cat << EOF > user_priority.conf
 [config]
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
 LOG_POINT_STAT_VERBOSITY = 3
 POINT_STAT_DESC = NA
 POINT_STAT_POLY=[ "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Appalachia.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_Central.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_East.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_South.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_West.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_DeepSouth.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatBasin.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatLakes.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Mezquital.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_MidAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NorthAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NRockies.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificNW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificSW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Prairie.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southeast.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southwest.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SRockies.nc" ];

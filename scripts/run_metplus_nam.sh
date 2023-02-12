@@ -62,7 +62,7 @@ echo $model1
 # and /parm/met_config
 cat << EOF > user_priority.conf
 [config]
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output

@@ -9,11 +9,11 @@
 #PBS -l debug=true
 # 
 
-module purge
+module reset
 export HPC_OPT=/apps/ops/prod/libs
 module use /apps/ops/prod/libs/modulefiles/compiler/intel/19.1.3.304/
 module load intel
-module load gsl
+module load gsl/2.7
 module load python/3.8.6
 module load netcdf/4.7.4
 module load met/10.1.2
@@ -113,7 +113,7 @@ cd ${MET_PLUS_TMP}
 # and /parm/met_config
 cat << EOF > user_priority.conf
 [config]
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 POINT_STAT_MASK_POLY = /lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
@@ -196,7 +196,7 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
 POINT_STAT_OUTPUT_FLAG_FHO = STAT
@@ -247,7 +247,7 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
 POINT_STAT_OUTPUT_FLAG_FHO = STAT
@@ -319,7 +319,7 @@ OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 PB2NC_CONFIG_FILE = ${MET_PLUS}/parm/use_cases/grid_to_obs/met_config/PB2NCConfig_conus_sfc
 POINT_STAT_CONFIG_FILE =${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
 POINT_STAT_OUTPUT_FLAG_FHO = STAT

@@ -101,9 +101,16 @@ cd ${MET_PLUS_TMP}
 # Define high priority venviironment variable used in the METplus
 # to overwrite any prior setting in ~/parm/use_cases/perry 
 # and /parm/met_config
+##
+## Leave the PB2NC_SKIP_IF_OUTPUT_EXISTS=True
+## Otherwise it will be overwritten 23 time from  ${DATE}02 - ${DATEp1}00
+## The last one generated will change the valid time from ${DATE}_HH ${DATEp1}_HH.
+## This will cause the problem in point_stat lead sto valid time mis-matched.
+## Thus use the very 1st one generated with corrrect valid-time
+##
 cat << EOF > user_priority.conf
 [config]
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 [dir]
 OUTPUT_BASE = ${MET_PLUS_OUT}
 PROJ_DIR = ${MET_PLUS}/output
@@ -182,7 +189,7 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_o3${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
@@ -227,7 +234,7 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqmmax/stat/aqmmax
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_8hr_o3${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
@@ -285,7 +292,7 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.max_1hr_pm25${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
@@ -351,7 +358,7 @@ OBS_POINT_STAT_INPUT_DIR = {PB2NC_OUTPUT_DIR}
 POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/pmmax/stat/${model}
 [config]
 MODEL = ${envir1}
-PB2NC_SKIP_IF_OUTPUT_EXISTS=False
+PB2NC_SKIP_IF_OUTPUT_EXISTS=True
 [filename_templates]
 FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t${hour}z.ave_24hr_pm25${Bias_Corr}.148.grib2
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
