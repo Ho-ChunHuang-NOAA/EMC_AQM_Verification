@@ -1,4 +1,5 @@
 #!/bin/bash
+source /u/ho-chun.huang/versions/run.ver
 module load prod_util
 module load prod_envir
 #
@@ -49,15 +50,12 @@ cat << EOF > ${batch_script}
 #PBS -l place=shared,select=1:ncpus=1:mem=4500MB
 #PBS -l walltime=02:00:00
 #PBS -l debug=true
+module load envvar/${envvar_ver}
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load intel/${intel_ver}
+module load craype/${craype_ver}
+module load cray-mpich/${cray_mpich_ver}
 # 
-module load envvar/1.0
-module load PrgEnv-intel/8.2.0
-module load intel/19.1.3.304
-module load craype/2.7.8
-module load cray-mpich/8.1.9
-
-
-#
 mkdir -p ${idir}
 cd ${idir}
 htar -xf ${hpssroot}/${timestamp}.tar

@@ -1,4 +1,5 @@
 #!/bin/bash
+source /u/ho-chun.huang/versions/run.ver
 #    ## require for module load prod_util
 module load prod_util
 module load prod_envir

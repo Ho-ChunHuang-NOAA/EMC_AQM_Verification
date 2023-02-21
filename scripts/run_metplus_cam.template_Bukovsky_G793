@@ -68,42 +68,15 @@ export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_cam/${envir}/${DATE}
 rm -f -r $MET_PLUS_TMP
 mkdir -p $MET_PLUS_TMP
 
-###############################################################################################
-## Define FCST and OBS input location depend on the case of near-real-time or retrospective run
-## METplus will use FCST_INPUT_SELECT and OBS_INPUT_SELECT
-## Assign AQM output directory for various exp, PROD, PARA6D,...or I143_a
-###############################################################################################
-## EXP model output directory, the default is /lfs/h1/ops/prod/com/aqm/v6.1
-## Define FCST_INPUT_COMOUT for AQM model output
-##
-## export FCST_INPUT_NCO=/lfs/h1/ops/prod/com/aqm/v6.1
-## export FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
 ## 
 export FCST_INPUT_SELECT=xxFCST_INPUT
 
-## EXP Obs input directory, the default is /lfs/h1/ops/prod/com/obsproc/v1.1
-## Define OBS_INPUT_SELECT for EPA bufr --> obsproc --> prepbufpr  location
-## 
-## 
-## export OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.1                        avail after 21Z
-## export OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/Perry.Shafran/com/hourly/prod
-## export OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/com/hourly/prod  avail after 22Z
 ## 
 export OBS_INPUT_SELECT=xxOBS_INPUT
 
 mkdir -p ${MET_PLUS_OUT} ${MET_PLUS_STD}
 #
-# For consistent flexible MET_PLUS_OUT.  It is because ${MET_PLUS_CONF}/system_aq.conf
-# is the last configure files when executing run_metplus.py.  The hardwire setting of OUTPUT_BASE 
-# will overwrite the flexible MET_PLUS_OUT defined in user script.  Now use the
-# ${MET_PLUS_CONF}/system_aq.conf
-#
 cd ${MET_PLUS_TMP}
-
-## export model=${envir}
-## export model=nam
-## model1=`echo $model | tr a-z A-Z`
-## echo $model1
 
 #
 # Define high priority enviironment variable used in the METplus
@@ -127,21 +100,6 @@ VALID_END = ${DATE}23
 EOF
 
 #
-# Inline-CMAQ all. fcst_var = "SPFH" (2m/10m[kg/kg]), "TMP"(2m[K]), "HGT"(sfc), "UGRD"(10m), "VGRD"(10m), "RH" (2m[%]), "CAPE" (sfc[J/kg]), "HPBL" (sfc[m]),
-#                           "PRMSL"(MSL[Pa]), "DPT"(2m[K}), "PWO", "TCDC"(hybrid level[%]), "VIS"(sfc[m]), "CEILING", "GUST"i(sfc[m/s])
-# 
-# PB2NC sample :  obs_var = "SPFH"[KG/KG], "TMP"[K], "HGT"[m], "UGRD"[m/s], "VGRD"[m/s], "RH", "CAPE", "PBL",
-#                           "PRMSL"[PA], "DPT"[K], "PWO"[KG/M**2or mm], "TCDC"[%], "VIS"[m], "CEILING"[m], "GUST"[m/s] 
-# PWO : TOTAL PRECIPITABLE WATER
-# CELING : HGT OF CLOUD BASE
-#
-# Switch to use prolevf because the pb2nc and point_stat both look for pressure quantities
-# BOTH_VAR1_LEVELS = Z2, P1000, P925, P850, P700, P500, P400, P300, P250, P200, P150, P100, P50
-#
-## FCST_POINT_STAT_INPUT_DIR = /lfs/h1/ops/prod/com/obsproc/v1.1
-## MODEL = ${model1}
-## OBS_POINT_STAT_INPUT_TEMPLATE = prepbufr.nam.{valid?fmt=%Y%m%d%H}.nc
-
 cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
@@ -168,14 +126,7 @@ PB2NC_INPUT_TEMPLATE =  nam.{da_init?fmt=%Y%m%d}/nam.t{cycle?fmt=%2H}z.prepbufr.
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF
 
-#model1=`echo $model | tr a-z A-Z`
-#echo $model1
-
 ${MET_PLUS}/ush/run_metplus.py -c ${MET_PLUS}/parm/use_cases/grid_to_obs/grid_to_obs.conf -c ${MET_PLUS}/parm/use_cases/grid_to_obs/examples/conus_surface.conf -c ${MET_PLUS_CONF}/pb2nc_cam.conf -c ${MET_PLUS_CONF}/point_stat_cam.conf -c ${MET_PLUS_TMP}/${model}.conf -c ${MET_PLUS_CONF}/shared.conf -c ${MET_PLUS_TMP}/shared_${model}.conf -c ${MET_PLUS_CONF}/system_cam.conf -c ${MET_PLUS_TMP}/user_priority.conf
-
-## mkdir -p ${MET_PLUS_STD}/stat/${model}
-## cp ${MET_PLUS_OUT}/cam/stat/${model}/*${TODAY}* ${MET_PLUS_STD}/stat/${model}
-## mv ${MET_PLUS_OUT}/logs/master_metplus.log.${TODAY} ${MET_PLUS_TMP}/master_metplus.log.${TODAY}_${model}
 
 cat << EOF > statanalysis.conf
 [dir]
