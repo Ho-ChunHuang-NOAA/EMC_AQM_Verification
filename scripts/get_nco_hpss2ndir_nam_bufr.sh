@@ -62,7 +62,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         logfile=${logdir}/${job_name}.out
         if [ -e ${logfile} ]; then /bin/rm -f ${logfile}; fi
 cat > ${batch_script} << EOF
-#!/bin/bash -l
+#!/bin/bash
 #PBS -o ${logfile}
 #PBS -e ${logfile}
 #PBS -l place=shared,select=1:ncpus=1:mem=4500MB
