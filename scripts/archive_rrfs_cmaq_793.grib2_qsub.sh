@@ -23,6 +23,7 @@ else
 fi
 echo "out_envir=${out_envir}"
 expid=`echo ${out_envir} | cut -c4-6`
+expid=aqm   # after 4/1/2023 directory will be changed into aqm.yyyymmdd
 
 data_in=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}
 data_in=/lfs/h2/emc/ptmp/jianping.huang/emc.para/com/aqm/v7.0/aqm.v7.0.${expid}

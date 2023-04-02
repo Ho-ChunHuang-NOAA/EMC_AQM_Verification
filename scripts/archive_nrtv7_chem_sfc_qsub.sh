@@ -23,6 +23,7 @@ else
 fi
 echo "out_envir=${out_envir}"
 expid=`echo ${out_envir} | cut -c4-6`
+expid=aqm   # after 4/1/2023 directory will be changed into aqm.yyyymmdd
 
 ## send output to v70c43"
 out_envir=v70c43
