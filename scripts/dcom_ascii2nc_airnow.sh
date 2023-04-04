@@ -1,4 +1,6 @@
 #!/bin/bash
+source /u/ho-chun.huang/versions/run.ver
+module load prod_util/${prod_util_ver}
 MSG="$0 Hourly_type [aqobs|data] FIRSTDAY LASTDAY"
 ## set -x
 if [ $# -lt 3 ]; then
@@ -9,12 +11,13 @@ else
    FIRSTDAY=$2
    LASTDAY=$3
 fi
+echo "Processing ${hourly_opt} ${FIRSTDAY} ${LASTDAY}"
 
 declare -a data_type=( aqobs data )
 flag_check_datatype=no
 for i in "${data_type[@]}"; do
     if [ "${i}" == "${hourly_opt}" ]; then
-        flag_check_datatype=tes
+        flag_check_datatype=yes
         break
     fi
 done
@@ -53,7 +56,8 @@ if [ "${ihost}" == "wcoss2" ]; then
     logdir=/lfs/h2/emc/ptmp/ho-chun.huang/batch_logs
     mkdir -p ${logdir}
 
-    input_dir=/lfs/h2/emc/physics/noscrub/ho-chun.huang/epa_airnow_acsii
+    dcomout=/lfs/h1/ops/prod/dcom
+    usr_input=/lfs/h2/emc/physics/noscrub/ho-chun.huang/epa_airnow_acsii
     output_dir=/lfs/h2/emc/vpppg/noscrub/ho-chun.huang/dcom_ascii2nc_airnow
     if [ ! -d ${output_dir} ]; then mkdir -p  ${output_dir}; fi
 
@@ -73,6 +77,7 @@ else
     mkdir -p ${logdir}
 
     input_dir=/scratch2/NCEPDEV/naqfc/Ho-Chun.Huang/noscrub/dcom
+    usr_input=/scratch2/NCEPDEV/naqfc/Ho-Chun.Huang/noscrub/dcom
     output_dir=/scratch2/NCEPDEV/naqfc/Ho-Chun.Huang/noscrub/dcom_ascii2nc_airnow
     if [ ! -d ${output_dir} ]; then mkdir -p  ${output_dir}; fi
 
@@ -100,7 +105,16 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     YY=`echo ${NOW} | cut -c1-4`
     YM=`echo ${NOW} | cut -c1-6`
     if [ "${ihost}" == "wcoss2" ]; then
-        idir=${input_dir}/${YY}/${NOW}
+        idir=${dcomout}/${NOW}/airnow
+	if [ ! -d ${idir} ]; then
+            idir=${usr_input}/${YY}/${NOW}
+	    if [ ! -d ${idir} ]; then
+                echo "can not find ${dcomout}/${NOW}/airnow or ${usr_input}/${YY}/${NOW}, skip to next day"
+                cdate=${NOW}"00"
+                NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
+		continue
+	    fi
+	fi
     else
         idir=${input_dir}/${NOW}/airnow
     fi
