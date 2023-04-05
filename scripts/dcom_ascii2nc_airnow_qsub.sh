@@ -75,6 +75,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
 
     task_cpu='04:30:00'
     task_cpu='01:30:00'
+    task_cpu='00:30:00'
 cat > ${batch_script} << EOF
 #!/bin/bash
 #PBS -o ${logfile}
