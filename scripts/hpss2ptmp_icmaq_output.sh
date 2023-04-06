@@ -50,11 +50,11 @@ cat << EOF > ${batch_script}
 #PBS -l place=shared,select=1:ncpus=1:mem=4500MB
 #PBS -l walltime=02:00:00
 #PBS -l debug=true
-module load envvar/${envvar_ver}
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-mpich/${cray_mpich_ver}
+## module load envvar/${envvar_ver}
+## module load PrgEnv-intel/${PrgEnv_intel_ver}
+## module load intel/${intel_ver}
+## module load craype/${craype_ver}
+## module load cray-mpich/${cray_mpich_ver}
 # 
 mkdir -p ${idir}
 cd ${idir}

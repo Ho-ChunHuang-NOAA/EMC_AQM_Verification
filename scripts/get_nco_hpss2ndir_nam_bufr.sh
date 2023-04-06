@@ -71,17 +71,17 @@ cat > ${batch_script} << EOF
 #PBS -A AQM-DEV
 #PBS -l walltime=${task_cpu}
 #PBS -l debug=true
-module load envvar/${envvar_ver}
-module load PrgEnv-intel/${PrgEnv_intel_ver}
-module load intel/${intel_ver}
-module load craype/${craype_ver}
-module load cray-mpich/${cray_mpich_ver}
+## module load envvar/${envvar_ver}
+## module load PrgEnv-intel/${PrgEnv_intel_ver}
+## module load intel/${intel_ver}
+## module load craype/${craype_ver}
+## module load cray-mpich/${cray_mpich_ver}
 
 ##
 ##  Provide fix date daily Hysplit data processing
 ##
 
-module load prod_util
+## module load prod_util
    FIRSTDAY=${NOW}
    LASTDAY=${NOW}
    hpssprod=${hpssprod}
