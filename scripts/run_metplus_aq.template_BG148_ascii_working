@@ -1,0 +1,345 @@
+#!/bin/bash
+#PBS -N xxJOB
+#PBS -o xxOUTLOG
+#PBS -e xxERRLOG
+#PBS -q dev
+#PBS -A AQM-DEV
+#PBS -l place=shared,select=1:ncpus=1:mem=4500MB
+#PBS -l walltime=04:00:00
+######PBS -l debug=true
+# 
+
+module reset
+module use /apps/ops/prod/libs/modulefiles/compiler/intel/19.1.3.304/
+export HPC_OPT=/apps/ops/prod/libs
+module load intel
+module load gsl/2.7
+module load python/3.8.6
+module load netcdf/4.7.4
+module load met/11.0.0
+module load metplus/5.0.0
+## export MET_BASE=/apps/ops/para/libs/intel/19.1.3.304/met/10.1.2/share/met
+## export MET_ROOT=/apps/ops/para/libs/intel/19.1.3.304/met/10.1.2
+## export PATH=/apps/ops/para/libs/intel/19.1.3.304/met/10.1.2/bin:${PATH}
+## METPLUS_PATH","/apps/ops/prod/libs/intel/19.1.3.304/metplus/5.0.0
+## {METPLUS_PATH}/parm/met_config/PointStatConfig_wrapped
+## {METPLUS_PATH}/parm/met_config/STATAnalysisConfig_wrapped
+
+module load prod_util/2.0.13
+module load prod_envir/2.0.6
+
+envir=xxENVIR
+envir1=`echo ${envir} | tr a-z A-Z`
+echo "experiment run is ${envir} ${envir1}"
+
+set -x
+TODAY=`date +%Y%m%d`
+
+#
+# Find EXP Name if envir="EXP"_bc
+#
+if [[ "${envir}" == *"_bc"* ]]; then
+    length=${#envir}
+    cutlim=$(expr ${length} - 3)
+    EXP=`echo ${envir} | cut -c1-${cutlim}`
+    Bias_Corr='_bc'
+else
+    EXP=${envir}
+    Bias_Corr=''
+fi
+
+caseid="_test"
+export cycle=t00z
+export UTILHOME=/apps/ops/prod/nco/core/prod_util.v2.0.13
+export utilscript=${UTILHOME}/ush
+export utilexec=${UTILHOME}/exec
+export EXECutil=${UTILHOME}/exec
+
+## This is for near-realtime
+##  sh $utilscript/setup.sh
+##  sh $utilscript/setpdy.sh
+##  . $MET_PLUS_TMP/PDY
+
+export DATE=xxDATE
+export DATEp1=xxDATEp1
+export MET_PLUS=xxBASE
+export MET_PLUS_CONF=${MET_PLUS}/parm/use_cases/hochun
+export MET_PLUS_CONF2=${MET_PLUS}/parm/met_config
+# export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq${caseid}
+# export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
+export MET_PLUS_OUT=/lfs/h2/emc/physics/noscrub/${USER}/metplus_aq
+export MET_PLUS_STD=/lfs/h2/emc/ptmp/${USER}/metplus_aq/${envir}/${DATE}
+
+#
+# Creat a more distinct temporary directory to store temporary config files for specific model/date/type
+# If both near-real-time and retro run share the same directory, the config files generated for one run
+# can be deleted (for commands below) when another one is activated
+#
+# export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aq${caseid}/${envir}/${DATE}
+export MET_PLUS_TMP=/lfs/h2/emc/ptmp/${USER}/metplus_aq/${envir}/${DATE}
+
+rm -f -r ${MET_PLUS_TMP}
+mkdir -p ${MET_PLUS_TMP}
+###############################################################################################
+## Define FCST and OBS input location depend on the case of near-real-time or retrospective run
+## METplus will use FCST_INPUT_SELECT and OBS_INPUT_SELECT
+## Assign AQM output directory for various exp, PROD, PARA6D,...or I143_a
+###############################################################################################
+## EXP model output directory, the default is /lfs/h1/ops/prod/com/aqm/v6.1
+## Define FCST_INPUT_COMOUT for AQM model output
+##
+## export FCST_INPUT_NCO=/lfs/h1/ops/prod/com/aqm/v6.1
+## export FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/aqm/${EXP}
+## 
+export FCST_INPUT_SELECT=xxFCST_INPUT
+
+## EXP Obs input directory, the default is /lfs/h1/ops/prod/com/obsproc/v1.1
+## Define OBS_INPUT_SELECT for EPA bufr --> obsproc --> prepbufpr  location
+## 
+## 
+## export OBS_INPUT_NCO=/lfs/h1/ops/prod/com/obsproc/v1.1                        avail after 21Z
+## export OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/Perry.Shafran/com/hourly/prod
+## export OBS_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/com/hourly/prod  avail after 22Z
+## 
+export OBS_INPUT_SELECT=xxOBS_INPUT
+
+mkdir -p ${MET_PLUS_OUT} ${MET_PLUS_STD}
+#
+# For consistent flexible MET_PLUS_OUT.  It is because ${MET_PLUS_CONF}/system_aq.conf
+# is the last configure files when executing run_metplus.py.  The hardwire setting of OUTPUT_BASE 
+# will overwrite the flexible MET_PLUS_OUT defined in user script.  Now use the
+# ${MET_PLUS_CONF}/system_aq.conf
+#
+cd ${MET_PLUS_TMP}
+#
+# Define high priority enviironment variable used in the METplus
+# to overwrite any prior setting in ~/parm/use_cases/perry 
+# and /parm/met_config
+##
+cat << EOF > stat_common.conf
+[config]
+## Configuration-related settings such as the process list, begin and end times, etc.
+PROCESS_LIST = PointStat
+LOOP_ORDER = processes
+
+LOG_LEVEL = DEBUG
+LOG_MET_VERBOSITY = 2
+LOG_ASCII2NC_VERBOSITY = 3
+LOG_POINT_STAT_VERBOSITY = 3
+
+
+## FOR PREBURF INPUT
+## POINT_STAT_MESSAGE_TYPE = ONLYSF
+
+LOOP_BY = VALID
+VALID_TIME_FMT = %Y%m%d%H
+VALID_BEG = ${DATE}00
+VALID_END = ${DATE}23
+VALID_INCREMENT = 1H
+
+OBS_WINDOW_BEGIN = -3600
+OBS_WINDOW_END = -3600
+
+INIT_SEQ = 6, 12
+LEAD_SEQ_MIN = 1
+LEAD_SEQ_MAX = 72
+
+POINT_STAT_CONFIG_FILE = ${MET_PLUS}/parm/met_config/PointStatConfig_wrapped
+POINT_STAT_DESC = NA
+POINT_STAT_POLY=[ "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Appalachia.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_Central.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_East.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_South.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CONUS_West.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_CPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_DeepSouth.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatBasin.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_GreatLakes.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Mezquital.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_MidAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NorthAtlantic.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_NRockies.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificNW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_PacificSW.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Prairie.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southeast.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_Southwest.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SPlains.nc", "/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/EVS_fix/masks/Bukovsky_G148_SRockies.nc" ];
+POINT_STAT_OUTPUT_FLAG_CTC = STAT
+POINT_STAT_OUTPUT_FLAG_FHO = STAT
+POINT_STAT_OUTPUT_FLAG_SL1L2 = STAT
+POINT_STAT_CLIMO_MEAN_TIME_INTERP_METHOD = DW_MEAN
+POINT_STAT_CLIMO_CDF_BINS = 1
+POINT_STAT_INTERP_VLD_THRESH = 1.0
+POINT_STAT_INTERP_SHAPE = SQUARE
+POINT_STAT_INTERP_TYPE_METHOD = BILIN
+POINT_STAT_INTERP_TYPE_WIDTH = 2
+POINT_STAT_REGRID_TO_GRID = NONE
+POINT_STAT_REGRID_METHOD = BILIN
+POINT_STAT_REGRID_WIDTH = 1
+[dir]
+OUTPUT_BASE = ${MET_PLUS_OUT}
+PROJ_DIR = ${MET_PLUS}/output
+METPLUS_BASE = ${MET_PLUS}
+CONFIG_DIR = ${MET_PLUS_CONF2}
+STAGING_DIR = {OUTPUT_BASE}/stage
+TMP_DIR = {OUTPUT_BASE}/tmp
+LOG_DIR = ${MET_PLUS_TMP}/logs
+PARM_BASE = {METPLUS_BASE}/parm
+FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
+OBS_POINT_STAT_INPUT_DIR = ${OBS_INPUT_SELECT}
+EOF
+
+model=aq
+model1=`echo ${model} | tr a-z A-Z`
+echo ${model1}
+
+cat << EOF > ${model}_point_stat.conf
+[dir]
+## MET_BUILD_BASE = /apps/ops/prod/libs/intel/19.1.3.304/met/11.0.0
+## MET_INSTALL_DIR = /apps/ops/prod/libs/intel/19.1.3.304/met/11.0.0
+POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
+[config]
+POINT_STAT_MET_CONFIG_OVERRIDES = cat_thresh = [ >50, >60, >65, >70, >75, >85, >105, >125, >150 ];
+METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat_aq.conf
+MODEL = ${envir1}
+FCST_VAR1_NAME = OZCON
+FCST_VAR1_LEVELS = A1
+FCST_VAR1_OPTIONS = set_attr_name = "OZCON1";
+OBS_VAR1_NAME= OZONE
+OBS_VAR1_LEVELS= A1
+OBS_VAR1_OPTIONS =  message_type = "AIRNOW_HOURLY_AQOBS"; censor_thresh = [ <=0.0 ]; censor_val=[ 0.0 ];
+[exe]
+NCDUMP_EXE, DO NOT USE module load netcdf it will break
+# the tc_pairs binary ... ldd tc_pairs and it cant find lib.netcdf.so.6
+#
+##WGRIB2 = $WGRIB2   ;; MUST run module load wgrib2
+WGRIB2 = /nwprod/util/exec/wgrib2
+CUT = /bin/cut
+TR = /usr/bin/tr
+RM = /bin/rm
+NCAP2 = ncap2                 ;; MUST run module load nco
+CONVERT = /usr/bin/convert
+[filename_templates]
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.awpozcon${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
+OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_aqobs_{valid?fmt=%Y%m%d%H?shift=-3600}.nc
+POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+
+${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS_TMP}/${model}_point_stat.conf ${MET_PLUS_TMP}/stat_common.conf
+
+cat << EOF > statanalysis.conf
+[dir]
+STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/aqm
+MODEL1_STAT_ANALYSIS_LOOKIN_DIR = {OUTPUT_BASE}/aqm/stat/${model}/${envir}/*{VALID_BEG}*
+[config]
+PROCESS_LIST = StatAnalysis
+LOOP_ORDER = times
+
+LOOP_BY = VALID
+VALID_TIME_FMT = %Y%m%d
+VALID_BEG = ${DATE}
+VALID_END = ${DATE}
+VALID_INCREMENT = 86400
+
+MODEL = ${envir}
+MODEL1 = ${envir1}
+
+MODEL_LIST = {MODEL1}
+LOOP_LIST_ITEMS = MODEL_LIST
+
+OBTYPE = ONLYSF
+MODEL1_OBTYPE = ONLYSF
+
+METPLUS_CONF = {OUTPUT_BASE}/conf/{MODEL}/metplus_final_statanalysis_gatherbydate.conf
+LOG_METPLUS = {LOG_DIR}/{MODEL}/{VALID_BEG}/master_metplus.statanalysis.log.{LOG_TIMESTAMP_TEMPLATE}
+STAT_ANALYSIS_CONFIG_FILE = {CONFIG_DIR}/STATAnalysisConfig_wrapped
+STAT_ANALYSIS_JOB_NAME = filter
+STAT_ANALYSIS_JOB_ARGS = -dump_row [dump_row_filename]
+[filename_templates]
+STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
+EOF
+
+${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/stat_common.conf
+
+model=pm
+model1=`echo ${model} | tr a-z A-Z`
+echo ${model1}
+
+## FCST_POINT_STAT_INPUT_TEMPLATE = {init?fmt=%Y%m%d%H}/postprd/rrfs.t{init?fmt=%2H}z.natlevf{lead?fmt=%3H}.tm00.grib2
+cat << EOF > ${model}_point_stat.conf
+[dir]
+POINT_STAT_OUTPUT_DIR = {OUTPUT_BASE}/aqm/stat/${model}
+[config]
+PROCESS_LIST = PointStat
+LOOP_ORDER = processes
+
+LOOP_BY = VALID
+VALID_TIME_FMT = %Y%m%d%H
+VALID_BEG = ${DATE}00
+VALID_END = ${DATE}23
+VALID_INCREMENT = 1H
+
+OBS_WINDOW_BEGIN = -3600
+OBS_WINDOW_END = -3600
+
+INIT_SEQ = 6, 12
+LEAD_SEQ_MIN = 1
+LEAD_SEQ_MAX = 72
+
+POINT_STAT_INTERP_TYPE_WIDTH = 1
+POINT_STAT_REGRID_METHOD = NEAREST
+
+POINT_STAT_MET_CONFIG_OVERRIDES = cat_thresh = [ >5, >10, >12, >15, >20, >25, >35, >40, >45, >50, >55, >60, >65 ];
+METPLUS_CONF = {OUTPUT_BASE}/conf/${envir}/${model}/metplus_final_pointstat_pm.conf
+## LEAD_SEQ = begin_end_incr(1,72,1)
+FCST_VAR1_NAME = PMTF
+FCST_VAR1_LEVELS = L1
+OBS_VAR1_NAME= PM25
+OBS_VAR1_LEVELS= A1
+OBS_VAR1_OPTIONS =  message_type = "AIRNOW_HOURLY_AQOBS"; censor_thresh = [ <=0.0 ]; censor_val=[ 0.0 ];
+MODEL = ${envir1}
+[exe]
+NCDUMP_EXE, DO NOT USE module load netcdf it will break
+# the tc_pairs binary ... ldd tc_pairs and it cant find lib.netcdf.so.6
+#
+##WGRIB2 = $WGRIB2   ;; MUST run module load wgrib2
+WGRIB2 = /nwprod/util/exec/wgrib2
+CUT = /bin/cut
+TR = /usr/bin/tr
+RM = /bin/rm
+NCAP2 = ncap2                 ;; MUST run module load nco
+CONVERT = /usr/bin/convert
+[filename_templates]
+FCST_POINT_STAT_INPUT_TEMPLATE = cs.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.pm25${Bias_Corr}.f{lead?fmt=%2H}.148.grib2
+OBS_POINT_STAT_INPUT_TEMPLATE = {valid?fmt=%Y%m%d}/airnow_hourly_{valid?fmt=%Y%m%d%H?shift=-3600}.nc
+POINT_STAT_OUTPUT_TEMPLATE = ${envir}
+EOF
+
+${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS_TMP}/${model}_point_stat.conf ${MET_PLUS_TMP}/stat_common.conf
+
+cat << EOF > statanalysis.conf
+[dir]
+STAT_ANALYSIS_OUTPUT_DIR = {OUTPUT_BASE}/stat/aqm
+MODEL1_STAT_ANALYSIS_LOOKIN_DIR = {OUTPUT_BASE}/aqm/stat/${model}/${envir}/*{VALID_BEG}*
+[config]
+PROCESS_LIST = StatAnalysis
+LOOP_ORDER = times
+
+LOOP_BY = VALID
+VALID_TIME_FMT = %Y%m%d
+VALID_BEG = ${DATE}
+VALID_END = ${DATE}
+VALID_INCREMENT = 86400
+
+MODEL = ${envir}
+MODEL1 = ${envir1}
+
+MODEL_LIST = {MODEL1}
+LOOP_LIST_ITEMS = MODEL_LIST
+
+OBTYPE = ONLYSF
+MODEL1_OBTYPE = ONLYSF
+
+METPLUS_CONF = {OUTPUT_BASE}/conf/{MODEL}/metplus_final_statanalysis_gatherbydate_pm.conf
+LOG_METPLUS = {LOG_DIR}/{MODEL}/{VALID_BEG}/master_metplus.statanalysis.log.{LOG_TIMESTAMP_TEMPLATE}
+STAT_ANALYSIS_CONFIG_FILE = {CONFIG_DIR}/STATAnalysisConfig_wrapped
+STAT_ANALYSIS_JOB_NAME = filter
+STAT_ANALYSIS_JOB_ARGS = -dump_row [dump_row_filename]
+[filename_templates]
+STAT_ANALYSIS_DUMP_ROW_TEMPLATE =  {valid_beg?fmt=%Y%m%d}/{MODEL1}_${model1}_{valid_beg?fmt=%Y%m%d}.stat
+EOF
+
+${METPLUS_PATH}/ush/run_metplus.py -c ${MET_PLUS_TMP}/statanalysis.conf -c ${MET_PLUS_TMP}/stat_common.conf
+
+## Define LOG_DIR using MET_PLUS_TMP, thus avodiing moving logs file
+## mv ${MET_PLUS_OUT}/logs/master_metplus.log.${TODAY}* ${MET_PLUS_TMP}
+## mv ${MET_PLUS_OUT}/logs/${envir}/${DATE}/master_metplus.statanalysis.log.${TODAY}* ${MET_PLUS_TMP}
+
+info_dir=/lfs/h2/emc/ptmp/${USER}/run_status/evs/aq148_3
+if [ ! -d ${info_dir} ]; then mkdir -p ${info_dir}; fi
+status_file=${info_dir}/evs_retro_run.status
+echo "EVS ${envir} ${DATE}" > ${status_file}
+
+exit
