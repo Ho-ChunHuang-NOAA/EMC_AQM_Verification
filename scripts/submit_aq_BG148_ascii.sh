@@ -73,14 +73,14 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     OBS_INPUT_NCO=/lfs/h2/emc/vpppg/noscrub/ho-chun.huang/dcom_ascii2nc_airnow
     OBS_INPUT_USER=/lfs/h2/emc/vpppg/noscrub/ho-chun.huang/dcom_ascii2nc_airnow
     obs_dir=${OBS_INPUT_NCO}
-    if [ -s ${obs_dir}/${NOW}/airnow_hourly_${NOW}23.nc ]; then
+    if [ -s ${obs_dir}/${NOW}/airnow_hourly_aqobs_${NOW}23.nc ]; then
         obs_select=${obs_dir}
     else
         obs_dir=${OBS_INPUT_USER}
-        if [ -s ${obs_dir}/${NOW}/airnow_hourly_${NOW}23.nc ]; then
+        if [ -s ${obs_dir}/${NOW}/airnow_hourly_aqobs_${NOW}23.nc ]; then
             obs_select=${obs_dir}
     else
-	    echo "Can not find ${obs_dir}/${NOW}/airnow_hourly_${NOW}23.nc"
+	    echo "Can not find ${obs_dir}/${NOW}/airnow_hourly_aqobs_${NOW}23.nc"
 	    exit
         fi
     fi
@@ -116,7 +116,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
         echo "${working_dir}/${run_script}"
-        ## cat ${working_dir}/${run_script} | qsub
+        cat ${working_dir}/${run_script} | qsub
     else
         echo "Can not find ${working_dir}/${run_script}"
     fi
