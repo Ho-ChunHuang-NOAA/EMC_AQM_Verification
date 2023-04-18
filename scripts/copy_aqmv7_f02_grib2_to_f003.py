@@ -30,12 +30,13 @@ for line in rfile:
         if ver_name[1] == "netcdf_ver":
             netcdf_ver=ver[1]
 
-if len(sys.argv) < 2:
-    print("you must provide 2 arguments for start_date end_date")
+if len(sys.argv) < 3:
+    print("you must provide 3 arguments for start_date end_date")
     sys.exit()
 else:
-    start_date = sys.argv[1]
-    end_date = sys.argv[2]
+    envir = sys.argv[1]
+    start_date = sys.argv[2]
+    end_date = sys.argv[3]
 
 working_dir="/lfs/h2/emc/stmp/"+user
 if not os.path.exists(working_dir):
@@ -53,9 +54,9 @@ if not os.path.exists(log_dir):
     os.mkdir(log_dir)
 
 model="aqm"
-hpss_root="/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/Verification_Grib2"
-from_bkp_dir="/lfs/h2/emc/physics/noscrub/ho-chun.huang/verification/aqm"
-to_bkp_dir="/lfs/h2/emc/vpppg/noscrub/ho-chun.huang/verification/aqm"
+hpss_root="/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/Verification_Grib2/"+envir
+from_bkp_dir="/lfs/h2/emc/physics/noscrub/ho-chun.huang/verification/aqm/"+envir
+to_bkp_dir="/lfs/h2/emc/vpppg/noscrub/ho-chun.huang/verification/aqm/"+envir
 from_dir_id="cs"
 to_dir_id="aqm"
 
