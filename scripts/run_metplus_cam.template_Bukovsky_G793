@@ -100,6 +100,15 @@ VALID_END = ${DATE}23
 EOF
 
 #
+# FCST_VAR16_NAME = VIS
+# FCST_VAR16_LEVELS = L0
+# FCST_VAR16_THRESH =  <805, <1609, <4828, <8045 ,>=8045, <16090
+# FCST_VAR16_OPTIONS = GRIB_lvl_typ = 3; desc = "GSL"; censor_thresh = gt16090; censor_val = 16090;
+# OBS_VAR16_NAME = VIS
+# OBS_VAR16_LEVELS = L0
+# OBS_VAR16_THRESH =  <805, <1609, <4828, <8045 ,>=8045, <16090
+# OBS_VAR16_OPTIONS = censor_thresh = gt16090; censor_val = 16090; desc = "GSL";
+## BOTH_VAR8_OPTIONS = GRIB_lvl_typ = 1; censor_thresh = gt16090; censor_val = 16090; desc = "EMC";
 cat << EOF > ${model}.conf
 [dir]
 LOG_DIR = ${MET_PLUS_TMP}/logs
@@ -107,21 +116,12 @@ FCST_POINT_STAT_INPUT_DIR = ${FCST_INPUT_SELECT}
 OBS_POINT_STAT_INPUT_DIR = {OUTPUT_BASE}/cam/conus_cam
 PB2NC_INPUT_DIR = ${OBS_INPUT_SELECT}
 [config]
+MODEL = ${envir1}
 POINT_STAT_CONFIG_FILE ={PARM_BASE}/met_config/PointStatConfig_cam_Bukovsky_G793
 METPLUS_CONF = {OUTPUT_BASE}/conf/${model}/metplus_final_pb2nc_pointstat.conf
 LEAD_SEQ = begin_end_incr(0,72,1)
-BOTH_VAR8_OPTIONS = GRIB_lvl_typ = 1; censor_thresh = gt16090; censor_val = 16090; desc = "EMC";
-FCST_VAR16_NAME = VIS
-FCST_VAR16_LEVELS = L0
-FCST_VAR16_THRESH =  <805, <1609, <4828, <8045 ,>=8045, <16090
-FCST_VAR16_OPTIONS = GRIB_lvl_typ = 3; desc = "GSL"; censor_thresh = gt16090; censor_val = 16090;
-OBS_VAR16_NAME = VIS
-OBS_VAR16_LEVELS = L0
-OBS_VAR16_THRESH =  <805, <1609, <4828, <8045 ,>=8045, <16090
-OBS_VAR16_OPTIONS = censor_thresh = gt16090; censor_val = 16090; desc = "GSL";
-MODEL = ${envir1}
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/postprd/aqm.t{init?fmt=%2H}z.all.f{lead?fmt=%3H}.793.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.cmaq.f{lead?fmt=%3H}.793.grib2
 PB2NC_INPUT_TEMPLATE =  nam.{da_init?fmt=%Y%m%d}/nam.t{cycle?fmt=%2H}z.prepbufr.tm{offset?fmt=%2H}.nr
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF

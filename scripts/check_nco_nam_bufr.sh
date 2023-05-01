@@ -23,8 +23,8 @@ local_envir=${envir}
 model=nam
 runid=pm
 
-flag_hpss=no
 flag_hpss=yes
+flag_hpss=no
 
 bkpdir=/lfs/h2/emc/physics/noscrub/${USER}/verification/${model}/${envir}
 bkpdir=/lfs/h2/emc/physics/noscrub/${USER}/verification/com/${model}/${envir}

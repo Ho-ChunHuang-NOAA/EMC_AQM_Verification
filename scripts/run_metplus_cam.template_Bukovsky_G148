@@ -163,7 +163,7 @@ OBS_VAR16_THRESH =  <805, <1609, <4828, <8045 ,>=8045, <16090
 OBS_VAR16_OPTIONS = censor_thresh = gt16090; censor_val = 16090; desc = "GSL";
 MODEL = ${envir1}
 [filename_templates]
-FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/postprd/rrfs.t{init?fmt=%2H}z.natlevf{lead?fmt=%3H}.tm00.grib2
+FCST_POINT_STAT_INPUT_TEMPLATE = aqm.{init?fmt=%Y%m%d}/aqm.t{init?fmt=%2H}z.cmaq.f{lead?fmt=%3H}.148.grib2
 PB2NC_INPUT_TEMPLATE =  nam.{da_init?fmt=%Y%m%d}/nam.t{cycle?fmt=%2H}z.prepbufr.tm{offset?fmt=%2H}.nr
 POINT_STAT_OUTPUT_TEMPLATE = ${envir}
 EOF

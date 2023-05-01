@@ -83,9 +83,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
             icnt=`printf %2.2d ${t}`
             ckfile=${obs_dir}/nam.${PDYm1}/nam.t${i}z.prepbufr.tm${icnt}
             ckfile=${obs_dir}/nam.${PDYm1}/nam.t${i}z.prepbufr.tm${icnt}.nr
-            if [ -s ${ckfile} ]; then
-                if [ "${icnt}" == "06" ]; then echo "Found        ${ckfile}"; fi
-            else
+            if [ ! -s ${ckfile} ]; then
                 if [ "${icnt}" == "06" ]; then echo "Can not find ${ckfile}"; fi
                 find_obs_prepbufr=no
                 break
@@ -104,9 +102,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
                 icnt=`printf %2.2d ${t}`
                 ckfile=${obs_dir}/nam.${PDYm1}/nam.t${i}z.prepbufr.tm${icnt}
                 ckfile=${obs_dir}/nam.${PDYm1}/nam.t${i}z.prepbufr.tm${icnt}.nr
-                if [ -s ${ckfile} ]; then
-                    if [ "${icnt}" == "06" ]; then echo "Found        ${ckfile}";fi
-                else
+                if [ ! -s ${ckfile} ]; then
                     if [ "${icnt}" == "06" ]; then echo "Can not find ${ckfile}"; fi
                 fi
                 ((t++))
@@ -115,27 +111,25 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         obs_select=${obs_dir}   ## one need to assign obs_select no matter what, it can failed during the run, it is okay
     fi
     FCST_INPUT_NCO=/lfs/h1/ops/prod/com/aqm/v6.1
-    FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/RRFS-CMAQ/${EXP}
+    FCST_INPUT_NCO=/lfs/h2/emc/physics/noscrub/${USER}/verification/met/${EXP}
+    FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/met/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
     find_fcst_grib2=yes
     for i in "${fcst_cyc[@]}"; do
-        ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/aqm.t${i}z.all.f072.793.grib2
-        if [ -s ${ckfile} ]; then
-            echo "Found        ${ckfile}"
-        else
+        ckfile=${fcst_dir}/aqm.${PDYm3}/aqm.t${i}z.cmaq.f072.793.grib2
+        if [ ! -s ${ckfile} ]; then
             echo "Can not find ${ckfile}"
             find_fcst_grib2=no
         fi
     done
+find_fcst_grib2=yes
     if [ "${find_fcst_grib2}" == "yes" ]; then
         fcst_select=${fcst_dir}
     else
         fcst_dir=${FCST_INPUT_USER}
         for i in "${fcst_cyc[@]}"; do
-            ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/aqm.t${i}z.all.f072.793.grib2
-            if [ -s ${ckfile} ]; then
-                echo "Found        ${ckfile}"
-            else
+            ckfile=${fcst_dir}/aqm.${PDYm3}//aqm.t${i}z.cmaq.f072.793.grib2
+            if [ ! -s ${ckfile} ]; then
                 echo "Can not find ${ckfile}"
             fi
         done
@@ -144,7 +138,8 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     run_script=run_${jjob}.sh
     sed -e "s!xxBASE!${HOMEverif}!" -e "s!xxFCST_INPUT!${fcst_select}!" -e "s!xxOBS_INPUT!${obs_select}!" -e "s!xxENVIR!${envir}!" -e "s!xxJOB!${jjob}!" -e "s!xxOUTLOG!${out_logfile}!" -e "s!xxERRLOG!${err_logfile}!" -e "s!xxDATEp1!${PDYp1}!" -e "s!xxDATE!${NOW}!" ${script_dir}/${script_base} > ${working_dir}/${run_script}
     if [ -s ${working_dir}/${run_script} ]; then
-        echo "${working_dir}/${run_script}"
+        echo "SCRIPT = ${working_dir}/${run_script}"
+        echo "LOG FILE  = ${out_logfile}"
         cat ${working_dir}/${run_script} | qsub
     else
         echo "Can not find ${working_dir}/${run_script}"
@@ -153,7 +148,5 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
 done
 echo "working_dir=${working_dir}"
-echo "run_scrpt = ${working_dir}/${run_script}"
-echo "log_file  = ${out_logfile}"
 exit
 

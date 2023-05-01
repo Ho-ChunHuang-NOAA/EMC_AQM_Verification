@@ -115,11 +115,11 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         obs_select=${obs_dir}   ## one need to assign obs_select no matter what, it can failed during the run, it is okay
     fi
     FCST_INPUT_NCO=/lfs/h1/ops/prod/com/aqm/v6.1
-    FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/RRFS-CMAQ/${EXP}
+    FCST_INPUT_USER=/lfs/h2/emc/physics/noscrub/${USER}/verification/met/${EXP}
     fcst_dir=${FCST_INPUT_NCO}
     find_fcst_grib2=yes
     for i in "${fcst_cyc[@]}"; do
-        ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/aqm.t${i}z.all.f072.793.grib2
+        ckfile=${fcst_dir}/aqm.${PDYm3}/aqm.t${i}z.cmaq.f072.793.grib2
         if [ -s ${ckfile} ]; then
             echo "Found        ${ckfile}"
         else
@@ -132,7 +132,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
     else
         fcst_dir=${FCST_INPUT_USER}
         for i in "${fcst_cyc[@]}"; do
-            ckfile=${fcst_dir}/aqm.${PDYm3}/postprd/aqm.t${i}z.all.f072.793.grib2
+            ckfile=${fcst_dir}/aqm.${PDYm3}/aqm.t${i}z.cmaq.f072.793.grib2
             if [ -s ${ckfile} ]; then
                 echo "Found        ${ckfile}"
             else
