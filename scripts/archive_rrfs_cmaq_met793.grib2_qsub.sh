@@ -1,5 +1,4 @@
 #!/bin/bash
-source /u/ho-chun.huang/versions/run.ver
 module load prod_util
 module load prod_envir
 MSG="$0 EXP [para|para1|...] START_DATE END_DATE"
@@ -26,19 +25,18 @@ expid=`echo ${out_envir} | cut -c4-6`
 expid=aqm   # after 4/1/2023 directory will be changed into aqm.yyyymmdd
 
 data_in=/lfs/h2/emc/ptmp/ho-chun.huang/data/RRFSCMAQ/${in_envir}
-data_in=/lfs/h2/emc/ptmp/jianping.huang/emc.para/com/aqm/v7.0/aqm.v7.0.${expid}
-data_in=/lfs/h2/emc/aqmtemp/para/com/aqm/v7.0
-if [ ! -d ${data_in}/${expid}.${FIRSTDAY} ]; then
-    echo "Can not find ${data_in}/${expid}.${FIRSTDAY}, program exit"
+data_in=/lfs/h2/emc/ptmp/jianping.huang/emc.para/com/aqm/v7.0/${expid}
+if [ ! -d ${data_in}.${FIRSTDAY} ]; then
+    echo "Can not find ${data_in}.${FIRSTDAY}, program exit"
     exit
 fi
 
-working_dir=/lfs/h2/emc/ptmp/${USER}/rrfs_met_grib2_qsub_scripts
-log_dir=/lfs/h2/emc/ptmp/${USER}/rrfs_met_grib2_logs
+working_dir=/lfs/h2/emc/ptmp/${USER}/rrfs_met793_grib2_qsub_scripts
+log_dir=/lfs/h2/emc/ptmp/${USER}/rrfs_met793_grib2_logs
 mkdir -p ${working_dir} ${log_dir}
 
-hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/RRFS_postprd_grib2/${in_envir}
-outdir=/lfs/h2/emc/physics/noscrub/${USER}/verification/RRFS-CMAQ
+hpssroot=/5year/NCEPDEV/emc-naqfc/Ho-Chun.Huang/Verification_met_Grib2/${in_envir}
+outdir=/lfs/h2/emc/physics/noscrub/${USER}/verification/met
 
 
 NOW=${FIRSTDAY}
@@ -55,8 +53,8 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         hsi mkdir -p ${hpssroot}/${YY}/${YM}
     fi
     cd ${working_dir}
-    task_cpu='04:59:00'
-    job_name=daily_bkp_rrfs_793_${NOW}
+    task_cpu='01:59:00'
+    job_name=daily_bkp_rrfs_met793_${NOW}
     batch_script=${job_name}.sh
     if [ -e ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
 
@@ -67,22 +65,23 @@ cat > ${batch_script} << EOF
 #PBS -o ${logfile}
 #PBS -e ${logfile}
 #PBS -S /bin/bash
-#PBS -l place=shared,select=1:ncpus=1:mem=4500MB
+#PBS -l place=shared,select=1:ncpus=1:mem=5GB
 #PBS -N j${job_name}
 #PBS -q dev_transfer
-#PBS -A HYS-DEV
+#PBS -A AQM-DEV
 #PBS -l walltime=${task_cpu}
 #####PBS -l debug=true
-## module load envvar/${envvar_ver}
-## module load PrgEnv-intel/${PrgEnv_intel_ver}
-## module load intel/${intel_ver}
-## module load craype/${craype_ver}
-## module load cray-mpich/${cray_mpich_ver}
+## module load envvar/1.0
+## module load PrgEnv-intel/8.2.0
+## module load intel/19.1.3.304
+## module load craype/2.7.8
+## module load cray-mpich/8.1.9
 
 ##
 ##  Provide fix date daily Hysplit data processing
 ##
     ## module load prod_util
+set -x
     cd ${working_dir}
     NOW=${NOW}
     USER=${USER}
@@ -96,13 +95,12 @@ EOF
 if [ -s ${batch_script}.add ]; then /bin/rm -f ${batch_script}.add; fi
 cat > ${batch_script}.add << 'EOF'
     declare -a cyc=( 06 12 )
-    odir=${outdir}/${out_envir}/aqm.${NOW}/postprd
-    mkdir -p ${odir}/POST_STAT
+    odir=${outdir}/${out_envir}/aqm.${NOW}
+    mkdir -p ${odir}
     for i in "${cyc[@]}"; do
-        idir=${data_in}/${expid}.${NOW}/${i}
+        idir=${data_in}.${NOW}/${i}
 	if [ -d ${idir} ]; then
             cp -p ${idir}/aqm.t${i}z.cmaq.f*.793.grib2 ${odir}
-            if [ -d ${idir}/POST_STAT ]; then cp -pr ${idir}/POST_STAT/*  ${odir}/POST_STAT; fi
 	    echo "${NOW} ${i}"
         else
 	    echo "Can not find ${idir}"
