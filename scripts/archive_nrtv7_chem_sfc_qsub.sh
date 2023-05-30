@@ -69,7 +69,7 @@ while [ ${NOW} -le ${LASTDAY} ]; do
         hsi mkdir -p ${hpssroot}/${YY}/${YM}
     fi
     cd ${working_dir}
-    task_cpu='04:30:00'
+    task_cpu='01:00:00'
     job_name=daily_bkp_${out_envir}_chem_sfc_nc_${NOW}
     batch_script=${job_name}.sh
     if [ -e ${batch_script} ]; then /bin/rm -f ${batch_script}; fi
