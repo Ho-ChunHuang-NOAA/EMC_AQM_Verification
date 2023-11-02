@@ -1,8 +1,3 @@
-*save
-*working
-*tmp
-*reset
-*test
 add*
 archive_rrfs_cmaq_bicornc_qsub.sh
 archive_rrfs_cmaq_chem_sfc_qsub.sh_ver0
