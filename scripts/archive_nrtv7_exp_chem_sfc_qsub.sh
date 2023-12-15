@@ -153,8 +153,8 @@ EOF
    ##  Submit run scripts
    ##
        cat ${batch_script} | qsub
-       echo "Script = ${working_dir}/${batch_script}"
-       echo "Log    = ${logfile}"
+       echo "SCRIPT   = ${working_dir}/${batch_script}"
+       echo "LOG FILE = ${logfile}"
 
     cdate=${NOW}"00"
     NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)

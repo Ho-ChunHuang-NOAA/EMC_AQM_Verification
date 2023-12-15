@@ -1,4 +1,6 @@
 #!/bin/bash
+       echo "SCRIPT   = ${working_dir}/${batch_script}"
+       echo "LOG FILE = ${logfile}"
 module load prod_util
 module load prod_envir
 MSG="$0 EXP [para|para1|...] START_DATE END_DATE"
@@ -122,8 +124,8 @@ EOF
    ##  Submit run scripts
    ##
        cat ${batch_script} | qsub
-       echo "qsub_script=${working_dir}/${batch_script}"
-       echo "logfile=${logfile}"
+       echo "SCRIPT   = ${working_dir}/${batch_script}"
+       echo "LOG FILE = ${logfile}"
 
     cdate=${NOW}"00"
     NOW=$(${NDATE} +24 ${cdate}| cut -c1-8)
