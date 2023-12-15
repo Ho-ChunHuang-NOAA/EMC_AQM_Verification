@@ -76,7 +76,7 @@ cat > ${batch_script} << EOF
 #PBS -o ${logfile}
 #PBS -e ${logfile}
 #PBS -S /bin/bash
-#PBS -l place=shared,select=1:ncpus=1:mem=4500MB
+#PBS -l place=shared,select=1:ncpus=1:mem=5GB
 #PBS -N j${job_name}
 #PBS -q dev_transfer
 #PBS -A HYS-DEV
