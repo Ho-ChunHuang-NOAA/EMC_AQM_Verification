@@ -1,7 +1,5 @@
 #!/bin/bash
 source /u/ho-chun.huang/versions/run.ver
-module load prod_util
-module load prod_envir
 MSG="$0 EXP [para|para1|...] START_DATE END_DATE"
 if [ $# -lt 3 ]; then
    echo ${MSG}

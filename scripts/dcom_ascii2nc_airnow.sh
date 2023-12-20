@@ -1,6 +1,5 @@
 #!/bin/bash
 source /u/ho-chun.huang/versions/run.ver
-module load prod_util/${prod_util_ver}
 MSG="$0 Hourly_type [aqobs|data] FIRSTDAY LASTDAY"
 ## set -x
 if [ $# -lt 3 ]; then
