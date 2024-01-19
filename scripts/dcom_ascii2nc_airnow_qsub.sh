@@ -87,14 +87,6 @@ cat > ${batch_script} << EOF
 #PBS -l walltime=${task_cpu}
 #####PBS -l debug=true
 ##
-##  Provide fix date daily Hysplit data processing
-##
-##  module load envvar/${envvar_ver}
-##  module load PrgEnv-intel/${PrgEnv_intel_ver}
-##  module load intel/${intel_ver}
-##  module load craype/${craype_ver}
-##  module load cray-mpich/${cray_mpich_ver}
-
 
    export OMP_NUM_THREADS=1
    cd ${working_dir}
@@ -118,19 +110,24 @@ EOF
     if [ -s ${batch_script}.add ]; then /bin/rm -f ${batch_script}.add; fi
 cat > ${batch_script}.add << 'EOF'
 
-    module reset
-    ## module use /apps/ops/prod/libs/modulefiles/compiler/intel/19.1.3.304/
-    ## export HPC_OPT=/apps/ops/prod/libs
-    module use /apps/ops/${nco_opt}/libs/modulefiles/compiler/intel/19.1.3.304/
-    export HPC_OPT=/apps/ops/${nco_opt}/libs
-    module load intel
-    module load gsl/2.7
-    module load python/3.8.6
-    module load netcdf/4.7.4
-    module load met/${version_opt}
-    module load metplus/${metplus_opt}
+export HOMEevs=/lfs/h2/emc/vpppg/noscrub/$USER/EVS
 
-set -x 
+###%include <envir-p1.h>
+
+############################################################
+# Load modules
+############################################################
+
+   source $HOMEevs/versions/run.ver
+
+   evs_ver_2d=$(echo $evs_ver | cut -d'.' -f1-2)
+
+   module reset
+   module load prod_envir/${prod_envir_ver}
+
+   source $HOMEevs/dev/modulefiles/aqm/aqm_prep.sh
+
+   set -x 
 
     if [ ! -d ${output_dir} ]; then mkdir -p  ${output_dir}; fi
 
@@ -211,7 +208,6 @@ set -x
 
     cd ${output_dir}
     htar -cf ${hpssdir}/${NOW}.tar ${NOW}
-
 
 exit
 EOF
