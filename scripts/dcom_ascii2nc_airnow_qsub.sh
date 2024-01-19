@@ -22,15 +22,6 @@ dcomout=/lfs/h1/ops/prod/dcom
 usr_input=/lfs/h2/emc/physics/noscrub/${USER}/epa_airnow_acsii
 output_dir=/lfs/h2/emc/vpppg/noscrub/${USER}/dcom_ascii2nc_airnow
 
-version_opt=11.0.0
-version_opt=11.0.1
-
-if [ "${version_opt}" == "11.0.0" ]; then metplus_opt=5.0.0; fi
-if [ "${version_opt}" == "11.0.0" ]; then nco_opt=prod; fi
-
-if [ "${version_opt}" == "11.0.1" ]; then metplus_opt=5.0.1; fi
-if [ "${version_opt}" == "11.0.1" ]; then nco_opt=para; fi
-
 working_dir=/lfs/h2/emc/stmp/${USER}/ACSII2NC_AIRNOW
 log_dir=/lfs/h2/emc/ptmp/${USER}/batch_logs
 
@@ -101,9 +92,6 @@ cat > ${batch_script} << EOF
    usr_input=${usr_input}
    output_dir=${output_dir}
    cmdfmt=${cmdfmt}
-   version_opt=${version_opt}
-   metplus_opt=${metplus_opt}
-   nco_opt=${nco_opt}
    flag_test=no
 EOF
    
